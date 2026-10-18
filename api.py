@@ -13,7 +13,7 @@ from flask import Blueprint, current_app, jsonify, request
 
 import database
 from services import ServiceError, ValidationError
-from services import accounts, budgets, categories, holdings, importer, trading212, transactions
+from services import accounts, budgets, categories, dashboard, holdings, importer, trading212, transactions
 
 bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -62,6 +62,14 @@ def health():
     except (database.DatabaseError, sqlite3.DatabaseError) as exc:
         db_state = {"ok": False, "error": str(exc)}
     return jsonify(database=db_state, ollama=current_app.extensions["ollama"].status())
+
+
+# --------------------------------------------------------------------------- tableau de bord
+
+@bp.get("/dashboard")
+def dashboard_data():
+    months = request.args.get("months", default=6, type=int)
+    return jsonify(dashboard.dashboard(_db(), months))
 
 
 # --------------------------------------------------------------------------- comptes

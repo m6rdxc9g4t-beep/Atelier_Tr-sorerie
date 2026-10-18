@@ -1,72 +1,108 @@
 {% extends "base.html" %}
-{% from "_macros.html" import icon, kpi_card %}
+{% from "_macros.html" import icon %}
 
 {% block title %}Tableau de bord{% endblock %}
 {% block page_title %}Tableau de bord{% endblock %}
 
+{% block head %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js" defer></script>
+{% endblock %}
+
 {% block content %}
-  {# ---- KPIs : branchés sur l'API à l'étape 3 ---- #}
-  <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicateurs clés">
-    {{ kpi_card("Solde total", "—", "ink", "Tous comptes confondus", "kpi-balance") }}
-    {{ kpi_card("Revenus du mois", "—", "gain", "Entrées hors virements internes", "kpi-income") }}
-    {{ kpi_card("Dépenses du mois", "—", "loss", "Sorties hors virements internes", "kpi-expense") }}
-    {{ kpi_card("Taux d'épargne", "—", "brand", "(Revenus − Dépenses) ÷ Revenus", "kpi-savings") }}
-  </section>
+  {% if stats.accounts == 0 %}
+    {# ---- Premier lancement : base vide ---- #}
+    <section class="card mx-auto max-w-2xl p-10 text-center">
+      <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-brand/15 text-brand">
+        {{ icon("M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z", "h-7 w-7") }}
+      </div>
+      <h2 class="mt-5 text-xl font-bold">Bienvenue dans votre atelier</h2>
+      <p class="mt-2 text-muted">Commencez par créer vos comptes, puis importez un relevé bancaire : le tableau de bord se remplira tout seul.</p>
+      <div class="mt-6 flex flex-wrap justify-center gap-2">
+        <a href="{{ url_for('accounts') }}" class="btn btn-primary">Créer un compte</a>
+        <a href="{{ url_for('transactions') }}" class="btn btn-ghost">Importer un relevé</a>
+      </div>
+      <p class="mt-6 text-xs text-muted">Pour explorer avec des données fictives :
+        <code class="rounded bg-raised px-1.5 py-0.5">flask --app app seed-demo</code></p>
+    </section>
+  {% else %}
+    {# ---- Filtre unique, au-dessus de tout ce qu'il pilote ---- #}
+    <section class="mb-5 flex flex-wrap items-center justify-between gap-3">
+      <div class="segmented" role="radiogroup" aria-label="Période des graphiques">
+        <label><input type="radio" name="months" value="6" checked><span>6 mois</span></label>
+        <label><input type="radio" name="months" value="12"><span>12 mois</span></label>
+      </div>
+      <p id="as-of" class="text-sm text-muted"></p>
+    </section>
 
-  {# ---- Graphiques ---- #}
-  <section class="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
-    <div class="card p-6 xl:col-span-2">
-      <div class="mb-4 flex items-center justify-between">
-        <h2 class="font-bold">Évolution de la trésorerie</h2>
-        <span class="chip">6 derniers mois</span>
-      </div>
-      <div class="placeholder h-72">
-        {{ icon("M3 17l5-5 4 4 8-8M14 8h6v6", "h-8 w-8") }}
-        <span>Courbe Chart.js — étape 3</span>
-      </div>
-    </div>
+    <div id="dashboard" class="transition-opacity" aria-live="polite">
+      {# ---- Indicateurs ---- #}
+      <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicateurs clés">
+        {% for id, label in [("networth", "Patrimoine net"), ("income", "Revenus du mois"), ("expense", "Dépenses du mois"), ("savings", "Taux d'épargne")] %}
+          <div class="card p-5" id="kpi-{{ id }}">
+            <p class="text-sm font-medium text-muted">{{ label }}</p>
+            <p class="num mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl" data-value><span class="skeleton inline-block h-8 w-32 align-middle"></span></p>
+            <p class="mt-2 min-h-[1rem] text-xs text-muted" data-delta></p>
+          </div>
+        {% endfor %}
+      </section>
 
-    <div class="card p-6">
-      <div class="mb-4 flex items-center justify-between">
-        <h2 class="font-bold">Dépenses par catégorie</h2>
-        <span class="chip">Ce mois</span>
-      </div>
-      <div class="placeholder h-72">
-        {{ icon("M12 3a9 9 0 1 0 9 9h-9z M14 2.5A8 8 0 0 1 21.5 10H14z", "h-8 w-8") }}
-        <span>Donut Chart.js — étape 3</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
-    <div class="card p-6 xl:col-span-2">
-      <h2 class="mb-4 font-bold">Dernières transactions</h2>
-      <div class="placeholder h-48">
-        {{ icon("M4 7h14m0 0-4-4m4 4-4 4M20 17H6m0 0 4-4m-4 4 4 4", "h-8 w-8") }}
-        <span>Tableau avec badges de catégorie — étape 3</span>
-      </div>
-    </div>
-
-    {# ---- État du système : fonctionnel dès l'étape 1 ---- #}
-    <div class="card p-6">
-      <h2 class="mb-4 font-bold">État de l'atelier</h2>
-      <dl class="space-y-3 text-sm">
-        <div class="flex justify-between"><dt class="text-muted">Comptes</dt><dd class="num font-semibold">{{ stats.accounts }}</dd></div>
-        <div class="flex justify-between"><dt class="text-muted">Transactions</dt><dd class="num font-semibold">{{ stats.transactions }}</dd></div>
-        <div class="flex justify-between"><dt class="text-muted">Catégories</dt><dd class="num font-semibold">{{ stats.categories }}</dd></div>
-        <div class="flex justify-between"><dt class="text-muted">Budgets</dt><dd class="num font-semibold">{{ stats.budgets }}</dd></div>
-        <div class="flex justify-between border-t border-line pt-3">
-          <dt class="text-muted">IA locale</dt>
-          <dd id="ollama-detail" class="font-semibold text-muted">…</dd>
+      {# ---- Graphiques ---- #}
+      <section class="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
+        <div class="card p-6 xl:col-span-2">
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 id="trend-title" class="font-bold">Évolution du patrimoine</h2>
+            <div class="segmented" role="radiogroup" aria-label="Graphique affiché">
+              <label><input type="radio" name="trend" value="networth" checked><span>Patrimoine</span></label>
+              <label><input type="radio" name="trend" value="flows"><span>Revenus & dépenses</span></label>
+            </div>
+          </div>
+          <div id="trend-legend" class="mb-3 flex flex-wrap gap-x-5 gap-y-1 text-sm"></div>
+          <div class="relative h-72"><canvas id="trend-chart" role="img" aria-label="Graphique d'évolution"></canvas></div>
+          <details class="mt-4 text-sm">
+            <summary class="cursor-pointer text-muted hover:text-ink">Voir les données</summary>
+            <div class="mt-3 overflow-x-auto"><table class="table" id="trend-table"></table></div>
+          </details>
         </div>
-      </dl>
-      {% if stats.transactions == 0 %}
-        <div class="mt-5 rounded-xl bg-lilac/10 p-4 text-sm">
-          <p class="font-semibold">Base vide</p>
-          <p class="mt-1 text-muted">Pour tester avec des données fictives :</p>
-          <code class="mt-2 block rounded-lg bg-canvas px-3 py-2 text-xs">flask --app app seed-demo</code>
+
+        <div class="card p-6">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="font-bold">Dépenses par catégorie</h2>
+            <span id="donut-month" class="chip"></span>
+          </div>
+          <div class="relative mx-auto h-52 w-52">
+            <canvas id="donut-chart" role="img" aria-label="Répartition des dépenses du mois"></canvas>
+            <div class="pointer-events-none absolute inset-0 grid place-items-center text-center">
+              <div><p class="num text-xl font-extrabold" id="donut-total"></p><p class="text-xs text-muted">dépensés</p></div>
+            </div>
+          </div>
+          <ul id="donut-legend" class="mt-5 space-y-2 text-sm"></ul>
         </div>
-      {% endif %}
+      </section>
+
+      {# ---- Opérations et budgets ---- #}
+      <section class="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
+        <div class="card overflow-hidden xl:col-span-2">
+          <div class="flex items-center justify-between px-6 pt-6 pb-3">
+            <h2 class="font-bold">Dernières opérations</h2>
+            <a href="{{ url_for('transactions') }}" class="text-sm font-semibold text-brand hover:underline">Tout voir →</a>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="table"><tbody id="recent"></tbody></table>
+          </div>
+        </div>
+
+        <div class="card p-6">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="font-bold">Budgets du mois</h2>
+            <a href="{{ url_for('budgets') }}" class="text-sm font-semibold text-brand hover:underline">Gérer →</a>
+          </div>
+          <div id="budgets" class="space-y-4"></div>
+        </div>
+      </section>
     </div>
-  </section>
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+  {% if stats.accounts %}<script src="{{ url_for('static', filename='js/pages/dashboard.js') }}" defer></script>{% endif %}
 {% endblock %}

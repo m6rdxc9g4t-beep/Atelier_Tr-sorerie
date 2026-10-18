@@ -53,6 +53,7 @@ atelier_tresorerie/
 │   ├── budgets.py      #   budgets mensuels et objectifs d'épargne
 │   ├── holdings.py     #   positions (titres, crypto, or, argent) et valorisation
 │   ├── trading212.py   #   import de l'historique CSV Trading 212
+│   ├── dashboard.py    #   agrégations du tableau de bord
 │   └── importer.py     #   import CSV / Excel (aperçu puis validation, anti-doublons)
 ├── finance.py          # Calculs financiers purs (montants, taux d'épargne, KPI)
 ├── database.py         # Connexion SQLite, schéma, migrations, données de démo, commandes CLI
@@ -87,6 +88,7 @@ l'en-tête `X-Requested-With`. Erreurs : `{"error": "...", "fields": {"champ": "
 | Positions | `GET/POST /api/holdings` · `GET/PATCH/DELETE /api/holdings/<id>` · `POST /api/holdings/prices` |
 | Trading 212 | `POST /api/import/trading212` (multipart : `file`, `account_id`, `dry_run=1` pour l'aperçu) |
 | Import | `POST /api/import/preview` (multipart : `file`, `account_id`, `mapping`) · `POST /api/import/commit` |
+| Tableau de bord | `GET /api/dashboard?months=6` (indicateurs, historique, dépenses par catégorie, opérations, budgets) |
 | Santé | `GET /api/health` |
 
 ### Import de relevés
@@ -110,6 +112,16 @@ Dépôts, achats, ventes, dividendes et intérêts deviennent des opérations du
 alimentent les positions, recalculées au coût moyen pondéré. Les colonnes sont reconnues par leur nom,
 car Trading 212 fait évoluer son format ; un export qui chevauche le précédent ne crée pas de doublons.
 
+### Tableau de bord
+
+- **Patrimoine net** : liquidités de tous les comptes + valeur des positions, comparé à la fin du mois précédent.
+- **Revenus / dépenses du mois** : classés selon la catégorie (un remboursement dans « Courses » réduit
+  les dépenses) ; virements internes et achats de titres exclus. La comparaison se fait « à date » :
+  du 1er au même jour du mois précédent.
+- **Taux d'épargne** = (revenus − dépenses) ÷ revenus.
+- **Historique** : solde des comptes en fin de mois + positions valorisées au dernier cours connu à cette date.
+- Les graphiques utilisent Chart.js (chargé depuis jsDelivr) et suivent le thème clair / sombre.
+
 ## Conventions
 
 - **Montants en centimes entiers** (`amount_cents`) : jamais de `float` pour l'argent. `finance.to_cents()`
@@ -122,8 +134,9 @@ car Trading 212 fait évoluer son format ; un export qui chevauche le précéden
 
 1. ✅ Structure, base SQLite, layout et thème
 2. ✅ API REST comptes / transactions / budgets / objectifs, pages correspondantes, import CSV / Excel
-3. Tableau de bord dynamique : KPI, courbe 6 mois, donut par catégorie, dernières transactions
-4. Assistant IA (Ollama) : chat sur les finances, catégorisation automatique ; page Paramètres
+3. ✅ Placements (actions, ETF, crypto, or, argent) et import Trading 212
+4. ✅ Tableau de bord : indicateurs, patrimoine sur 6 / 12 mois, revenus & dépenses, dépenses par catégorie
+5. Assistant IA (Ollama) : chat sur les finances, catégorisation automatique ; page Paramètres
 
 ## Workflow Git
 
