@@ -220,3 +220,18 @@
   }
   refreshHealth();
 })();
+
+// ---------- Quitter (application Mac lancée par double-clic) ----------
+document.getElementById("quit-app")?.addEventListener("click", async () => {
+  if (!(await AT.confirm("Quitter Atelier Trésorerie ? Le serveur local sera arrêté.", { confirmLabel: "Quitter", danger: false }))) return;
+  try {
+    await AT.api("POST", "/api/system/shutdown");
+  } catch (e) { /* le serveur s'arrête : une erreur réseau est attendue */ }
+  document.body.innerHTML = `
+    <main style="min-height:100vh;display:grid;place-items:center;text-align:center;padding:2rem">
+      <div>
+        <p style="font-size:1.25rem;font-weight:800">Atelier Trésorerie est fermé.</p>
+        <p style="margin-top:.5rem;opacity:.7">Vous pouvez fermer cet onglet. Double-cliquez sur l'application pour la relancer.</p>
+      </div>
+    </main>`;
+});

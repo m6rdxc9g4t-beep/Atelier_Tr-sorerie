@@ -7,6 +7,7 @@ Lancement :
 from __future__ import annotations
 
 import os
+import sys
 from datetime import date
 
 from flask import Flask, jsonify, render_template, request
@@ -66,6 +67,7 @@ def create_app(config_overrides: dict | None = None) -> Flask:
         return {
             "nav_items": NAV_ITEMS,
             "current_month_label": f"{MONTHS_FR[today.month - 1]} {today.year}",
+            "app_mode": app.config["APP_MODE"],
         }
 
     # ------------------------------------------------------------------ pages
@@ -126,8 +128,14 @@ if __name__ == "__main__":
     # 127.0.0.1 : l'application n'est accessible que depuis cette machine.
     # Port 5050 par défaut : sur macOS, le port 5000 est pris par le récepteur AirPlay,
     # ce qui donne une page blanche sur http://localhost:5000.
-    application = create_app()
+    #
+    # --app-mode : lancement par l'application Mac (double-clic). Serveur en arrière-plan,
+    # sans rechargement automatique ni débogueur, avec un bouton « Quitter » dans l'interface.
+    app_mode = "--app-mode" in sys.argv
+    if app_mode:
+        os.environ["ATELIER_APP_MODE"] = "1"
+    application = create_app({"APP_MODE": True} if app_mode else None)
     port = application.config["PORT"]
     if not os.environ.get("WERKZEUG_RUN_MAIN"):  # une seule fois, pas à chaque rechargement automatique
-        print(f"\n  Atelier Trésorerie → http://127.0.0.1:{port}\n")
-    application.run(host="127.0.0.1", port=port, debug=True)
+        print(f"\n  Atelier Trésorerie → http://127.0.0.1:{port}\n", flush=True)
+    application.run(host="127.0.0.1", port=port, debug=not app_mode, use_reloader=not app_mode, threaded=True)

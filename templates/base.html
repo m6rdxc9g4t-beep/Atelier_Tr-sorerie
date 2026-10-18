@@ -14,6 +14,8 @@
     })();
   </script>
 
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-64.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -50,7 +52,7 @@
   <aside id="sidebar"
          class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col border-r border-line bg-surface/95 backdrop-blur transition-transform duration-200 lg:translate-x-0">
     <div class="flex items-center gap-3 px-6 pt-7 pb-8">
-      <div class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-brand to-gain text-canvas font-extrabold">AT</div>
+      <img src="{{ url_for('static', filename='img/favicon-64.png') }}" alt="" class="h-10 w-10" width="40" height="40">
       <div class="leading-tight">
         <p class="font-bold tracking-tight">Atelier</p>
         <p class="text-sm text-muted">Trésorerie</p>
@@ -80,6 +82,12 @@
         100 % local, aucune donnée envoyée
       </p>
     </div>
+    {% if app_mode %}
+      <button id="quit-app" type="button" class="nav-link mx-3 mb-4">
+        {{ icon("M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11") }}
+        <span>Quitter l'application</span>
+      </button>
+    {% endif %}
   </aside>
 
   <div id="backdrop" class="fixed inset-0 z-30 hidden bg-black/40 lg:hidden"></div>

@@ -30,6 +30,23 @@ ollama pull llama3.1                 # ou le modèle indiqué dans OLLAMA_MODEL
 La pastille « IA locale » de la barre latérale indique l'état en direct (vert : prêt, jaune : modèle
 manquant, corail : Ollama arrêté).
 
+## Application Mac (double-clic)
+
+Une fois le projet installé, créez l'application **Atelier Trésorerie** :
+
+```bash
+cd ~/atelier_tresorerie          # dossier du projet
+bash scripts/creer_app_mac.sh
+```
+
+Elle apparaît dans le dossier Applications (et dans Launchpad / Spotlight), avec son icône.
+Un double-clic démarre le serveur en arrière-plan et ouvre le navigateur ; un nouveau double-clic
+rouvre simplement la page. Pour arrêter : « Quitter l'application » en bas de la barre latérale.
+Le journal se trouve dans `~/Library/Logs/Atelier Tresorerie.log`.
+
+Relancez le script si vous déplacez le dossier du projet ou changez d'installation de Python.
+L'application lance le code du dossier du projet : après un `git pull`, elle utilise la nouvelle version.
+
 ## Commandes utiles
 
 | Commande | Effet |

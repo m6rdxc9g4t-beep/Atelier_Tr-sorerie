@@ -7,7 +7,10 @@ Toute requête qui modifie des données doit porter l'en-tête `X-Requested-With
 from __future__ import annotations
 
 import json
+import os
+import signal
 import sqlite3
+import threading
 
 from flask import Blueprint, current_app, jsonify, request
 
@@ -62,6 +65,22 @@ def health():
     except (database.DatabaseError, sqlite3.DatabaseError) as exc:
         db_state = {"ok": False, "error": str(exc)}
     return jsonify(database=db_state, ollama=current_app.extensions["ollama"].status())
+
+
+@bp.get("/ping")
+def ping():
+    """Réponse légère : permet au lanceur Mac de savoir si l'application tourne déjà."""
+    return jsonify(app="atelier-tresorerie", app_mode=current_app.config["APP_MODE"])
+
+
+@bp.post("/system/shutdown")
+def shutdown():
+    """Arrête le serveur (uniquement quand il a été lancé par l'application Mac)."""
+    if not current_app.config["APP_MODE"]:
+        return jsonify(error="Disponible uniquement depuis l'application Mac."), 404
+    # Laisse le temps à la réponse de partir avant d'arrêter le processus
+    threading.Timer(0.5, lambda: os.kill(os.getpid(), signal.SIGTERM)).start()
+    return jsonify(ok=True)
 
 
 # --------------------------------------------------------------------------- tableau de bord
