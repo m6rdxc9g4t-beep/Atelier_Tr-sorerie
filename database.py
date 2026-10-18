@@ -78,10 +78,33 @@ DEFAULT_CATEGORIES = [
 ]
 
 
+# Migrations numérotées, appliquées dans l'ordre sur les bases plus anciennes.
+# Règle : ne jamais modifier une migration publiée, en ajouter une nouvelle.
+MIGRATIONS: dict[int, str] = {
+    2: """
+        -- Lie les deux jambes d'un virement entre comptes
+        ALTER TABLE transactions ADD COLUMN transfer_group TEXT;
+        CREATE INDEX IF NOT EXISTS idx_transactions_transfer ON transactions(transfer_group);
+    """,
+}
+LATEST_VERSION = max(MIGRATIONS, default=1)
+
+
+def schema_version(conn: sqlite3.Connection) -> int:
+    return conn.execute("PRAGMA user_version").fetchone()[0]
+
+
 def init_schema(conn: sqlite3.Connection) -> None:
-    """Crée les tables (idempotent) et les catégories par défaut."""
+    """Crée les tables (idempotent), applique les migrations et les catégories par défaut."""
     try:
+        version = schema_version(conn)
         conn.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
+        version = max(version, 1)  # schema.sql = version 1
+        for target in sorted(MIGRATIONS):
+            if target > version:
+                conn.executescript(f"BEGIN;\n{MIGRATIONS[target]}\nPRAGMA user_version = {target};\nCOMMIT;")
+                version = target
+        conn.execute(f"PRAGMA user_version = {version}")
         conn.executemany(
             "INSERT OR IGNORE INTO categories (name, kind, color) VALUES (?, ?, ?)",
             DEFAULT_CATEGORIES,
@@ -144,9 +167,9 @@ def seed_demo(conn: sqlite3.Connection, months: int = 6, today: date | None = No
 
     rows: list[tuple] = []
 
-    def add(acc, d, label, cents, category):
+    def add(acc, d, label, cents, category, group=None):
         if d <= today:
-            rows.append((acc, cat[category], d.isoformat(), label, cents, "valide", "demo"))
+            rows.append((acc, cat[category], d.isoformat(), label, cents, "valide", "demo", group))
 
     # Premier jour du mois, `months` mois en arrière (mois courant inclus)
     start = today.replace(day=1)
@@ -161,8 +184,9 @@ def seed_demo(conn: sqlite3.Connection, months: int = 6, today: date | None = No
         add(courant, m.replace(day=5), "Électricité & Internet", -rng.randint(85_00, 120_00), "Énergie & Internet")
         add(courant, m.replace(day=6), "Abonnements streaming", -27_98, "Abonnements")
         add(courant, m.replace(day=8), "Pass transport", -86_40, "Transport")
-        add(courant, m.replace(day=2), "Virement vers Livret A", -200_00, "Virement interne")
-        add(livret, m.replace(day=2), "Virement depuis compte courant", 200_00, "Virement interne")
+        group = f"demo-{m:%Y-%m}"
+        add(courant, m.replace(day=2), "Virement vers Livret A", -200_00, "Virement interne", group)
+        add(livret, m.replace(day=2), "Virement depuis compte courant", 200_00, "Virement interne", group)
         for week_day in (4, 11, 18, 25):
             add(courant, m.replace(day=week_day), "Supermarché", -rng.randint(55_00, 115_00), "Courses")
         for _ in range(rng.randint(2, 5)):
@@ -180,9 +204,25 @@ def seed_demo(conn: sqlite3.Connection, months: int = 6, today: date | None = No
         month_start = (m.replace(day=28) + timedelta(days=4)).replace(day=1)
 
     conn.executemany(
-        "INSERT INTO transactions (account_id, category_id, date, label, amount_cents, status, source) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO transactions (account_id, category_id, date, label, amount_cents, status, source, transfer_group) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         rows,
+    )
+
+    # Budgets du mois courant et du précédent, et deux objectifs d'épargne
+    this_month = today.strftime("%Y-%m")
+    last_month = (today.replace(day=1) - timedelta(days=1)).strftime("%Y-%m")
+    limits = {"Courses": 380_00, "Restaurants": 120_00, "Loisirs": 100_00, "Shopping": 120_00, "Abonnements": 30_00}
+    conn.executemany(
+        "INSERT OR IGNORE INTO budgets (category_id, month, amount_limit_cents) VALUES (?, ?, ?)",
+        [(cat[name], m, limit) for name, limit in limits.items() for m in (last_month, this_month)],
+    )
+    conn.executemany(
+        "INSERT INTO goals (name, target_amount_cents, current_amount_cents, deadline, account_id) VALUES (?, ?, ?, ?, ?)",
+        [
+            ("Fonds d'urgence", 10_000_00, 0, None, livret),
+            ("Vacances d'été", 1_500_00, 600_00, f"{today.year + 1}-06-30", None),
+        ],
     )
     conn.commit()
     return len(rows)

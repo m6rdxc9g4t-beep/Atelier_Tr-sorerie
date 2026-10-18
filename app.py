@@ -11,6 +11,7 @@ from datetime import date
 from flask import Flask, jsonify, render_template, request
 
 import database
+from api import bp as api_bp
 from config import Config
 from finance import format_eur
 from ollama_client import OllamaClient
@@ -33,11 +34,8 @@ NAV_ITEMS = [
 
 # Pages pas encore construites : description affichée en attendant
 UPCOMING = {
-    "accounts": (2, "Liste des comptes courants, d'épargne et d'investissement avec leur solde en temps réel."),
-    "transactions": (2, "Saisie, recherche, filtres, catégorisation et import CSV / Excel des opérations."),
-    "budgets": (2, "Plafonds mensuels par catégorie, jauges de consommation et objectifs d'épargne."),
     "ai_insights": (4, "Dialogue avec vos finances via l'IA locale Ollama : analyses et conseils personnalisés."),
-    "settings": (4, "Modèle Ollama, devise, thème, export et sauvegarde de la base."),
+    "settings": (4, "Modèle Ollama, devise, thème, catégories, export et sauvegarde de la base."),
 }
 
 MONTHS_FR = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet",
@@ -74,26 +72,27 @@ def create_app(config_overrides: dict | None = None) -> Flask:
         stats = database.db_stats(database.get_db())
         return render_template("index.html", stats=stats)
 
+    @app.get("/accounts")
+    def accounts():
+        return render_template("accounts.html")
+
+    @app.get("/transactions")
+    def transactions():
+        return render_template("transactions.html")
+
+    @app.get("/budgets")
+    def budgets():
+        return render_template("budgets.html")
+
     def _upcoming_page(endpoint: str):
         step, description = UPCOMING[endpoint]
         item = next(i for i in NAV_ITEMS if i["endpoint"] == endpoint)
         return render_template("placeholder.html", item=item, step=step, description=description)
 
-    for endpoint, url in [("accounts", "/accounts"), ("transactions", "/transactions"),
-                          ("budgets", "/budgets"), ("ai_insights", "/ai-insights"),
-                          ("settings", "/settings")]:
-        app.add_url_rule(url, endpoint, lambda e=endpoint: _upcoming_page(e))
+    app.add_url_rule("/ai-insights", "ai_insights", lambda: _upcoming_page("ai_insights"))
+    app.add_url_rule("/settings", "settings", lambda: _upcoming_page("settings"))
 
-    # ------------------------------------------------------------------ API
-
-    @app.get("/api/health")
-    def api_health():
-        try:
-            stats = database.db_stats(database.get_db())
-            db_state = {"ok": True, **stats}
-        except (database.DatabaseError, database.sqlite3.DatabaseError) as exc:
-            db_state = {"ok": False, "error": str(exc)}
-        return jsonify(database=db_state, ollama=app.extensions["ollama"].status())
+    app.register_blueprint(api_bp)
 
     # ------------------------------------------------------------------ erreurs
 

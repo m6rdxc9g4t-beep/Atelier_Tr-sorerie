@@ -4,22 +4,7 @@ from datetime import date
 import pytest
 
 import database
-from app import create_app
 from finance import format_eur, savings_rate, to_cents
-
-
-@pytest.fixture()
-def app(tmp_path):
-    return create_app({
-        "TESTING": True,
-        "DATABASE_PATH": tmp_path / "test.db",
-        "OLLAMA_URL": "http://127.0.0.1:9",  # port fermé : simule Ollama hors ligne
-    })
-
-
-@pytest.fixture()
-def client(app):
-    return app.test_client()
 
 
 @pytest.mark.parametrize("url", ["/", "/accounts", "/transactions", "/budgets", "/ai-insights", "/settings"])
@@ -48,7 +33,7 @@ def test_schema_is_idempotent(app):
     database.init_schema(conn)  # deuxième passage : aucune erreur, aucun doublon
     tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')")}
     assert {"accounts", "transactions", "categories", "budgets", "goals", "v_account_balances"} <= tables
-    assert conn.execute("PRAGMA user_version").fetchone()[0] == 1
+    assert database.schema_version(conn) == database.LATEST_VERSION
     conn.close()
 
 
