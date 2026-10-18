@@ -28,4 +28,5 @@ class Config:
     OLLAMA_TIMEOUT = float(os.environ.get("OLLAMA_TIMEOUT", "90"))
 
     CURRENCY = os.environ.get("CURRENCY", "EUR")
+    PORT = int(os.environ.get("PORT", "5050"))  # 5000 est occupé par AirPlay sur macOS
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # imports CSV/Excel : 10 Mo max

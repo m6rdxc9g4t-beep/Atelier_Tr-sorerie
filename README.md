@@ -12,10 +12,13 @@ pip install -r requirements-dev.txt
 cp .env.example .env                 # puis adaptez SECRET_KEY et OLLAMA_MODEL
 
 flask --app app seed-demo            # optionnel : 6 mois de données fictives
-python app.py                        # → http://127.0.0.1:5000
+python app.py                        # → http://127.0.0.1:5050
 ```
 
 La base `data/finance.db` est créée automatiquement au premier lancement.
+
+> **macOS** : utilisez bien l'adresse `http://127.0.0.1:5050`. Le port 5000 est réservé par le
+> récepteur AirPlay, qui renvoie une page blanche. Le port se change avec `PORT=...` dans `.env`.
 
 ### IA locale (Ollama)
 

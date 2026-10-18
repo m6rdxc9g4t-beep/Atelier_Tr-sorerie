@@ -36,7 +36,7 @@ locale Ollama. Confidentialité absolue : aucune donnée financière ne doit qui
 ## Vérifier avant de committer
 ```bash
 pytest
-python app.py   # puis ouvrir http://127.0.0.1:5000
+python app.py   # puis ouvrir http://127.0.0.1:5050 (5000 = AirPlay sur macOS)
 ```
 
 ## Git

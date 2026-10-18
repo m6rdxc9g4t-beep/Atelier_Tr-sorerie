@@ -1,8 +1,8 @@
 """Point d'entrée Flask d'Atelier Trésorerie : routes des pages et de l'API.
 
 Lancement :
-    python app.py                      (http://127.0.0.1:5000)
-    flask --app app run --debug
+    python app.py                      (http://127.0.0.1:5050)
+    flask --app app run --debug --port 5050
 """
 from __future__ import annotations
 
@@ -116,5 +116,10 @@ def create_app(config_overrides: dict | None = None) -> Flask:
 
 
 if __name__ == "__main__":
-    # 127.0.0.1 : l'application n'est accessible que depuis cette machine
-    create_app().run(host="127.0.0.1", port=5000, debug=True)
+    # 127.0.0.1 : l'application n'est accessible que depuis cette machine.
+    # Port 5050 par défaut : sur macOS, le port 5000 est pris par le récepteur AirPlay,
+    # ce qui donne une page blanche sur http://localhost:5000.
+    application = create_app()
+    port = application.config["PORT"]
+    print(f"\n  Atelier Trésorerie → http://127.0.0.1:{port}\n")
+    application.run(host="127.0.0.1", port=port, debug=True)
