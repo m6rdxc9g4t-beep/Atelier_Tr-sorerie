@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Erreur {{ code }}{% endblock %}
+{% block page_title %}Erreur {{ code }}{% endblock %}
+
+{% block content %}
+  <div class="card mx-auto max-w-xl p-10 text-center">
+    <p class="num text-5xl font-extrabold text-loss">{{ code }}</p>
+    <p class="mt-4 text-muted">{{ message }}</p>
+    <a href="{{ url_for('dashboard') }}" class="mt-6 inline-block rounded-xl bg-brand px-5 py-2.5 font-semibold text-canvas hover:opacity-90">
+      Retour au tableau de bord
+    </a>
+  </div>
+{% endblock %}

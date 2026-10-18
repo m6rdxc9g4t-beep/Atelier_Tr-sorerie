@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Atelier Trésorerie{% endblock %} · Atelier Trésorerie</title>
+
+  {# Thème appliqué avant le rendu pour éviter le flash : sombre par défaut #}
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem("theme"); } catch (e) {}
+      if (saved !== "light") document.documentElement.classList.add("dark");
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Couleurs pilotées par des variables CSS (voir static/css/app.css) :
+    // une seule classe (bg-surface, text-ink...) fonctionne en mode clair ET sombre.
+    const v = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            canvas: v("canvas"), surface: v("surface"), raised: v("raised"),
+            line: v("line"), ink: v("ink"), muted: v("muted"),
+            brand: v("brand"), gain: v("gain"), loss: v("loss"),
+            warn: v("warn"), lilac: v("lilac"),
+          },
+          fontFamily: { sans: ["Manrope", "system-ui", "sans-serif"] },
+          borderRadius: { xl2: "1.25rem" },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  {% block head %}{% endblock %}
+</head>
+
+<body class="h-full bg-canvas text-ink font-sans antialiased">
+  {% from "_macros.html" import icon %}
+
+  <!-- Sidebar -->
+  <aside id="sidebar"
+         class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col border-r border-line bg-surface/95 backdrop-blur transition-transform duration-200 lg:translate-x-0">
+    <div class="flex items-center gap-3 px-6 pt-7 pb-8">
+      <div class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-brand to-gain text-canvas font-extrabold">AT</div>
+      <div class="leading-tight">
+        <p class="font-bold tracking-tight">Atelier</p>
+        <p class="text-sm text-muted">Trésorerie</p>
+      </div>
+    </div>
+
+    <nav class="flex-1 space-y-1 px-3" aria-label="Navigation principale">
+      {% for item in nav_items %}
+        {% set active = request.endpoint == item.endpoint %}
+        <a href="{{ url_for(item.endpoint) }}"
+           class="nav-link {{ 'is-active' if active }}"
+           {% if active %}aria-current="page"{% endif %}>
+          {{ icon(item.icon) }}
+          <span>{{ item.label }}</span>
+        </a>
+      {% endfor %}
+    </nav>
+
+    <div class="m-3 rounded-xl border border-line bg-raised/60 p-4 text-sm">
+      <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">IA locale</p>
+      <div class="flex items-center gap-2">
+        <span id="ollama-dot" class="h-2.5 w-2.5 rounded-full bg-muted/50"></span>
+        <span id="ollama-label" class="text-muted">Vérification…</span>
+      </div>
+      <p class="mt-3 flex items-center gap-1.5 text-xs text-muted">
+        {{ icon("M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z", "h-3.5 w-3.5") }}
+        100 % local, aucune donnée envoyée
+      </p>
+    </div>
+  </aside>
+
+  <div id="backdrop" class="fixed inset-0 z-30 hidden bg-black/40 lg:hidden"></div>
+
+  <!-- Contenu -->
+  <div class="flex min-h-full flex-col lg:pl-64">
+    <header class="sticky top-0 z-20 flex items-center gap-3 border-b border-line bg-canvas/80 px-4 py-4 backdrop-blur sm:px-8">
+      <button id="menu-toggle" class="icon-btn lg:hidden" aria-label="Ouvrir le menu" aria-controls="sidebar">
+        {{ icon("M4 6h16M4 12h16M4 18h16") }}
+      </button>
+      <div class="min-w-0 flex-1">
+        <h1 class="truncate text-lg font-bold tracking-tight sm:text-xl">{% block page_title %}{% endblock %}</h1>
+        <p class="text-sm capitalize text-muted">{{ current_month_label }}</p>
+      </div>
+      <button id="theme-toggle" class="icon-btn" aria-label="Basculer le thème clair / sombre">
+        <span class="hidden dark:inline">{{ icon("M12 4V2M12 22v-2M4.9 4.9 3.5 3.5M20.5 20.5l-1.4-1.4M4 12H2M22 12h-2M4.9 19.1l-1.4 1.4M20.5 3.5l-1.4 1.4M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z") }}</span>
+        <span class="dark:hidden">{{ icon("M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z") }}</span>
+      </button>
+    </header>
+
+    <main class="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-8">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

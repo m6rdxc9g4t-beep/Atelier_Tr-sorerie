@@ -1,0 +1,25 @@
+# Données financières personnelles : ne JAMAIS les versionner
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/imports/
+*.csv
+*.xlsx
+
+# Environnement
+.env
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Éditeurs / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

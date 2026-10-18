@@ -1,0 +1,100 @@
+/* Atelier Trésorerie — jetons de design.
+   Valeurs RGB séparées par des espaces pour permettre l'opacité Tailwind (bg-brand/10...). */
+
+:root {
+  /* Mode clair : fonds neutres, encre bleu nuit */
+  --canvas: 245 246 251;
+  --surface: 255 255 255;
+  --raised: 238 241 249;
+  --line: 223 228 239;
+  --ink: 17 24 52;
+  --muted: 100 110 140;
+  --brand: 76 94 204;    /* bleu nuit lumineux */
+  --gain: 14 150 112;    /* émeraude */
+  --loss: 214 92 80;     /* corail */
+  --warn: 196 138 22;
+  --lilac: 124 108 220;
+  color-scheme: light;
+}
+
+.dark {
+  /* Mode sombre : bleu nuit profond + accents pastel */
+  --canvas: 9 13 28;
+  --surface: 15 21 42;
+  --raised: 22 30 58;
+  --line: 34 44 78;
+  --ink: 229 233 246;
+  --muted: 138 148 182;
+  --brand: 165 180 252;  /* pervenche */
+  --gain: 110 231 183;   /* menthe */
+  --loss: 252 160 148;   /* corail doux */
+  --warn: 252 211 77;
+  --lilac: 196 181 253;
+  color-scheme: dark;
+}
+
+/* Chiffres alignés : indispensable pour comparer des montants */
+.num { font-variant-numeric: tabular-nums; }
+
+.card {
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--line));
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+}
+.dark .card { box-shadow: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 8px 24px rgb(0 0 0 / 0.25); }
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 0.85rem;
+  font-weight: 600;
+  font-size: 0.925rem;
+  color: rgb(var(--muted));
+  transition: background-color 0.15s, color 0.15s;
+}
+.nav-link:hover { background: rgb(var(--raised)); color: rgb(var(--ink)); }
+.nav-link.is-active { background: rgb(var(--brand) / 0.14); color: rgb(var(--brand)); }
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgb(var(--line));
+  color: rgb(var(--muted));
+  transition: color 0.15s, background-color 0.15s;
+}
+.icon-btn:hover { color: rgb(var(--ink)); background: rgb(var(--raised)); }
+
+.chip {
+  border-radius: 999px;
+  background: rgb(var(--raised));
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgb(var(--muted));
+}
+
+/* Zone réservée aux composants des étapes suivantes */
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 1.5px dashed rgb(var(--line));
+  border-radius: 1rem;
+  color: rgb(var(--muted));
+  font-size: 0.875rem;
+  background: repeating-linear-gradient(135deg, transparent 0 12px, rgb(var(--raised) / 0.45) 12px 24px);
+}
+
+:focus-visible { outline: 2px solid rgb(var(--brand)); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

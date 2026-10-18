@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+
+{% block title %}{{ item.label }}{% endblock %}
+{% block page_title %}{{ item.label }}{% endblock %}
+
+{% block content %}
+  <div class="card mx-auto max-w-xl p-10 text-center">
+    <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-lilac/15 text-lilac">
+      {{ icon(item.icon, "h-7 w-7") }}
+    </div>
+    <h2 class="mt-5 text-xl font-bold">{{ item.label }}</h2>
+    <p class="mt-2 text-muted">{{ description }}</p>
+    <span class="chip mt-6 inline-block">Prévu à l'étape {{ step }}</span>
+  </div>
+{% endblock %}

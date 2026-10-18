@@ -1,0 +1,14 @@
+{# Composants Jinja réutilisables. Usage : {% from "_macros.html" import icon, kpi_card %} #}
+
+{% macro icon(path, cls="h-5 w-5") -%}
+  <svg class="{{ cls }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ path }}"/></svg>
+{%- endmacro %}
+
+{% macro kpi_card(label, value, tone="ink", hint=None, id=None) -%}
+  <div class="card p-5" {% if id %}id="{{ id }}"{% endif %}>
+    <p class="text-sm font-medium text-muted">{{ label }}</p>
+    <p class="num mt-2 text-2xl font-extrabold tracking-tight text-{{ tone }} sm:text-3xl" data-kpi-value>{{ value }}</p>
+    {% if hint %}<p class="mt-2 text-xs text-muted" data-kpi-hint>{{ hint }}</p>{% endif %}
+  </div>
+{%- endmacro %}
