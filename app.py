@@ -16,7 +16,6 @@ import database
 from api import bp as api_bp
 from config import Config
 from finance import format_eur
-from ollama_client import OllamaClient
 
 # Navigation principale (sidebar) — `icon` = tracé SVG 24×24 au trait
 NAV_ITEMS = [
@@ -36,12 +35,6 @@ NAV_ITEMS = [
      "icon": "M4 6h9m4 0h3M15 4v4M4 12h3m4 0h9M9 10v4M4 18h11m4 0h1M17 16v4"},
 ]
 
-# Pages pas encore construites : description affichée en attendant
-UPCOMING = {
-    "ai_insights": (4, "Dialogue avec vos finances via l'IA locale Ollama : analyses et conseils personnalisés."),
-    "settings": (4, "Modèle Ollama, devise, thème, catégories, export et sauvegarde de la base."),
-}
-
 MONTHS_FR = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet",
              "août", "septembre", "octobre", "novembre", "décembre"]
 
@@ -54,10 +47,6 @@ def create_app(config_overrides: dict | None = None) -> Flask:
 
     database.init_app(app)
     database.ensure_schema(app)
-
-    app.extensions["ollama"] = OllamaClient(
-        app.config["OLLAMA_URL"], app.config["OLLAMA_MODEL"], app.config["OLLAMA_TIMEOUT"]
-    )
 
     app.jinja_env.filters["eur"] = format_eur
 
@@ -93,13 +82,13 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     def budgets():
         return render_template("budgets.html")
 
-    def _upcoming_page(endpoint: str):
-        step, description = UPCOMING[endpoint]
-        item = next(i for i in NAV_ITEMS if i["endpoint"] == endpoint)
-        return render_template("placeholder.html", item=item, step=step, description=description)
+    @app.get("/ai-insights")
+    def ai_insights():
+        return render_template("ai.html")
 
-    app.add_url_rule("/ai-insights", "ai_insights", lambda: _upcoming_page("ai_insights"))
-    app.add_url_rule("/settings", "settings", lambda: _upcoming_page("settings"))
+    @app.get("/settings")
+    def settings():
+        return render_template("settings.html")
 
     app.register_blueprint(api_bp)
 

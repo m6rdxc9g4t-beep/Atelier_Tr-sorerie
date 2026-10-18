@@ -24,8 +24,8 @@ def test_health_reports_db_and_offline_ollama(client):
     data = client.get("/api/health").get_json()
     assert data["database"]["ok"] is True
     assert data["database"]["categories"] == len(database.DEFAULT_CATEGORIES)
-    assert data["ollama"]["available"] is False
-    assert "ollama serve" in data["ollama"]["error"]
+    assert data["ai"]["provider"] == "ollama" and data["ai"]["ready"] is False and data["ai"]["local"] is True
+    assert "ollama serve" in data["ai"]["error"]
 
 
 def test_schema_is_idempotent(app):

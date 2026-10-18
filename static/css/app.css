@@ -227,3 +227,16 @@ dialog.modal::backdrop { background: rgb(9 13 28 / 0.55); backdrop-filter: blur(
 }
 .toast-error { background: rgb(var(--loss)); color: rgb(var(--canvas)); }
 @keyframes toast-in { from { transform: translateY(8px); opacity: 0; } }
+
+/* Cartes de choix du moteur d'IA (Paramètres) */
+.engine-card {
+  display: block;
+  cursor: pointer;
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  border: 1.5px solid rgb(var(--line));
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.engine-card:hover { border-color: rgb(var(--brand) / 0.5); }
+.engine-card:has(input:checked) { border-color: rgb(var(--brand)); background: rgb(var(--brand) / 0.08); }
+.engine-card:has(input:focus-visible) { outline: 2px solid rgb(var(--brand)); outline-offset: 2px; }
