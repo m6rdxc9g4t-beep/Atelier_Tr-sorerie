@@ -51,6 +51,8 @@ atelier_tresorerie/
 │   ├── categories.py   #   catégories
 │   ├── transactions.py #   opérations, virements, actions groupées, catégorisation par l'historique
 │   ├── budgets.py      #   budgets mensuels et objectifs d'épargne
+│   ├── holdings.py     #   positions (titres, crypto, or, argent) et valorisation
+│   ├── trading212.py   #   import de l'historique CSV Trading 212
 │   └── importer.py     #   import CSV / Excel (aperçu puis validation, anti-doublons)
 ├── finance.py          # Calculs financiers purs (montants, taux d'épargne, KPI)
 ├── database.py         # Connexion SQLite, schéma, migrations, données de démo, commandes CLI
@@ -82,6 +84,8 @@ l'en-tête `X-Requested-With`. Erreurs : `{"error": "...", "fields": {"champ": "
 | Virements | `POST /api/transfers` (crée deux opérations liées) |
 | Budgets | `GET /api/budgets?month=AAAA-MM` · `POST` (crée ou met à jour) · `PATCH/DELETE /api/budgets/<id>` · `POST /api/budgets/copy` |
 | Objectifs | `GET/POST /api/goals` · `PATCH/DELETE /api/goals/<id>` |
+| Positions | `GET/POST /api/holdings` · `GET/PATCH/DELETE /api/holdings/<id>` · `POST /api/holdings/prices` |
+| Trading 212 | `POST /api/import/trading212` (multipart : `file`, `account_id`, `dry_run=1` pour l'aperçu) |
 | Import | `POST /api/import/preview` (multipart : `file`, `account_id`, `mapping`) · `POST /api/import/commit` |
 | Santé | `GET /api/health` |
 
@@ -92,6 +96,19 @@ Les colonnes Date / Libellé / Montant (ou Débit + Crédit) sont reconnues dans
 banques françaises ; sinon on les choisit à la main dans l'aperçu. Chaque ligne reçoit une
 empreinte : réimporter un relevé, ou un relevé qui chevauche le précédent, ne crée pas de doublons.
 Les catégories sont reprises du fichier ou devinées à partir des opérations déjà catégorisées.
+
+### Placements (actions, ETF, crypto, or, argent)
+
+Les positions sont rattachées à un compte de type **Investissement**. La valeur d'un compte
+d'investissement = liquidités (solde des opérations) + positions (quantité × dernier cours).
+Les métaux précieux se comptent en grammes, onces troy ou pièces, avec leur pureté : l'application
+calcule le poids de métal fin. Les cours se mettent à jour à la main (bouton « Mettre à jour les
+cours »), et chaque mise à jour est historisée.
+
+**Trading 212** : exportez l'historique en CSV depuis l'application, puis « Importer Trading 212 ».
+Dépôts, achats, ventes, dividendes et intérêts deviennent des opérations du compte ; achats et ventes
+alimentent les positions, recalculées au coût moyen pondéré. Les colonnes sont reconnues par leur nom,
+car Trading 212 fait évoluer son format ; un export qui chevauche le précédent ne crée pas de doublons.
 
 ## Conventions
 

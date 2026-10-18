@@ -6,6 +6,7 @@ Lancement :
 """
 from __future__ import annotations
 
+import os
 from datetime import date
 
 from flask import Flask, jsonify, render_template, request
@@ -22,6 +23,8 @@ NAV_ITEMS = [
      "icon": "M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z"},
     {"endpoint": "accounts", "label": "Comptes & Soldes",
      "icon": "M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 21h18"},
+    {"endpoint": "investments", "label": "Placements",
+     "icon": "M3 17l5-5 4 4 8-8M14 8h6v6M3 21h18"},
     {"endpoint": "transactions", "label": "Transactions",
      "icon": "M4 7h14m0 0-4-4m4 4-4 4M20 17H6m0 0 4-4m-4 4 4 4"},
     {"endpoint": "budgets", "label": "Budgets & Objectifs",
@@ -76,6 +79,10 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     def accounts():
         return render_template("accounts.html")
 
+    @app.get("/investments")
+    def investments():
+        return render_template("investments.html")
+
     @app.get("/transactions")
     def transactions():
         return render_template("transactions.html")
@@ -121,5 +128,6 @@ if __name__ == "__main__":
     # ce qui donne une page blanche sur http://localhost:5000.
     application = create_app()
     port = application.config["PORT"]
-    print(f"\n  Atelier Trésorerie → http://127.0.0.1:{port}\n")
+    if not os.environ.get("WERKZEUG_RUN_MAIN"):  # une seule fois, pas à chaque rechargement automatique
+        print(f"\n  Atelier Trésorerie → http://127.0.0.1:{port}\n")
     application.run(host="127.0.0.1", port=port, debug=True)

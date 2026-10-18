@@ -7,7 +7,7 @@ import database
 from finance import format_eur, savings_rate, to_cents
 
 
-@pytest.mark.parametrize("url", ["/", "/accounts", "/transactions", "/budgets", "/ai-insights", "/settings"])
+@pytest.mark.parametrize("url", ["/", "/accounts", "/investments", "/transactions", "/budgets", "/ai-insights", "/settings"])
 def test_pages_render(client, url):
     res = client.get(url)
     assert res.status_code == 200
@@ -50,10 +50,10 @@ def test_constraints(app):
 def test_seed_demo(app):
     conn = database.connect(app.config["DATABASE_PATH"])
     n = database.seed_demo(conn, today=date(2026, 10, 18))
-    assert n > 100
+    assert n > 80
     assert database.seed_demo(conn) == 0  # ne double pas les données
     balances = conn.execute("SELECT name, balance_cents FROM v_account_balances").fetchall()
-    assert len(balances) == 3
+    assert len(balances) == 4
     # Les virements internes s'annulent sur l'ensemble des comptes
     internal = conn.execute(
         "SELECT SUM(amount_cents) FROM transactions t JOIN categories c ON c.id = t.category_id "

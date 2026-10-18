@@ -13,7 +13,7 @@ from flask import Blueprint, current_app, jsonify, request
 
 import database
 from services import ServiceError, ValidationError
-from services import accounts, budgets, categories, importer, transactions
+from services import accounts, budgets, categories, holdings, importer, trading212, transactions
 
 bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -69,7 +69,7 @@ def health():
 @bp.get("/accounts")
 def accounts_list():
     items = accounts.list_accounts(_db(), include_archived=_flag("archived"))
-    return jsonify(items=items, total_balance_cents=sum(a["balance_cents"] for a in items if not a["archived"]))
+    return jsonify(items=items, total_balance_cents=sum(a["total_value_cents"] for a in items if not a["archived"]))
 
 
 @bp.post("/accounts")
@@ -204,6 +204,40 @@ def goals_delete(goal_id):
     return "", 204
 
 
+# --------------------------------------------------------------------------- positions (placements)
+
+@bp.get("/holdings")
+def holdings_list():
+    account_id = request.args.get("account_id", type=int)
+    return jsonify(holdings.list_holdings(_db(), account_id, include_closed=_flag("closed")))
+
+
+@bp.post("/holdings")
+def holdings_create():
+    return jsonify(holdings.create_holding(_db(), _json())), 201
+
+
+@bp.post("/holdings/prices")
+def holdings_prices():
+    return jsonify(holdings.update_prices(_db(), _json()))
+
+
+@bp.get("/holdings/<int:holding_id>")
+def holdings_get(holding_id):
+    return jsonify(holdings.get_holding(_db(), holding_id))
+
+
+@bp.patch("/holdings/<int:holding_id>")
+def holdings_update(holding_id):
+    return jsonify(holdings.update_holding(_db(), holding_id, _json()))
+
+
+@bp.delete("/holdings/<int:holding_id>")
+def holdings_delete(holding_id):
+    holdings.delete_holding(_db(), holding_id)
+    return "", 204
+
+
 # --------------------------------------------------------------------------- import
 
 @bp.post("/import/preview")
@@ -225,6 +259,19 @@ def import_preview():
 @bp.post("/import/commit")
 def import_commit():
     return jsonify(importer.commit(_db(), _json())), 201
+
+
+@bp.post("/import/trading212")
+def import_trading212():
+    """multipart/form-data : file, account_id, dry_run (1 = aperçu, 0 = import)."""
+    upload = request.files.get("file")
+    if upload is None or not upload.filename:
+        raise ValidationError("Aucun fichier reçu.", {"file": "Choisissez l'export CSV de Trading 212."})
+    raw = upload.read()
+    account_id = request.form.get("account_id")
+    if request.form.get("dry_run", "1") != "0":
+        return jsonify(trading212.preview(_db(), upload.filename, raw, account_id))
+    return jsonify(trading212.commit(_db(), upload.filename, raw, account_id)), 201
 
 
 @bp.errorhandler(413)

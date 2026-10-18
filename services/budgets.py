@@ -4,6 +4,7 @@ from __future__ import annotations
 import sqlite3
 from datetime import date
 
+from .holdings import VALUE_SQL
 from .validation import ConflictError, NotFoundError, ValidationError, Validator, ensure_exists, update_row
 
 
@@ -156,9 +157,11 @@ def copy_budgets(conn: sqlite3.Connection, data: dict | None) -> dict:
 
 # --------------------------------------------------------------------------- objectifs
 
-_GOAL_SELECT = """
+_GOAL_SELECT = f"""
     SELECT g.id, g.name, g.target_amount_cents, g.current_amount_cents, g.deadline, g.account_id,
-           g.created_at, a.name AS account_name, b.balance_cents AS account_balance_cents
+           g.created_at, a.name AS account_name,
+           b.balance_cents + (SELECT COALESCE(SUM({VALUE_SQL}), 0) FROM holdings h WHERE h.account_id = g.account_id)
+               AS account_balance_cents
     FROM goals g
     LEFT JOIN accounts a ON a.id = g.account_id
     LEFT JOIN v_account_balances b ON b.id = g.account_id

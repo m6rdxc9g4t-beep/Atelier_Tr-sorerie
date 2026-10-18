@@ -26,6 +26,9 @@ locale Ollama. Confidentialité absolue : aucune donnée financière ne doit qui
 - Routes API sous `/api/...`, réponses JSON ; erreurs `{"error": "...", "fields": {...}}`.
   Les requêtes qui modifient des données exigent l'en-tête `X-Requested-With` (anti-CSRF).
 - Virements : deux opérations liées par `transfer_group`, exclues des revenus et dépenses.
+- Placements : valeur d'un compte = liquidités (`balance_cents`) + positions (`services/holdings.VALUE_SQL`).
+  Positions issues d'un import : quantité et prix de revient recalculés depuis `trades`, jamais saisis.
+  Achats / ventes de titres = catégorie de type `transfert` (ni revenu ni dépense).
 - Toute chaîne utilisateur insérée dans du HTML passe par `AT.esc()`.
 - UI : Tailwind avec les jetons de `static/css/app.css` (`bg-surface`, `text-ink`, `text-muted`,
   `text-gain`, `text-loss`, `bg-brand`...) — pas de couleurs codées en dur. Chiffres avec la classe `num`.

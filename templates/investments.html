@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, kpi_card %}
+
+{% block title %}Placements{% endblock %}
+{% block page_title %}Placements{% endblock %}
+
+{% block content %}
+  <div id="no-account" class="card mx-auto hidden max-w-xl p-10 text-center">
+    <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-lilac/15 text-lilac">
+      {{ icon("M3 17l5-5 4 4 8-8M14 8h6v6M3 21h18", "h-7 w-7") }}
+    </div>
+    <h2 class="mt-5 text-xl font-bold">Aucun compte d'investissement</h2>
+    <p class="mt-2 text-muted">
+      Les positions (actions, ETF, crypto, or, argent…) sont rattachées à un compte de type
+      <strong class="text-ink">Investissement</strong> : par exemple « Trading 212 », « PEA » ou « Or physique ».
+    </p>
+    <div class="mt-6 flex flex-wrap justify-center gap-2">
+      <button id="quick-t212" class="btn btn-primary" type="button">Créer un compte « Trading 212 »</button>
+      <a href="{{ url_for('accounts') }}" class="btn btn-ghost">Autre compte…</a>
+    </div>
+  </div>
+
+  <div id="main" class="hidden">
+    <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Synthèse des placements">
+      {{ kpi_card("Valeur des positions", "—", "ink", "Quantité × dernier cours connu", "kpi-value") }}
+      {{ kpi_card("Montant investi", "—", "ink", "Prix de revient, frais inclus", "kpi-cost") }}
+      {{ kpi_card("Plus-value latente", "—", "gain", "Par rapport au montant investi", "kpi-gain") }}
+      {{ kpi_card("Liquidités", "—", "brand", "Espèces sur les comptes d'investissement", "kpi-cash") }}
+    </section>
+
+    <section class="mt-6 flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:justify-between">
+      <div id="account-pills" class="flex flex-wrap gap-2" role="tablist" aria-label="Filtrer par compte"></div>
+      <div class="flex flex-wrap items-center gap-2">
+        <label class="mr-1 flex items-center gap-2 text-sm text-muted">
+          <input id="show-closed" type="checkbox" class="checkbox"> Positions soldées
+        </label>
+        <button id="btn-prices" class="btn btn-ghost" type="button">{{ icon("M4 4v6h6M20 20v-6h-6M5 15a7 7 0 0 0 12 3M19 9A7 7 0 0 0 7 6", "h-4 w-4") }} Mettre à jour les cours</button>
+        <button id="btn-t212" class="btn btn-ghost" type="button">{{ icon("M12 15V3m0 0L8 7m4-4 4 4M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4", "h-4 w-4") }} Importer Trading 212</button>
+        <button id="btn-new" class="btn btn-primary" type="button">{{ icon("M12 5v14M5 12h14", "h-4 w-4") }} Ajouter une position</button>
+      </div>
+    </section>
+
+    <section id="allocation" class="card mt-4 p-5"></section>
+
+    <section class="card mt-4 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Position</th>
+              <th class="hidden md:table-cell">Compte</th>
+              <th class="hidden text-right sm:table-cell">Quantité</th>
+              <th class="hidden text-right lg:table-cell">Prix de revient</th>
+              <th class="hidden text-right md:table-cell">Cours</th>
+              <th class="text-right">Valeur</th>
+              <th class="hidden text-right sm:table-cell">Plus-value</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div id="empty" class="hidden p-10 text-center text-muted"></div>
+    </section>
+    <p class="mt-3 text-xs text-muted">
+      Les cours sont saisis à la main ou repris du dernier achat / vente importé : aucune donnée n'est envoyée sur Internet.
+    </p>
+  </div>
+
+  {# ------------------------------------------------------------ fenêtre position #}
+  <dialog id="holding-dialog" class="modal" aria-labelledby="holding-dialog-title">
+    <form id="holding-form" novalidate>
+      <div class="modal-head">
+        <h2 id="holding-dialog-title" class="text-lg font-bold">Nouvelle position</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
+      </div>
+      <div class="modal-body grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div data-field>
+          <label class="field-label" for="hd-type">Type d'actif</label>
+          <select id="hd-type" name="asset_type" class="input">
+            <option value="etf">ETF</option>
+            <option value="action">Action</option>
+            <option value="fonds">Fonds</option>
+            <option value="obligation">Obligation</option>
+            <option value="crypto">Crypto</option>
+            <option value="metal">Métal précieux</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+        <div data-field>
+          <label class="field-label" for="hd-account">Compte</label>
+          <select id="hd-account" name="account_id" class="input"></select>
+        </div>
+        <div class="sm:col-span-2" data-field>
+          <label class="field-label" for="hd-name">Nom</label>
+          <input id="hd-name" name="name" class="input" maxlength="120" placeholder="Ex. Vanguard FTSE All-World">
+        </div>
+
+        <div data-field data-for="titre">
+          <label class="field-label" for="hd-symbol">Symbole (facultatif)</label>
+          <input id="hd-symbol" name="symbol" class="input uppercase" maxlength="20" placeholder="VWCE">
+        </div>
+        <div data-field data-for="titre">
+          <label class="field-label" for="hd-isin">ISIN (facultatif)</label>
+          <input id="hd-isin" name="isin" class="input uppercase" maxlength="12" placeholder="IE00BK5BQT80">
+        </div>
+
+        <div data-field data-for="metal">
+          <label class="field-label" for="hd-metal">Métal</label>
+          <select id="hd-metal" name="metal" class="input">
+            <option value="or">Or</option>
+            <option value="argent">Argent</option>
+            <option value="platine">Platine</option>
+            <option value="palladium">Palladium</option>
+          </select>
+        </div>
+        <div data-field data-for="metal">
+          <label class="field-label" for="hd-unit">Compté en</label>
+          <select id="hd-unit" name="unit" class="input">
+            <option value="g">Grammes</option>
+            <option value="oz">Onces troy (31,1 g)</option>
+            <option value="piece">Pièces</option>
+          </select>
+        </div>
+        <div data-field data-for="metal">
+          <label class="field-label" for="hd-purity">Pureté (‰)</label>
+          <input id="hd-purity" name="purity" class="input num" inputmode="decimal" placeholder="999,9">
+        </div>
+        <div data-field data-for="piece">
+          <label class="field-label" for="hd-weight">Poids d'une pièce (g)</label>
+          <input id="hd-weight" name="weight_g" class="input num" inputmode="decimal" placeholder="6,45">
+        </div>
+
+        <div data-field>
+          <label class="field-label" for="hd-quantity">Quantité <span id="hd-unit-hint" class="font-normal"></span></label>
+          <input id="hd-quantity" name="quantity" class="input num" inputmode="decimal" placeholder="0">
+        </div>
+        <div data-field>
+          <label class="field-label" for="hd-cost">Prix de revient total (€)</label>
+          <input id="hd-cost" name="cost_basis" class="input num" inputmode="decimal" placeholder="0,00">
+        </div>
+        <div class="sm:col-span-2" data-field>
+          <label class="field-label" for="hd-price">Cours actuel <span id="hd-price-unit" class="font-normal">par titre</span> (€)</label>
+          <input id="hd-price" name="price" class="input num" inputmode="decimal" placeholder="Laisser vide = valorisé au prix de revient">
+        </div>
+        <p id="hd-imported-note" class="hidden rounded-xl bg-lilac/10 p-3 text-xs text-muted sm:col-span-2">
+          Quantité et prix de revient sont calculés à partir de l'historique Trading 212 importé.
+          Réimportez un export récent pour les mettre à jour.
+        </p>
+        <div class="sm:col-span-2" data-field>
+          <label class="field-label" for="hd-notes">Notes</label>
+          <textarea id="hd-notes" name="notes" class="input" rows="2" maxlength="1000" placeholder="Lieu de stockage, n° de certificat…"></textarea>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" id="hd-delete" class="btn btn-danger mr-auto">Supprimer</button>
+        <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  {# ------------------------------------------------------------ fenêtre cours #}
+  <dialog id="prices-dialog" class="modal modal-wide" aria-labelledby="prices-dialog-title">
+    <form id="prices-form" novalidate>
+      <div class="modal-head">
+        <h2 id="prices-dialog-title" class="text-lg font-bold">Mettre à jour les cours</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-3 text-sm text-muted">Saisissez le cours du jour ; seuls les champs modifiés sont enregistrés (et ajoutés à l'historique).</p>
+        <div class="max-h-[55vh] overflow-auto rounded-xl border border-line">
+          <table class="table">
+            <thead><tr><th>Position</th><th class="text-right">Cours actuel</th><th class="w-40">Nouveau cours (€)</th></tr></thead>
+            <tbody id="prices-rows"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer les cours</button>
+      </div>
+    </form>
+  </dialog>
+
+  {# ------------------------------------------------------------ fenêtre import Trading 212 #}
+  <dialog id="t212-dialog" class="modal modal-wide" aria-labelledby="t212-dialog-title">
+    <div class="modal-head">
+      <h2 id="t212-dialog-title" class="text-lg font-bold">Importer l'historique Trading 212</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
+    </div>
+    <div class="modal-body space-y-5">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div class="space-y-3">
+          <div data-field>
+            <label class="field-label" for="t212-account">Compte de destination</label>
+            <select id="t212-account" class="input"></select>
+          </div>
+          <details class="rounded-xl bg-raised/60 p-3 text-xs text-muted">
+            <summary class="cursor-pointer font-semibold text-ink">Comment obtenir le fichier ?</summary>
+            <p class="mt-2">Dans Trading 212, ouvrez l'historique de votre compte, utilisez le bouton d'export,
+              choisissez la période et incluez ordres, dividendes et transactions. Vous recevez un fichier CSV.</p>
+            <p class="mt-2">Vous pouvez réimporter un export plus récent : les opérations déjà présentes sont ignorées.</p>
+          </details>
+        </div>
+        <label id="t212-drop" class="dropzone md:col-span-2" for="t212-file">
+          {{ icon("M12 15V3m0 0L8 7m4-4 4 4M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4", "h-7 w-7") }}
+          <span id="t212-file-name" class="font-semibold text-ink">Glissez l'export CSV ici ou cliquez pour choisir</span>
+          <span class="text-xs">Fichier CSV exporté depuis Trading 212</span>
+          <input id="t212-file" type="file" accept=".csv" class="sr-only">
+        </label>
+      </div>
+
+      <div id="t212-preview" class="hidden space-y-4">
+        <div id="t212-summary" class="flex flex-wrap gap-2"></div>
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div class="rounded-xl border border-line">
+            <p class="border-b border-line px-4 py-2.5 text-sm font-bold">Opérations à importer</p>
+            <table class="table"><tbody id="t212-kinds"></tbody></table>
+          </div>
+          <div class="rounded-xl border border-line">
+            <p class="border-b border-line px-4 py-2.5 text-sm font-bold">Positions après import</p>
+            <div class="max-h-64 overflow-auto"><table class="table"><tbody id="t212-positions"></tbody></table></div>
+          </div>
+        </div>
+        <details id="t212-ignored-box" class="text-sm">
+          <summary class="cursor-pointer font-semibold">Lignes ignorées</summary>
+          <ul id="t212-ignored" class="mt-2 space-y-1 text-xs text-muted"></ul>
+        </details>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+      <button type="button" id="t212-commit" class="btn btn-primary" disabled>Importer</button>
+    </div>
+  </dialog>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/pages/investments.js') }}"></script>
+{% endblock %}
