@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'unsafe-inline'" />
+    <title>Atelier Trésorerie</title>
+    <!-- Mêmes jetons de couleur que l'interface (clair / sombre) -->
+    <link rel="stylesheet" href="../static/css/app.css" />
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        display: grid;
+        place-items: center;
+        background: rgb(var(--canvas));
+        color: rgb(var(--ink));
+        font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-app-region: drag;
+      }
+      main {
+        text-align: center;
+      }
+      img {
+        width: 132px;
+        height: 132px;
+      }
+      h1 {
+        margin: 14px 0 6px;
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+      }
+      p {
+        margin: 0;
+        color: rgb(var(--muted));
+        min-height: 1.5em;
+      }
+      .bar {
+        width: 160px;
+        height: 4px;
+        margin: 18px auto 0;
+        border-radius: 999px;
+        background: rgb(var(--raised));
+        overflow: hidden;
+      }
+      .bar span {
+        display: block;
+        width: 40%;
+        height: 100%;
+        border-radius: inherit;
+        background: rgb(var(--brand));
+        animation: slide 1.1s ease-in-out infinite;
+      }
+      small {
+        display: block;
+        margin-top: 14px;
+        color: rgb(var(--muted));
+        opacity: 0.8;
+      }
+      @keyframes slide {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(250%); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bar span { animation: none; width: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="../static/img/logo-atelier-tresorerie.png" alt="" />
+      <h1>Atelier Trésorerie</h1>
+      <p id="status" role="status">Démarrage…</p>
+      <div class="bar" aria-hidden="true"><span></span></div>
+      <small id="hint"></small>
+    </main>
+    <script>
+      window.setStatus = (text, hint) => {
+        document.getElementById('status').textContent = text
+        document.getElementById('hint').textContent = hint || ''
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+
+{% block title %}Transactions{% endblock %}
+{% block page_title %}Transactions{% endblock %}
+
+{% block content %}
+  {# ------------------------------------------------------------ barre d'outils #}
+  <section class="card p-4">
+    <form id="filters" class="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-12" role="search">
+      <div class="col-span-2 md:col-span-4 xl:col-span-4">
+        <label class="sr-only" for="f-q">Rechercher</label>
+        <input id="f-q" name="q" type="search" class="input" placeholder="Rechercher un libellé, une note…">
+      </div>
+      <div class="xl:col-span-2">
+        <label class="sr-only" for="f-account">Compte</label>
+        <select id="f-account" name="account_id" class="input"></select>
+      </div>
+      <div class="xl:col-span-2">
+        <label class="sr-only" for="f-category">Catégorie</label>
+        <select id="f-category" name="category_id" class="input"></select>
+      </div>
+      <div class="xl:col-span-2">
+        <label class="sr-only" for="f-month">Mois</label>
+        <input id="f-month" name="month" type="month" class="input" title="Mois">
+      </div>
+      <div class="xl:col-span-2">
+        <label class="sr-only" for="f-type">Type</label>
+        <select id="f-type" name="type" class="input">
+          <option value="">Tous les types</option>
+          <option value="income">Revenus</option>
+          <option value="expense">Dépenses</option>
+          <option value="transfer">Virements</option>
+        </select>
+      </div>
+    </form>
+  </section>
+
+  <section class="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+    <div id="summary" class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-muted" aria-live="polite"></div>
+    <div class="flex flex-wrap gap-2">
+      <button id="btn-reset" class="btn btn-ghost btn-sm" type="button">Réinitialiser les filtres</button>
+      <button id="btn-import" class="btn btn-ghost">
+        {{ icon("M12 15V3m0 0L8 7m4-4 4 4M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4", "h-4 w-4") }} Importer
+      </button>
+      <button id="btn-new" class="btn btn-primary">
+        {{ icon("M12 5v14M5 12h14", "h-4 w-4") }} Nouvelle opération
+      </button>
+    </div>
+  </section>
+
+  {# ------------------------------------------------------------ actions groupées #}
+  <section id="bulk-bar" class="mt-4 hidden flex-wrap items-center gap-2 rounded-xl2 border border-brand/40 bg-brand/10 p-3 text-sm">
+    <span id="bulk-count" class="mr-2 font-bold"></span>
+    <select id="bulk-category" class="input h-9 w-auto min-w-[12rem]" aria-label="Catégorie à appliquer"></select>
+    <button id="bulk-apply" class="btn btn-ghost btn-sm" type="button">Catégoriser</button>
+    <button id="bulk-reconcile" class="btn btn-ghost btn-sm" type="button">Marquer rapprochées</button>
+    <button id="bulk-delete" class="btn btn-danger btn-sm" type="button">Supprimer</button>
+    <button id="bulk-clear" class="btn btn-sm ml-auto text-muted" type="button">Désélectionner</button>
+  </section>
+
+  {# ------------------------------------------------------------ tableau #}
+  <section class="card mt-4 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="w-10"><input id="select-all" type="checkbox" class="checkbox" aria-label="Tout sélectionner"></th>
+            <th class="hidden sm:table-cell"><button class="hover:text-ink" data-sort="date">Date</button></th>
+            <th><button class="hover:text-ink" data-sort="label">Libellé</button></th>
+            <th class="hidden sm:table-cell">Catégorie</th>
+            <th class="hidden md:table-cell">Compte</th>
+            <th class="hidden lg:table-cell">Statut</th>
+            <th class="text-right"><button class="hover:text-ink" data-sort="amount">Montant</button></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div id="empty" class="hidden p-10 text-center text-muted"></div>
+    <div class="flex items-center justify-between gap-3 border-t border-line px-4 py-3 text-sm">
+      <span id="page-info" class="text-muted"></span>
+      <div class="flex gap-2">
+        <button id="page-prev" class="btn btn-ghost btn-sm" type="button">← Précédent</button>
+        <button id="page-next" class="btn btn-ghost btn-sm" type="button">Suivant →</button>
+      </div>
+    </div>
+  </section>
+
+  {# ------------------------------------------------------------ fenêtre opération #}
+  <dialog id="tx-dialog" class="modal" aria-labelledby="tx-dialog-title">
+    <form id="tx-form" novalidate>
+      <div class="modal-head">
+        <h2 id="tx-dialog-title" class="text-lg font-bold">Nouvelle opération</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
+      </div>
+      <div class="modal-body grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="sm:col-span-2">
+          <div class="segmented" role="radiogroup" aria-label="Sens de l'opération">
+            <label><input type="radio" name="direction" value="out" checked><span>Dépense</span></label>
+            <label><input type="radio" name="direction" value="in"><span>Revenu</span></label>
+          </div>
+        </div>
+        <div data-field>
+          <label class="field-label" for="tx-amount">Montant (€)</label>
+          <input id="tx-amount" name="amount" class="input num text-lg font-bold" inputmode="decimal" placeholder="0,00" required>
+        </div>
+        <div data-field>
+          <label class="field-label" for="tx-date">Date</label>
+          <input id="tx-date" name="date" type="date" class="input" required>
+        </div>
+        <div class="sm:col-span-2" data-field>
+          <label class="field-label" for="tx-label">Libellé</label>
+          <input id="tx-label" name="label" class="input" maxlength="200" required placeholder="Ex. Supermarché">
+        </div>
+        <div data-field>
+          <label class="field-label" for="tx-account">Compte</label>
+          <select id="tx-account" name="account_id" class="input"></select>
+        </div>
+        <div data-field>
+          <label class="field-label" for="tx-category">Catégorie</label>
+          <select id="tx-category" name="category_id" class="input"></select>
+        </div>
+        <div data-field>
+          <label class="field-label" for="tx-status">Statut</label>
+          <select id="tx-status" name="status" class="input">
+            <option value="valide">Validée</option>
+            <option value="en_attente">En attente</option>
+            <option value="rapproche">Rapprochée</option>
+          </select>
+        </div>
+        <div class="sm:col-span-2" data-field>
+          <label class="field-label" for="tx-notes">Notes</label>
+          <textarea id="tx-notes" name="notes" class="input" rows="2" maxlength="1000"></textarea>
+        </div>
+        <p id="tx-transfer-note" class="hidden rounded-xl bg-lilac/10 p-3 text-xs text-muted sm:col-span-2">
+          Cette opération fait partie d'un virement : modifier la date ou le montant met aussi à jour l'autre compte,
+          et la supprimer supprime les deux opérations.
+        </p>
+        <p id="tx-category-hint" class="text-xs text-muted sm:col-span-2">
+          Sans catégorie, l'application propose celle des opérations au libellé similaire.
+        </p>
+      </div>
+      <div class="modal-foot">
+        <button type="button" id="tx-delete" class="btn btn-danger mr-auto">Supprimer</button>
+        <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  {# ------------------------------------------------------------ fenêtre import #}
+  <dialog id="import-dialog" class="modal modal-wide" aria-labelledby="import-dialog-title">
+    <div class="modal-head">
+      <h2 id="import-dialog-title" class="text-lg font-bold">Importer un relevé</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
+    </div>
+
+    <div class="modal-body space-y-5">
+      {# Étape 1 : fichier #}
+      <div id="import-step-file" class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div data-field>
+          <label class="field-label" for="imp-account">Compte de destination</label>
+          <select id="imp-account" class="input"></select>
+        </div>
+        <label id="imp-drop" class="dropzone md:col-span-2" for="imp-file">
+          {{ icon("M12 15V3m0 0L8 7m4-4 4 4M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4", "h-7 w-7") }}
+          <span id="imp-file-name" class="font-semibold text-ink">Glissez un fichier ici ou cliquez pour choisir</span>
+          <span class="text-xs">CSV ou Excel (.xlsx), 10 Mo maximum — export de votre banque</span>
+          <input id="imp-file" type="file" accept=".csv,.txt,.xlsx" class="sr-only">
+        </label>
+      </div>
+
+      {# Étape 2 : correspondance des colonnes + aperçu #}
+      <div id="import-step-preview" class="hidden space-y-4">
+        <div>
+          <p class="mb-2 text-sm font-semibold">Colonnes détectées <span class="font-normal text-muted">— corrigez si besoin</span></p>
+          <div id="imp-mapping" class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6"></div>
+        </div>
+        <div id="imp-summary" class="flex flex-wrap gap-2"></div>
+        <div class="max-h-[45vh] overflow-auto rounded-xl border border-line">
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="w-10"><input id="imp-select-all" type="checkbox" class="checkbox" aria-label="Tout sélectionner"></th>
+                <th>Ligne</th><th>Date</th><th>Libellé</th><th>Catégorie</th><th class="text-right">Montant</th><th>État</th>
+              </tr>
+            </thead>
+            <tbody id="imp-rows"></tbody>
+          </table>
+        </div>
+        <p id="imp-more" class="text-xs text-muted"></p>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+      <button type="button" id="imp-commit" class="btn btn-primary" disabled>Importer</button>
+    </div>
+  </dialog>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/pages/transactions.js') }}"></script>
+{% endblock %}

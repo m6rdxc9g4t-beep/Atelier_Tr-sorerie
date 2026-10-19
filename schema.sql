@@ -2,6 +2,8 @@
 -- Tous les montants sont stockés en CENTIMES (INTEGER) pour éviter les erreurs d'arrondi.
 -- Convention de signe : montant > 0 = entrée d'argent, montant < 0 = sortie.
 -- Le script est idempotent (IF NOT EXISTS) : il peut être rejoué sans risque.
+-- Ce fichier décrit le schéma de BASE (version 1). Les évolutions suivantes sont des
+-- migrations numérotées dans database.py (MIGRATIONS) : ne pas modifier les tables ici.
 
 PRAGMA foreign_keys = ON;
 
@@ -98,4 +100,3 @@ FROM accounts a
 LEFT JOIN transactions t ON t.account_id = a.id
 GROUP BY a.id;
 
-PRAGMA user_version = 1;

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+
+{% block title %}Budgets & Objectifs{% endblock %}
+{% block page_title %}Budgets & Objectifs{% endblock %}
+
+{% block content %}
+  {# ------------------------------------------------------------ navigation par mois #}
+  <section class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-2">
+      <button id="month-prev" class="icon-btn" aria-label="Mois précédent">{{ icon("M15 6l-6 6 6 6", "h-4 w-4") }}</button>
+      <h2 id="month-label" class="min-w-[11rem] text-center text-lg font-bold" aria-live="polite"></h2>
+      <button id="month-next" class="icon-btn" aria-label="Mois suivant">{{ icon("M9 6l6 6-6 6", "h-4 w-4") }}</button>
+      <button id="month-today" class="btn btn-ghost btn-sm ml-1" type="button">Ce mois</button>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button id="btn-copy" class="btn btn-ghost" type="button">Reprendre le mois précédent</button>
+      <button id="btn-new-budget" class="btn btn-primary" type="button">{{ icon("M12 5v14M5 12h14", "h-4 w-4") }} Nouveau budget</button>
+    </div>
+  </section>
+
+  <section class="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
+    {# ---- Budgets ---- #}
+    <div class="space-y-4 xl:col-span-2">
+      <div id="budget-total" class="card p-6"><div class="skeleton h-16"></div></div>
+      <div class="card p-6">
+        <h3 class="mb-4 font-bold">Budgets par catégorie</h3>
+        <div id="budget-list" class="space-y-5"></div>
+      </div>
+      <div id="unbudgeted-card" class="card hidden p-6">
+        <h3 class="font-bold">Dépenses sans budget</h3>
+        <p class="mt-1 text-sm text-muted">Ces catégories ont des dépenses ce mois-ci mais aucun plafond.</p>
+        <ul id="unbudgeted-list" class="mt-4 divide-y divide-line"></ul>
+      </div>
+    </div>
+
+    {# ---- Objectifs ---- #}
+    <div class="card h-fit p-6">
+      <div class="mb-4 flex items-center justify-between">
+        <h3 class="font-bold">Objectifs d'épargne</h3>
+        <button id="btn-new-goal" class="btn btn-ghost btn-sm" type="button">{{ icon("M12 5v14M5 12h14", "h-4 w-4") }} Ajouter</button>
+      </div>
+      <div id="goal-list" class="space-y-4"></div>
+    </div>
+  </section>
+
+  {# ------------------------------------------------------------ fenêtre budget #}
+  <dialog id="budget-dialog" class="modal" aria-labelledby="budget-dialog-title">
+    <form id="budget-form" novalidate>
+      <div class="modal-head">
+        <h2 id="budget-dialog-title" class="text-lg font-bold">Nouveau budget</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
+      </div>
+      <div class="modal-body grid grid-cols-1 gap-4">
+        <div data-field>
+          <label class="field-label" for="bd-category">Catégorie de dépense</label>
+          <select id="bd-category" name="category_id" class="input"></select>
+        </div>
+        <div data-field>
+          <label class="field-label" for="bd-amount">Plafond mensuel (€)</label>
+          <input id="bd-amount" name="amount_limit" class="input num text-lg font-bold" inputmode="decimal" placeholder="0,00">
+          <p id="bd-hint" class="mt-1 text-xs text-muted"></p>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" id="bd-delete" class="btn btn-danger mr-auto">Supprimer</button>
+        <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  {# ------------------------------------------------------------ fenêtre objectif #}
+  <dialog id="goal-dialog" class="modal" aria-labelledby="goal-dialog-title">
+    <form id="goal-form" novalidate>
+      <div class="modal-head">
+        <h2 id="goal-dialog-title" class="text-lg font-bold">Nouvel objectif</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
+      </div>
+      <div class="modal-body grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="sm:col-span-2" data-field>
+          <label class="field-label" for="gl-name">Nom</label>
+          <input id="gl-name" name="name" class="input" maxlength="80" placeholder="Ex. Vacances d'été">
+        </div>
+        <div data-field>
+          <label class="field-label" for="gl-target">Montant visé (€)</label>
+          <input id="gl-target" name="target_amount" class="input num" inputmode="decimal" placeholder="0,00">
+        </div>
+        <div data-field>
+          <label class="field-label" for="gl-deadline">Échéance (facultatif)</label>
+          <input id="gl-deadline" name="deadline" type="date" class="input">
+        </div>
+        <div data-field>
+          <label class="field-label" for="gl-account">Suivre le solde d'un compte</label>
+          <select id="gl-account" name="account_id" class="input"></select>
+        </div>
+        <div data-field>
+          <label class="field-label" for="gl-current">Déjà épargné (€)</label>
+          <input id="gl-current" name="current_amount" class="input num" inputmode="decimal" placeholder="0,00">
+        </div>
+        <p class="text-xs text-muted sm:col-span-2">
+          Si un compte est choisi, la progression suit automatiquement son solde. Sinon, mettez à jour le montant épargné à la main.
+        </p>
+      </div>
+      <div class="modal-foot">
+        <button type="button" id="gl-delete" class="btn btn-danger mr-auto">Supprimer</button>
+        <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/pages/budgets.js') }}"></script>
+{% endblock %}

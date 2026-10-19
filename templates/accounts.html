@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+
+{% block title %}Comptes & Soldes{% endblock %}
+{% block page_title %}Comptes & Soldes{% endblock %}
+
+{% block content %}
+  <section class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <p class="text-sm font-medium text-muted">Patrimoine total</p>
+      <p id="total-balance" class="num mt-1 text-3xl font-extrabold tracking-tight sm:text-4xl">
+        <span class="skeleton inline-block h-9 w-48 align-middle"></span>
+      </p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <label class="mr-2 flex items-center gap-2 text-sm text-muted">
+        <input id="show-archived" type="checkbox" class="checkbox"> Comptes archivés
+      </label>
+      <button id="btn-transfer" class="btn btn-ghost">
+        {{ icon("M4 7h14m0 0-4-4m4 4-4 4M20 17H6m0 0 4-4m-4 4 4 4", "h-4 w-4") }} Virement
+      </button>
+      <button id="btn-new-account" class="btn btn-primary">
+        {{ icon("M12 5v14M5 12h14", "h-4 w-4") }} Nouveau compte
+      </button>
+    </div>
+  </section>
+
+  <div id="accounts-groups" class="mt-6 space-y-5" aria-live="polite">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div class="skeleton h-40"></div><div class="skeleton h-40"></div><div class="skeleton h-40"></div>
+    </div>
+  </div>
+
+  {# ------------------------------------------------------------ fenêtre compte #}
+  <dialog id="account-dialog" class="modal" aria-labelledby="account-dialog-title">
+    <form id="account-form" novalidate>
+      <div class="modal-head">
+        <h2 id="account-dialog-title" class="text-lg font-bold">Nouveau compte</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
+      </div>
+      <div class="modal-body grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="sm:col-span-2" data-field>
+          <label class="field-label" for="acc-name">Nom du compte</label>
+          <input id="acc-name" name="name" class="input" maxlength="80" required placeholder="Compte courant">
+        </div>
+        <div data-field>
+          <label class="field-label" for="acc-type">Type</label>
+          <select id="acc-type" name="type" class="input">
+            <option value="courant">Compte courant</option>
+            <option value="epargne">Épargne</option>
+            <option value="investissement">Investissement</option>
+            <option value="credit">Crédit</option>
+            <option value="especes">Espèces</option>
+          </select>
+        </div>
+        <div data-field>
+          <label class="field-label" for="acc-institution">Établissement</label>
+          <input id="acc-institution" name="institution" class="input" maxlength="80" placeholder="Ma banque">
+        </div>
+        <div class="sm:col-span-2" data-field>
+          <label class="field-label" for="acc-opening">Solde d'ouverture (€)</label>
+          <input id="acc-opening" name="opening_balance" class="input num" inputmode="decimal" placeholder="0,00">
+          <p class="mt-1 text-xs text-muted">Solde du compte avant la première opération enregistrée.</p>
+        </div>
+        <fieldset class="sm:col-span-2" data-field>
+          <legend class="field-label">Couleur</legend>
+          <div id="acc-colors" class="flex flex-wrap gap-2"></div>
+        </fieldset>
+        <label id="acc-archived-row" class="flex items-center gap-2 text-sm sm:col-span-2">
+          <input type="checkbox" name="archived" class="checkbox"> Archiver ce compte (masqué, historique conservé)
+        </label>
+      </div>
+      <div class="modal-foot">
+        <button type="button" id="acc-delete" class="btn btn-danger mr-auto">Supprimer</button>
+        <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  {# ------------------------------------------------------------ fenêtre virement #}
+  <dialog id="transfer-dialog" class="modal" aria-labelledby="transfer-dialog-title">
+    <form id="transfer-form" novalidate>
+      <div class="modal-head">
+        <h2 id="transfer-dialog-title" class="text-lg font-bold">Virement entre comptes</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
+      </div>
+      <div class="modal-body grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div data-field>
+          <label class="field-label" for="tr-from">Depuis</label>
+          <select id="tr-from" name="from_account_id" class="input"></select>
+        </div>
+        <div data-field>
+          <label class="field-label" for="tr-to">Vers</label>
+          <select id="tr-to" name="to_account_id" class="input"></select>
+        </div>
+        <div data-field>
+          <label class="field-label" for="tr-amount">Montant (€)</label>
+          <input id="tr-amount" name="amount" class="input num" inputmode="decimal" placeholder="0,00">
+        </div>
+        <div data-field>
+          <label class="field-label" for="tr-date">Date</label>
+          <input id="tr-date" name="date" type="date" class="input">
+        </div>
+        <div class="sm:col-span-2" data-field>
+          <label class="field-label" for="tr-label">Libellé (facultatif)</label>
+          <input id="tr-label" name="label" class="input" maxlength="200" placeholder="Généré automatiquement">
+        </div>
+        <p class="text-xs text-muted sm:col-span-2">
+          Un virement crée deux opérations liées. Il n'est compté ni dans les revenus ni dans les dépenses.
+        </p>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+        <button type="submit" class="btn btn-primary">Effectuer le virement</button>
+      </div>
+    </form>
+  </dialog>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/pages/accounts.js') }}"></script>
+{% endblock %}

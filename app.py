@@ -1,19 +1,21 @@
 """Point d'entrée Flask d'Atelier Trésorerie : routes des pages et de l'API.
 
 Lancement :
-    python app.py                      (http://127.0.0.1:5000)
-    flask --app app run --debug
+    python app.py                      (http://127.0.0.1:5050)
+    flask --app app run --debug --port 5050
 """
 from __future__ import annotations
 
+import os
+import sys
 from datetime import date
 
 from flask import Flask, jsonify, render_template, request
 
 import database
+from api import bp as api_bp
 from config import Config
 from finance import format_eur
-from ollama_client import OllamaClient
 
 # Navigation principale (sidebar) — `icon` = tracé SVG 24×24 au trait
 NAV_ITEMS = [
@@ -21,6 +23,8 @@ NAV_ITEMS = [
      "icon": "M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z"},
     {"endpoint": "accounts", "label": "Comptes & Soldes",
      "icon": "M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 21h18"},
+    {"endpoint": "investments", "label": "Placements",
+     "icon": "M3 17l5-5 4 4 8-8M14 8h6v6M3 21h18"},
     {"endpoint": "transactions", "label": "Transactions",
      "icon": "M4 7h14m0 0-4-4m4 4-4 4M20 17H6m0 0 4-4m-4 4 4 4"},
     {"endpoint": "budgets", "label": "Budgets & Objectifs",
@@ -30,15 +34,6 @@ NAV_ITEMS = [
     {"endpoint": "settings", "label": "Paramètres",
      "icon": "M4 6h9m4 0h3M15 4v4M4 12h3m4 0h9M9 10v4M4 18h11m4 0h1M17 16v4"},
 ]
-
-# Pages pas encore construites : description affichée en attendant
-UPCOMING = {
-    "accounts": (2, "Liste des comptes courants, d'épargne et d'investissement avec leur solde en temps réel."),
-    "transactions": (2, "Saisie, recherche, filtres, catégorisation et import CSV / Excel des opérations."),
-    "budgets": (2, "Plafonds mensuels par catégorie, jauges de consommation et objectifs d'épargne."),
-    "ai_insights": (4, "Dialogue avec vos finances via l'IA locale Ollama : analyses et conseils personnalisés."),
-    "settings": (4, "Modèle Ollama, devise, thème, export et sauvegarde de la base."),
-}
 
 MONTHS_FR = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet",
              "août", "septembre", "octobre", "novembre", "décembre"]
@@ -53,10 +48,6 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     database.init_app(app)
     database.ensure_schema(app)
 
-    app.extensions["ollama"] = OllamaClient(
-        app.config["OLLAMA_URL"], app.config["OLLAMA_MODEL"], app.config["OLLAMA_TIMEOUT"]
-    )
-
     app.jinja_env.filters["eur"] = format_eur
 
     @app.context_processor
@@ -65,6 +56,7 @@ def create_app(config_overrides: dict | None = None) -> Flask:
         return {
             "nav_items": NAV_ITEMS,
             "current_month_label": f"{MONTHS_FR[today.month - 1]} {today.year}",
+            "app_mode": app.config["APP_MODE"],
         }
 
     # ------------------------------------------------------------------ pages
@@ -74,26 +66,31 @@ def create_app(config_overrides: dict | None = None) -> Flask:
         stats = database.db_stats(database.get_db())
         return render_template("index.html", stats=stats)
 
-    def _upcoming_page(endpoint: str):
-        step, description = UPCOMING[endpoint]
-        item = next(i for i in NAV_ITEMS if i["endpoint"] == endpoint)
-        return render_template("placeholder.html", item=item, step=step, description=description)
+    @app.get("/accounts")
+    def accounts():
+        return render_template("accounts.html")
 
-    for endpoint, url in [("accounts", "/accounts"), ("transactions", "/transactions"),
-                          ("budgets", "/budgets"), ("ai_insights", "/ai-insights"),
-                          ("settings", "/settings")]:
-        app.add_url_rule(url, endpoint, lambda e=endpoint: _upcoming_page(e))
+    @app.get("/investments")
+    def investments():
+        return render_template("investments.html")
 
-    # ------------------------------------------------------------------ API
+    @app.get("/transactions")
+    def transactions():
+        return render_template("transactions.html")
 
-    @app.get("/api/health")
-    def api_health():
-        try:
-            stats = database.db_stats(database.get_db())
-            db_state = {"ok": True, **stats}
-        except (database.DatabaseError, database.sqlite3.DatabaseError) as exc:
-            db_state = {"ok": False, "error": str(exc)}
-        return jsonify(database=db_state, ollama=app.extensions["ollama"].status())
+    @app.get("/budgets")
+    def budgets():
+        return render_template("budgets.html")
+
+    @app.get("/ai-insights")
+    def ai_insights():
+        return render_template("ai.html")
+
+    @app.get("/settings")
+    def settings():
+        return render_template("settings.html")
+
+    app.register_blueprint(api_bp)
 
     # ------------------------------------------------------------------ erreurs
 
@@ -117,5 +114,21 @@ def create_app(config_overrides: dict | None = None) -> Flask:
 
 
 if __name__ == "__main__":
-    # 127.0.0.1 : l'application n'est accessible que depuis cette machine
-    create_app().run(host="127.0.0.1", port=5000, debug=True)
+    # 127.0.0.1 : l'application n'est accessible que depuis cette machine.
+    # Port 5050 par défaut : sur macOS, le port 5000 est pris par le récepteur AirPlay,
+    # ce qui donne une page blanche sur http://localhost:5000.
+    #
+    # --desktop  : lancé par l'application de bureau (fenêtre Electron, desktop/main.cjs), qui
+    #              arrête le serveur en quittant (Cmd+Q).
+    # --app-mode : lancé par l'ancien lanceur qui ouvre le navigateur ; ajoute un bouton
+    #              « Quitter l'application » dans l'interface.
+    # Dans les deux cas : sans rechargement automatique ni débogueur.
+    app_mode = "--app-mode" in sys.argv
+    packaged = app_mode or "--desktop" in sys.argv
+    if app_mode:
+        os.environ["ATELIER_APP_MODE"] = "1"
+    application = create_app({"APP_MODE": True} if app_mode else None)
+    port = application.config["PORT"]
+    if not os.environ.get("WERKZEUG_RUN_MAIN"):  # une seule fois, pas à chaque rechargement automatique
+        print(f"\n  Atelier Trésorerie → http://127.0.0.1:{port}\n", flush=True)
+    application.run(host="127.0.0.1", port=port, debug=not packaged, use_reloader=not packaged, threaded=True)
