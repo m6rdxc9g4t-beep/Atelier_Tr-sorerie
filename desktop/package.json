@@ -1,0 +1,15 @@
+{
+  "name": "atelier-tresorerie-desktop",
+  "productName": "Atelier Trésorerie",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Application de bureau d'Atelier Trésorerie (Electron) : fenêtre native qui démarre le serveur Flask local.",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test \"test/*.test.cjs\""
+  },
+  "devDependencies": {
+    "electron": "44.6.0"
+  }
+}

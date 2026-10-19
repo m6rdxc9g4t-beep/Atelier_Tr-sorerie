@@ -118,13 +118,17 @@ if __name__ == "__main__":
     # Port 5050 par défaut : sur macOS, le port 5000 est pris par le récepteur AirPlay,
     # ce qui donne une page blanche sur http://localhost:5000.
     #
-    # --app-mode : lancement par l'application Mac (double-clic). Serveur en arrière-plan,
-    # sans rechargement automatique ni débogueur, avec un bouton « Quitter » dans l'interface.
+    # --desktop  : lancé par l'application de bureau (fenêtre Electron, desktop/main.cjs), qui
+    #              arrête le serveur en quittant (Cmd+Q).
+    # --app-mode : lancé par l'ancien lanceur qui ouvre le navigateur ; ajoute un bouton
+    #              « Quitter l'application » dans l'interface.
+    # Dans les deux cas : sans rechargement automatique ni débogueur.
     app_mode = "--app-mode" in sys.argv
+    packaged = app_mode or "--desktop" in sys.argv
     if app_mode:
         os.environ["ATELIER_APP_MODE"] = "1"
     application = create_app({"APP_MODE": True} if app_mode else None)
     port = application.config["PORT"]
     if not os.environ.get("WERKZEUG_RUN_MAIN"):  # une seule fois, pas à chaque rechargement automatique
         print(f"\n  Atelier Trésorerie → http://127.0.0.1:{port}\n", flush=True)
-    application.run(host="127.0.0.1", port=port, debug=not app_mode, use_reloader=not app_mode, threaded=True)
+    application.run(host="127.0.0.1", port=port, debug=not packaged, use_reloader=not packaged, threaded=True)
