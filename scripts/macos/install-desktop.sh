@@ -3,7 +3,10 @@
 # sur le modèle d'Atelier Projets.
 #
 #   bash scripts/macos/install-desktop.sh              → ~/Applications/Atelier Trésorerie.app
-#   bash scripts/macos/install-desktop.sh ~/Desktop    → dans un autre dossier
+#   bash scripts/macos/install-desktop.sh ~/Desktop    → sur le Bureau (comme Atelier Projets)
+#
+# Une seule application à la fois : une version installée ailleurs (Bureau, ~/Applications, /Applications),
+# y compris l'ancien lanceur qui ouvrait le navigateur, est remplacée.
 #
 # Une vraie application : sa propre fenêtre, son icône dans le Dock et son menu, sans navigateur. Au
 # lancement, elle vérifie Python, démarre le serveur local et affiche l'interface ; Cmd+Q arrête tout.
@@ -72,10 +75,13 @@ if curl -fsS --max-time 1 "http://127.0.0.1:$PORT/api/ping" 2>/dev/null | grep -
   curl -fsS --max-time 2 -X POST -H "X-Requested-With: install" "http://127.0.0.1:$PORT/api/system/shutdown" >/dev/null 2>&1 || true
 fi
 sleep 1
-# Ancien lanceur navigateur installé ailleurs (ex. /Applications) : retiré pour ne pas avoir deux icônes.
-for OLD in "/Applications/$NAME.app" "$HOME/Applications/$NAME.app"; do
-  if [[ -d "$OLD" && "$OLD" != "$APP" ]] && [[ "$(defaults read "$OLD/Contents/Info" CFBundleIdentifier 2>/dev/null)" == "$OLD_BUNDLE_ID" ]]; then
-    rm -rf "$OLD" 2>/dev/null && echo "  Ancien lanceur retiré : $OLD" || echo "⚠ Impossible de retirer l'ancien lanceur $OLD : supprimez-le à la main." >&2
+# Autre exemplaire (ancien lanceur navigateur ou application installée ailleurs) : retiré pour ne pas
+# avoir deux icônes « Atelier Trésorerie » dans Launchpad et Spotlight.
+for OLD in "/Applications/$NAME.app" "$HOME/Applications/$NAME.app" "$HOME/Desktop/$NAME.app"; do
+  [[ -d "$OLD" && "$OLD" != "$APP" ]] || continue
+  OLD_ID="$(defaults read "$OLD/Contents/Info" CFBundleIdentifier 2>/dev/null || true)"
+  if [[ "$OLD_ID" == "$OLD_BUNDLE_ID" || "$OLD_ID" == "$BUNDLE_ID" ]]; then
+    rm -rf "$OLD" 2>/dev/null && echo "  Ancien exemplaire retiré : $OLD" || echo "⚠ Impossible de retirer $OLD : supprimez-le à la main." >&2
   fi
 done
 mkdir -p "$TARGET_DIR"
@@ -126,7 +132,9 @@ if (fs.existsSync(entry)) {
 NODE
 
 # ---------------------------------------------------------------- icône (.icns avec les outils de macOS)
-ICON_SRC="$REPO/static/img/icon-1024.png"
+# Logo Atelier Trésorerie (même famille que celui d'Atelier Projets) ; à défaut, l'icône de l'interface.
+ICON_SRC="$REPO/scripts/macos/AppIcon.png"
+[[ -f "$ICON_SRC" ]] || ICON_SRC="$REPO/static/img/icon-1024.png"
 if [[ -f "$ICON_SRC" ]] && command -v iconutil >/dev/null 2>&1; then
   ICONSET="$(mktemp -d)/AppIcon.iconset"
   mkdir -p "$ICONSET"
@@ -142,6 +150,8 @@ xattr -cr "$APP" 2>/dev/null || true
 if ! codesign --force --deep --sign - "$APP" >/dev/null 2>&1; then
   echo "⚠ Signature locale impossible (codesign) : si macOS refuse d'ouvrir l'application, clic droit → Ouvrir." >&2
 fi
+# Ancienne icône personnalisée du Finder (fichier « Icon\r ») : sans objet, l'icône est dans l'application.
+rm -f "$APP/Icon"$'\r' 2>/dev/null || true
 touch "$APP"
 LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
 [[ -x "$LSREGISTER" ]] && "$LSREGISTER" -f "$APP" >/dev/null 2>&1 || true
