@@ -4,12 +4,12 @@
    toute modification se fait ici puis dans chaque copie.
 
    Balisage attendu :
-     <a class="atelier-brand" href="/">
+     <button type="button" class="atelier-brand" aria-haspopup="dialog">
        <span class="atelier-brand__tile" aria-hidden="true"><svg …icône de l'app…/></span>
        <span class="atelier-brand__name"><span class="atelier-brand__prefix">atelier_</span>Nom</span>
-     </a>
+     </button>
 
-   Aucune règle `display` sur __name ni `margin` sur .atelier-brand : les utilitaires de chaque app
+   Aucune règle `display` sur __name ni `margin` / `padding` sur .atelier-brand : les utilitaires de chaque app
    (hidden, lg:inline…) gardent la main.
 
    Police : Nunito (SIL Open Font License 1.1, voir OFL-Nunito.txt), embarquée — aucune requête réseau. */
@@ -71,4 +71,117 @@
 .atelier-brand__prefix {
   font-weight: 700;
   opacity: 0.55;
+}
+
+/* La marque est un bouton qui ouvre la fenêtre « À propos ». */
+button.atelier-brand {
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.atelier-brand:focus-visible {
+  outline: 2px solid var(--atelier-brand-from);
+  outline-offset: 4px;
+  border-radius: 0.75rem;
+}
+
+/* Fenêtre « À propos » (<dialog class="atelier-about">) : toujours sombre, comme les logos néon.
+   Balisage :
+     <dialog class="atelier-about" aria-labelledby="…">
+       <div class="atelier-about__panel">
+         <button class="atelier-about__close" aria-label="Fermer">×</button>
+         <img class="atelier-about__logo" src="logo.webp" alt="Logo Atelier Nom">
+         <h2 class="atelier-about__name"><span class="atelier-brand__prefix">atelier_</span>Nom</h2>
+         <p class="atelier-about__tagline">…</p>
+         <p class="atelier-about__suite">Suite Atelier · 100 % local</p>
+       </div>
+     </dialog> */
+.atelier-about {
+  width: min(26rem, calc(100vw - 2rem));
+  max-width: none;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  overflow: visible;
+  color: #e0f2fe;
+  background: transparent;
+}
+
+.atelier-about::backdrop {
+  background: rgb(2 6 23 / 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.atelier-about__panel {
+  position: relative;
+  padding: 1.75rem 1.75rem 1.5rem;
+  border-radius: 1.25rem;
+  text-align: center;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: radial-gradient(120% 75% at 50% 0%, #0c4a6e 0%, #0b1324 62%);
+  box-shadow:
+    inset 0 0 0 1px rgb(56 189 248 / 0.28),
+    0 30px 80px -24px rgb(56 189 248 / 0.5);
+}
+
+.atelier-about__logo {
+  display: block;
+  width: 100%;
+  max-width: 18rem;
+  height: auto;
+  max-height: 16.5rem;
+  margin: 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 28px rgb(56 189 248 / 0.3));
+}
+
+.atelier-about__name {
+  margin: 1rem 0 0;
+  font-family: var(--atelier-brand-font);
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: #f0f9ff;
+}
+
+.atelier-about__tagline {
+  margin: 0.5rem auto 0;
+  max-width: 22rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #a5c4d8;
+}
+
+.atelier-about__suite {
+  margin: 1.25rem 0 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+  opacity: 0.85;
+}
+
+.atelier-about__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  font: 400 1.25rem/1 system-ui, sans-serif;
+  color: inherit;
+  background: rgb(255 255 255 / 0.08);
+  cursor: pointer;
+}
+
+.atelier-about__close:hover {
+  background: rgb(255 255 255 / 0.16);
 }

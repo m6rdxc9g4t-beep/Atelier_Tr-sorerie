@@ -53,10 +53,10 @@
   <aside id="sidebar"
          class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col border-r border-line bg-surface/95 backdrop-blur transition-transform duration-200 lg:translate-x-0">
     <div class="px-6 pt-7 pb-8">
-      <a href="{{ url_for('dashboard') }}" class="atelier-brand" title="Atelier Trésorerie">
+      <button type="button" class="atelier-brand" aria-haspopup="dialog" title="À propos d'Atelier Trésorerie" data-atelier-about>
         <span class="atelier-brand__tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10 18v-7"/><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M3 22h18"/><path d="M6 18v-7"/></svg></span>
         <span class="atelier-brand__name"><span class="atelier-brand__prefix">atelier_</span>Trésorerie</span>
-      </a>
+      </button>
     </div>
 
     <nav class="flex-1 space-y-1 px-3" aria-label="Navigation principale">
@@ -113,6 +113,28 @@
       {% block content %}{% endblock %}
     </main>
   </div>
+
+  {# Fenêtre « À propos » (static/brand/atelier-brand.css) : ouverte par la marque, fermée par Échap, × ou un clic à côté #}
+  <dialog id="atelier-about" class="atelier-about" aria-labelledby="atelier-about-title">
+    <div class="atelier-about__panel">
+      <button type="button" class="atelier-about__close" aria-label="Fermer" data-atelier-about-close>×</button>
+      <img class="atelier-about__logo" src="{{ url_for('static', filename='img/logo-atelier-tresorerie.webp') }}" alt="Logo Atelier Trésorerie" width="576" height="526">
+      <h2 id="atelier-about-title" class="atelier-about__name"><span class="atelier-brand__prefix">atelier_</span>Trésorerie</h2>
+      <p class="atelier-about__tagline">Comptes, budgets et placements, avec une IA qui tourne sur votre machine.</p>
+      <p class="atelier-about__suite">Suite Atelier · 100 % local</p>
+    </div>
+  </dialog>
+  <script>
+    (function () {
+      var about = document.getElementById("atelier-about");
+      if (!about || !about.showModal) return;
+      document.querySelectorAll("[data-atelier-about]").forEach(function (b) {
+        b.addEventListener("click", function () { about.showModal(); });
+      });
+      about.querySelector("[data-atelier-about-close]").addEventListener("click", function () { about.close(); });
+      about.addEventListener("click", function (e) { if (e.target === about) about.close(); });
+    })();
+  </script>
 
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
   {% block scripts %}{% endblock %}
