@@ -42,3 +42,27 @@ def savings_rate(income_cents: int, expense_cents: int) -> float | None:
     if income_cents <= 0:
         return None
     return round((income_cents - abs(expense_cents)) / income_cents * 100, 1)
+
+
+def pct_change(current: int, previous: int) -> float | None:
+    """Variation en % entre deux montants. None si la base est nulle."""
+    if not previous:
+        return None
+    return round((current - previous) / abs(previous) * 100, 1)
+
+
+def month_ends(today, count: int) -> list[tuple[str, "date"]]:
+    """Les `count` derniers mois (mois courant inclus) : [("AAAA-MM", date de fin retenue)].
+
+    Pour le mois en cours, la date de fin est aujourd'hui (le futur n'existe pas encore).
+    """
+    from datetime import timedelta
+
+    out = []
+    first = today.replace(day=1)
+    for _ in range(count):
+        next_first = (first.replace(day=28) + timedelta(days=4)).replace(day=1)
+        end = min(next_first - timedelta(days=1), today)
+        out.append((first.strftime("%Y-%m"), end))
+        first = (first - timedelta(days=1)).replace(day=1)
+    return list(reversed(out))

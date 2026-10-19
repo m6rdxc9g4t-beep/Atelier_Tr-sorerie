@@ -15,8 +15,15 @@ locale Ollama. Confidentialité absolue : aucune donnée financière ne doit qui
 - `finance.py` : calculs financiers purs (montants, taux, KPI).
 - `database.py` : connexion (`get_db()`), schéma, migrations, CLI. Erreurs fichier/SQLite → `DatabaseError`.
 - `ollama_client.py` : seul point de contact avec Ollama ; erreurs → `OllamaError`.
+- `claude_client.py` : seul point de contact avec Claude (Claude Code `-p` sans outils, ou API) ;
+  erreurs → `ClaudeError`. `ai_providers.build_provider()` choisit le moteur selon `services/settings.py`.
+- `services/ai_context.py` : texte envoyé à l'IA. `detailed=False` (Claude) = montants agrégés uniquement :
+  ne jamais y ajouter de libellé, nom de compte, d'établissement, de position ou d'objectif.
 - `schema.sql` = schéma de base (v1), jamais modifié. Toute évolution = nouvelle entrée dans
   `database.MIGRATIONS` (numéro suivant) + test de migration.
+- `desktop/` : application de bureau Electron (même modèle qu'Atelier Projets). `main.cjs` = fenêtre,
+  menu, cycle de vie ; `lib/server.cjs` = lancement de `python app.py --desktop` (sans Electron, testé
+  par `npm test --prefix desktop`). Installée par `scripts/macos/install-desktop.sh`.
 - Frontend : `static/js/app.js` expose `window.AT` (api, eur, date, toast, confirm, showErrors...) ;
   un script par page dans `static/js/pages/`. Fenêtres modales = `<dialog>` natif.
 
@@ -33,12 +40,15 @@ locale Ollama. Confidentialité absolue : aucune donnée financière ne doit qui
 - UI : Tailwind avec les jetons de `static/css/app.css` (`bg-surface`, `text-ink`, `text-muted`,
   `text-gain`, `text-loss`, `bg-brand`...) — pas de couleurs codées en dur. Chiffres avec la classe `num`.
 - Textes de l'interface en français. Formatage monétaire via le filtre Jinja `|eur`.
-- Jamais d'appel réseau sortant hors `localhost` pour les données (Ollama : proxys désactivés).
+- Jamais d'appel réseau sortant hors `localhost` pour les données (Ollama : proxys désactivés), sauf via
+  `claude_client.py` quand l'utilisateur a choisi Claude dans Paramètres. Chaque moteur ne reçoit que
+  l'historique de ses propres échanges (colonne `ai_conversations.provider`).
 - Ne jamais versionner `data/*.db`, `.env`, ni des relevés CSV/Excel réels.
 
 ## Vérifier avant de committer
 ```bash
 pytest
+npm test --prefix desktop   # si desktop/ est modifié
 python app.py   # puis ouvrir http://127.0.0.1:5050 (5000 = AirPlay sur macOS)
 ```
 

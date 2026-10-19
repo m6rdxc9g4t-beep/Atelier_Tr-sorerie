@@ -24,8 +24,8 @@ def test_health_reports_db_and_offline_ollama(client):
     data = client.get("/api/health").get_json()
     assert data["database"]["ok"] is True
     assert data["database"]["categories"] == len(database.DEFAULT_CATEGORIES)
-    assert data["ollama"]["available"] is False
-    assert "ollama serve" in data["ollama"]["error"]
+    assert data["ai"]["provider"] == "ollama" and data["ai"]["ready"] is False and data["ai"]["local"] is True
+    assert "ollama serve" in data["ai"]["error"]
 
 
 def test_schema_is_idempotent(app):
@@ -82,3 +82,21 @@ def test_money_helpers():
     assert format_eur(1000, signed=True) == "+10,00 €"
     assert savings_rate(300000, -240000) == 20.0
     assert savings_rate(0, -1000) is None
+
+
+def test_ping_and_shutdown_only_in_app_mode(client, tmp_path, monkeypatch):
+    from app import create_app
+
+    assert client.get("/api/ping").get_json()["app"] == "atelier-tresorerie"
+    headers = {"X-Requested-With": "test"}
+    assert client.post("/api/system/shutdown", headers=headers).status_code == 404  # serveur de développement
+    assert "Quitter l'application" not in client.get("/").get_data(as_text=True)
+
+    killed = []
+    monkeypatch.setattr("api.os.kill", lambda pid, sig: killed.append(sig))
+    monkeypatch.setattr("api.threading.Timer", lambda delay, fn: type("T", (), {"start": lambda self: fn()})())
+    app_mode = create_app({"TESTING": True, "DATABASE_PATH": tmp_path / "m.db", "APP_MODE": True}).test_client()
+    assert "Quitter l'application" in app_mode.get("/").get_data(as_text=True)
+    assert app_mode.post("/api/system/shutdown").status_code == 403          # en-tête anti-CSRF exigé
+    assert app_mode.post("/api/system/shutdown", headers=headers).get_json() == {"ok": True}
+    assert len(killed) == 1

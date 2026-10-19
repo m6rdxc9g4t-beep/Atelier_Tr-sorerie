@@ -15,6 +15,9 @@ class OllamaError(RuntimeError):
 
 
 class OllamaClient:
+    local = True
+    label = "Ollama (local)"
+
     def __init__(self, base_url: str, model: str, timeout: float = 90):
         self.base_url = base_url.rstrip("/")
         self.model = model
@@ -64,17 +67,21 @@ class OllamaClient:
             "error": None if installed else f"Modèle « {self.model} » absent : ollama pull {self.model}",
         }
 
-    def chat(self, messages: list[dict], system: str | None = None, temperature: float = 0.3) -> str:
+    def chat(self, messages: list[dict], system: str | None = None, temperature: float = 0.3,
+             max_tokens: int | None = None) -> str:
         """Envoie une conversation et renvoie la réponse texte complète (sans streaming)."""
         if system:
             messages = [{"role": "system", "content": system}, *messages]
+        options = {"temperature": temperature}
+        if max_tokens:
+            options["num_predict"] = max_tokens
         data = self._request(
             "/api/chat",
             {
                 "model": self.model,
                 "messages": messages,
                 "stream": False,
-                "options": {"temperature": temperature},
+                "options": options,
             },
         )
         try:
