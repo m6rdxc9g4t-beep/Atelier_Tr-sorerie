@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+
+{% block title %}Paramètres{% endblock %}
+{% block page_title %}Paramètres{% endblock %}
+
+{% block content %}
+  <div class="mx-auto max-w-3xl space-y-6">
+    {# ------------------------------------------------------------ assistant IA #}
+    <form id="ai-form" class="card p-6" novalidate>
+      <h2 class="text-lg font-bold">Assistant IA</h2>
+      <p class="mt-1 text-sm text-muted">Le moteur utilisé par la page Assistant IA et la catégorisation automatique.</p>
+
+      <fieldset class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <legend class="sr-only">Moteur d'IA</legend>
+        <label class="engine-card">
+          <input type="radio" name="ai_provider" value="ollama" class="sr-only">
+          <span class="flex items-center justify-between"><span class="font-bold">Ollama</span><span class="badge badge-gain">Local</span></span>
+          <span class="mt-2 block text-sm text-muted">Gratuit et 100 % privé : l'IA tourne sur votre Mac. Analyses plus simples, réponses plus lentes.</span>
+        </label>
+        <label class="engine-card">
+          <input type="radio" name="ai_provider" value="claude" class="sr-only">
+          <span class="flex items-center justify-between"><span class="font-bold">Claude</span><span class="badge badge-warn">En ligne</span></span>
+          <span class="mt-2 block text-sm text-muted">Analyses plus fines. Vos questions et un résumé chiffré de vos finances sont envoyés à Anthropic.</span>
+        </label>
+      </fieldset>
+
+      {# ---- Ollama ---- #}
+      <div id="ollama-fields" class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div data-field>
+          <label class="field-label" for="ollama-model">Modèle</label>
+          <input id="ollama-model" name="ollama_model" class="input" list="ollama-models" maxlength="100" autocomplete="off">
+          <datalist id="ollama-models"></datalist>
+          <p id="ollama-models-hint" class="mt-1 text-xs text-muted"></p>
+        </div>
+        <div>
+          <p class="field-label">Adresse d'Ollama</p>
+          <p id="ollama-url" class="num flex h-[2.6rem] items-center text-sm"></p>
+          <p class="mt-1 text-xs text-muted">Modifiable dans le fichier <code>.env</code> (OLLAMA_URL).</p>
+        </div>
+        <p class="rounded-xl bg-raised/60 p-3 text-xs text-muted sm:col-span-2">
+          Pour installer Ollama : <a class="font-semibold text-brand hover:underline" href="https://ollama.com/download" target="_blank" rel="noopener">ollama.com/download</a>,
+          puis dans un terminal <code class="rounded bg-canvas px-1">ollama pull llama3.1</code>. Sur un Mac avec 8 Go de mémoire,
+          préférez un petit modèle (par exemple <code class="rounded bg-canvas px-1">llama3.2</code>).
+        </p>
+      </div>
+
+      {# ---- Claude ---- #}
+      <div id="claude-fields" class="mt-6 space-y-4">
+        <div class="segmented" role="radiogroup" aria-label="Connexion à Claude">
+          <label><input type="radio" name="claude_mode" value="cli"><span>Mon abonnement (Claude Code)</span></label>
+          <label><input type="radio" name="claude_mode" value="api"><span>Clé API</span></label>
+        </div>
+
+        <div id="cli-fields" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div data-field>
+            <label class="field-label" for="cli-model">Modèle</label>
+            <select id="cli-model" name="claude_cli_model" class="input">
+              <option value="sonnet">Sonnet (recommandé)</option>
+              <option value="opus">Opus (le plus fin, plus lent)</option>
+              <option value="haiku">Haiku (le plus rapide)</option>
+            </select>
+          </div>
+          <div data-field>
+            <label class="field-label" for="cli-path">Chemin de Claude Code</label>
+            <input id="cli-path" name="claude_cli_path" class="input num text-sm" maxlength="500" placeholder="Détection automatique">
+          </div>
+          <p class="text-xs text-muted sm:col-span-2">
+            Utilise le compte Claude déjà connecté dans Claude Code sur ce Mac, sans clé à saisir.
+            Claude répond seulement au texte reçu : il ne peut ni lire vos fichiers ni lancer de commandes.
+            Si la détection échoue, tapez <code class="rounded bg-canvas px-1">which claude</code> dans un terminal et collez le chemin ici.
+          </p>
+        </div>
+
+        <div id="api-fields" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div data-field>
+            <label class="field-label" for="api-key">Clé API</label>
+            <input id="api-key" name="anthropic_api_key" type="password" class="input num text-sm" autocomplete="off" placeholder="sk-ant-…">
+            <p id="api-key-state" class="mt-1 text-xs text-muted"></p>
+          </div>
+          <div data-field>
+            <label class="field-label" for="api-model">Modèle</label>
+            <input id="api-model" name="claude_api_model" class="input num text-sm" maxlength="100">
+          </div>
+          <p class="text-xs text-muted sm:col-span-2">
+            Clé à créer dans la <a class="font-semibold text-brand hover:underline" href="https://platform.claude.com" target="_blank" rel="noopener">Claude Console</a>.
+            L'API est facturée à l'usage, séparément d'un abonnement Claude. La clé reste dans la base de ce Mac.
+          </p>
+        </div>
+
+        <div class="rounded-xl border border-warn/40 bg-warn/10 p-4 text-sm">
+          <p class="font-semibold">Ce qui est envoyé à Anthropic</p>
+          <ul class="mt-2 list-disc space-y-1 pl-5 text-muted">
+            <li>Vos questions et les réponses précédentes de la conversation.</li>
+            <li>Un résumé chiffré : totaux par mois, par catégorie, par type de compte et par type d'actif, état des budgets.</li>
+            <li>Jamais : libellés d'opérations, noms de comptes, de banques, de positions ou d'objectifs.</li>
+            <li>Exception : la catégorisation automatique envoie les libellés concernés, après confirmation.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-wrap items-center gap-3 border-t border-line pt-5">
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <button id="btn-test" type="button" class="btn btn-ghost">Tester la connexion</button>
+        <p id="test-result" class="flex items-center gap-2 text-sm" aria-live="polite"></p>
+      </div>
+    </form>
+
+    {# ------------------------------------------------------------ données #}
+    <section class="card p-6">
+      <h2 class="text-lg font-bold">Vos données</h2>
+      <p class="mt-1 text-sm text-muted">Tout est enregistré dans un seul fichier, sur ce Mac :</p>
+      <p id="db-path" class="num mt-2 break-all rounded-xl bg-canvas px-3 py-2 text-xs"></p>
+      <div class="mt-4 flex flex-wrap items-center gap-3">
+        <a href="/api/system/backup" class="btn btn-ghost" download>
+          {{ icon("M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2", "h-4 w-4") }} Télécharger une sauvegarde
+        </a>
+        <p class="text-xs text-muted">Copie complète de la base, à conserver en lieu sûr (disque externe, coffre chiffré).</p>
+      </div>
+      <dl id="db-stats" class="mt-5 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4"></dl>
+    </section>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/pages/settings.js') }}"></script>
+{% endblock %}

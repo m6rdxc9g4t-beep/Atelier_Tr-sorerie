@@ -172,6 +172,39 @@
     },
 
     KIND_LABELS: { revenu: "Revenus", depense: "Dépenses", transfert: "Virements" },
+
+    /**
+     * Markdown minimal et sûr pour les réponses de l'IA : le texte est échappé AVANT
+     * toute mise en forme, aucune balise venant du modèle n'est donc interprétée.
+     */
+    markdown(text) {
+      const inline = (s) => AT.esc(s)
+        .replace(/`([^`]+)`/g, '<code class="rounded bg-raised px-1">$1</code>')
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/(^|[\s(])\*([^*\s][^*]*)\*(?=[\s.,;:!?)]|$)/g, "$1<em>$2</em>")
+        .replace(/(\d) ([%€])/g, "$1&nbsp;$2"); // « 46,6 % » ne se coupe pas en fin de ligne
+      const out = [];
+      let list = null;
+      const close = () => { if (list) { out.push(`</${list}>`); list = null; } };
+      for (const raw of String(text || "").split(/\r?\n/)) {
+        const line = raw.trimEnd();
+        let m;
+        if (!line.trim()) { close(); continue; }
+        if ((m = line.match(/^\s*#{1,6}\s+(.*)$/))) { close(); out.push(`<p class="mt-3 font-bold">${inline(m[1])}</p>`); continue; }
+        if ((m = line.match(/^\s*[-*•]\s+(.*)$/))) {
+          if (list !== "ul") { close(); out.push('<ul class="my-1.5 list-disc space-y-1 pl-5">'); list = "ul"; }
+          out.push(`<li>${inline(m[1])}</li>`); continue;
+        }
+        if ((m = line.match(/^\s*\d+[.)]\s+(.*)$/))) {
+          if (list !== "ol") { close(); out.push('<ol class="my-1.5 list-decimal space-y-1 pl-5">'); list = "ol"; }
+          out.push(`<li>${inline(m[1])}</li>`); continue;
+        }
+        close();
+        out.push(`<p class="my-1.5">${inline(line)}</p>`);
+      }
+      close();
+      return out.join("");
+    },
   };
   window.AT = AT;
 
@@ -196,27 +229,44 @@
   backdrop?.addEventListener("click", () => setMenu(false));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") setMenu(false); });
 
-  // ---------- État de l'IA locale ----------
+  // ---------- État de l'assistant IA (barre latérale) ----------
+  AT.aiState = (ai) => {
+    if (!ai) return { tone: "muted", text: "État indisponible" };
+    if (ai.ready) return { tone: "gain", text: `${ai.provider === "ollama" ? ai.model : ai.label} prêt` };
+    if (ai.provider === "ollama" && ai.models && ai.models.length) return { tone: "warn", text: `Modèle ${ai.model} absent` };
+    return { tone: ai.provider === "ollama" ? "loss" : "warn", text: ai.provider === "ollama" ? "Ollama hors ligne" : `${ai.label} à configurer` };
+  };
+
   async function refreshHealth() {
-    const dot = document.getElementById("ollama-dot");
-    const label = document.getElementById("ollama-label");
-    const detail = document.getElementById("ollama-detail");
+    const dot = document.getElementById("ai-dot");
+    const label = document.getElementById("ai-label");
+    const privacy = document.getElementById("ai-privacy");
     try {
-      const { ollama } = await AT.api("GET", "/api/health");
-      let color, text;
-      if (!ollama.available) {
-        color = "bg-loss"; text = "Ollama hors ligne";
-      } else if (!ollama.model_installed) {
-        color = "bg-warn"; text = `Modèle ${ollama.model} absent`;
-      } else {
-        color = "bg-gain"; text = `${ollama.model} prêt`;
-      }
-      if (dot) dot.className = `h-2.5 w-2.5 rounded-full ${color}`;
-      if (label) { label.textContent = text; label.title = ollama.error || ""; }
-      if (detail) { detail.textContent = text; detail.title = ollama.error || ""; }
+      const { ai } = await AT.api("GET", "/api/health");
+      const { tone, text } = AT.aiState(ai);
+      if (dot) dot.className = `h-2.5 w-2.5 rounded-full bg-${tone}`;
+      if (label) { label.textContent = text; label.title = ai.error || ""; }
+      if (privacy) privacy.textContent = ai.local ? "100 % local, aucune donnée envoyée" : "Claude : résumé chiffré envoyé";
+      document.dispatchEvent(new CustomEvent("aistatus", { detail: ai }));
     } catch (err) {
       if (label) label.textContent = "État indisponible";
     }
   }
+  AT.refreshHealth = refreshHealth;
   refreshHealth();
 })();
+
+// ---------- Quitter (application Mac lancée par double-clic) ----------
+document.getElementById("quit-app")?.addEventListener("click", async () => {
+  if (!(await AT.confirm("Quitter Atelier Trésorerie ? Le serveur local sera arrêté.", { confirmLabel: "Quitter", danger: false }))) return;
+  try {
+    await AT.api("POST", "/api/system/shutdown");
+  } catch (e) { /* le serveur s'arrête : une erreur réseau est attendue */ }
+  document.body.innerHTML = `
+    <main style="min-height:100vh;display:grid;place-items:center;text-align:center;padding:2rem">
+      <div>
+        <p style="font-size:1.25rem;font-weight:800">Atelier Trésorerie est fermé.</p>
+        <p style="margin-top:.5rem;opacity:.7">Vous pouvez fermer cet onglet. Double-cliquez sur l'application pour la relancer.</p>
+      </div>
+    </main>`;
+});

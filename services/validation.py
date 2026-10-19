@@ -89,6 +89,28 @@ class Validator:
         else:
             self.clean[out] = cents
 
+    def decimal(self, field: str, required: bool = False, minimum: float | None = None,
+                maximum: float | None = None, nullable: bool = False, exclusive_min: bool = False) -> None:
+        """Nombre décimal libre (quantité, pureté...) : accepte « 1 234,5 » ou 1234.5."""
+        if not self._present(field, required, nullable=nullable and not required):
+            return
+        text = str(self.data[field]).strip().replace("\u202f", "").replace("\xa0", "").replace(" ", "")
+        if "," in text and "." in text:
+            text = text.replace(".", "")
+        try:
+            value = float(text.replace(",", "."))
+        except ValueError:
+            self.errors[field] = "Nombre invalide."
+            return
+        if value != value or value in (float("inf"), float("-inf")):
+            self.errors[field] = "Nombre invalide."
+        elif minimum is not None and (value <= minimum if exclusive_min else value < minimum):
+            self.errors[field] = f"Doit être {'supérieur' if exclusive_min else 'supérieur ou égal'} à {minimum:g}."
+        elif maximum is not None and value > maximum:
+            self.errors[field] = f"Doit être inférieur ou égal à {maximum:g}."
+        else:
+            self.clean[field] = value
+
     def date(self, field: str, required: bool = False) -> None:
         if not self._present(field, required, nullable=not required):
             return

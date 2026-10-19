@@ -24,7 +24,8 @@
 
   function accountCard(a) {
     const color = a.color || "#a5b4fc";
-    const last = a.last_transaction_date ? `Dernière opération : ${AT.date(a.last_transaction_date)}` : "Aucune opération";
+    const last = a.last_transaction_date ? `Dernière opération : ${AT.date(a.last_transaction_date)}`
+      : a.holding_count ? "Positions suivies sur la page Placements" : "Aucune opération";
     return `
       <article class="card group relative overflow-hidden p-5 ${a.archived ? "opacity-60" : ""}">
         <span class="absolute inset-x-0 top-0 h-1" style="background:${esc(color)}"></span>
@@ -37,12 +38,15 @@
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16v4zM13.5 6.5l4 4"/></svg>
           </button>
         </div>
-        <p class="num mt-5 text-2xl font-extrabold tracking-tight ${a.balance_cents < 0 ? "text-loss" : ""}">${eur(a.balance_cents)}</p>
+        <p class="num mt-5 text-2xl font-extrabold tracking-tight ${a.total_value_cents < 0 ? "text-loss" : ""}">${eur(a.total_value_cents)}</p>
+        ${a.holding_count ? `<p class="num mt-1 text-xs text-muted">
+            <a class="font-semibold text-brand hover:underline" href="/investments">${a.holding_count} position${a.holding_count > 1 ? "s" : ""} ${eur(a.holdings_value_cents)}</a>
+            · liquidités ${eur(a.balance_cents)}</p>` : ""}
         <div class="mt-4 flex items-center justify-between gap-2 text-xs text-muted">
           <span class="truncate">${esc(last)}</span>
-          <a class="shrink-0 font-semibold text-brand hover:underline" href="/transactions?account_id=${a.id}">
+          ${a.transaction_count ? `<a class="shrink-0 font-semibold text-brand hover:underline" href="/transactions?account_id=${a.id}">
             ${a.transaction_count} opération${a.transaction_count > 1 ? "s" : ""} →
-          </a>
+          </a>` : ""}
         </div>
         ${a.archived ? '<span class="badge mt-3">Archivé</span>' : ""}
       </article>`;
@@ -50,8 +54,8 @@
 
   function render() {
     const active = accounts.filter((a) => !a.archived);
-    totalEl.textContent = eur(active.reduce((s, a) => s + a.balance_cents, 0));
-    totalEl.classList.toggle("text-loss", active.reduce((s, a) => s + a.balance_cents, 0) < 0);
+    totalEl.textContent = eur(active.reduce((s, a) => s + a.total_value_cents, 0));
+    totalEl.classList.toggle("text-loss", active.reduce((s, a) => s + a.total_value_cents, 0) < 0);
 
     if (!accounts.length) {
       groupsEl.innerHTML = `
@@ -65,7 +69,7 @@
     // Répartition par type, puis une seule grille de cartes (compacte même avec peu de comptes)
     const types = TYPE_ORDER.filter((type) => accounts.some((a) => a.type === type && !a.archived));
     const breakdown = types.map((type) => {
-      const subtotal = accounts.filter((a) => a.type === type && !a.archived).reduce((s, a) => s + a.balance_cents, 0);
+      const subtotal = accounts.filter((a) => a.type === type && !a.archived).reduce((s, a) => s + a.total_value_cents, 0);
       return `<span class="chip"><span class="font-semibold text-ink">${TYPE_TITLES[type]}</span>
         <span class="num ml-1">${eur(subtotal)}</span></span>`;
     }).join("");

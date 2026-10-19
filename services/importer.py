@@ -262,7 +262,7 @@ def preview(conn: sqlite3.Connection, filename: str, raw: bytes, account_id, map
                 raise ValueError("montant vide ou nul")
             item["amount_cents"] = cents
         except ValueError as exc:
-            item.update(status="error", error=str(exc).capitalize(),
+            item.update(status="error", error=str(exc)[:1].upper() + str(exc)[1:],
                         raw=[("" if c is None else str(c)) for c in raw_row][:width])
             rows.append(item)
             summary["errors"] += 1

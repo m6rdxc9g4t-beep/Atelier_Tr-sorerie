@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import sqlite3
 
+from .holdings import VALUE_SQL
 from .validation import ConflictError, NotFoundError, Validator, update_row
 
 ACCOUNT_TYPES = ("courant", "epargne", "investissement", "credit", "especes")
@@ -36,13 +37,17 @@ def _serialize(row: sqlite3.Row) -> dict:
     data = dict(row)
     data["archived"] = bool(data["archived"])
     data["type_label"] = TYPE_LABELS.get(data["type"], data["type"])
+    # Valeur totale = liquidités (solde des opérations) + valeur des positions détenues
+    data["total_value_cents"] = data["balance_cents"] + data["holdings_value_cents"]
     return data
 
 
-_SELECT = """
+_SELECT = f"""
     SELECT a.id, a.name, a.type, a.institution, a.currency, a.color, a.archived,
            a.opening_balance_cents, a.created_at,
            b.balance_cents,
+           (SELECT COALESCE(SUM({VALUE_SQL}), 0) FROM holdings h WHERE h.account_id = a.id) AS holdings_value_cents,
+           (SELECT COUNT(*) FROM holdings h WHERE h.account_id = a.id AND h.quantity > 0) AS holding_count,
            (SELECT COUNT(*) FROM transactions t WHERE t.account_id = a.id) AS transaction_count,
            (SELECT MAX(date) FROM transactions t WHERE t.account_id = a.id) AS last_transaction_date
     FROM accounts a
