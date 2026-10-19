@@ -30,22 +30,29 @@ ollama pull llama3.1                 # ou le modèle indiqué dans OLLAMA_MODEL
 La pastille « IA locale » de la barre latérale indique l'état en direct (vert : prêt, jaune : modèle
 manquant, corail : Ollama arrêté).
 
-## Application Mac (double-clic)
+## Application de bureau (macOS)
 
-Une fois le projet installé, créez l'application **Atelier Trésorerie** :
+Comme Atelier Projets, Atelier Trésorerie s'installe comme une vraie application : sa propre fenêtre,
+son icône dans le Dock et son menu, sans navigateur (Electron).
 
 ```bash
 cd ~/atelier_tresorerie          # dossier du projet
-bash scripts/creer_app_mac.sh
+bash scripts/macos/install-desktop.sh
 ```
 
-Elle apparaît dans le dossier Applications (et dans Launchpad / Spotlight), avec son icône.
-Un double-clic démarre le serveur en arrière-plan et ouvre le navigateur ; un nouveau double-clic
-rouvre simplement la page. Pour arrêter : « Quitter l'application » en bas de la barre latérale.
-Le journal se trouve dans `~/Library/Logs/Atelier Tresorerie.log`.
+Prérequis : Python avec les dépendances du projet (installées par le script si besoin) et Node.js
+(déjà présent pour Atelier Projets). L'application est créée dans `~/Applications` ; elle apparaît dans
+Launchpad et Spotlight, à glisser dans le Dock.
 
-Relancez le script si vous déplacez le dossier du projet ou changez d'installation de Python.
-L'application lance le code du dossier du projet : après un `git pull`, elle utilise la nouvelle version.
+- **Double-clic** : écran de démarrage, vérification de Python, lancement du serveur local, puis l'interface.
+  Si l'application tourne déjà dans un terminal (`python app.py`), la fenêtre l'utilise telle quelle.
+- **Cmd+Q** (ou fermer la fenêtre) arrête le serveur. **Cmd+,** ouvre les Paramètres, **Cmd+1…6** les pages.
+- **Mises à jour** : l'application lit le code du dossier du projet ; un `git pull` suffit. Une nouvelle
+  dépendance Python est installée automatiquement au lancement suivant.
+- **Journal** : menu Aide → Journal de l'application (`~/Library/Logs/Atelier_Tresorerie/app.log`).
+- Relancer le script après un déplacement du dossier, un changement de Python ou de Node.
+
+Variante qui ouvre l'interface dans le navigateur : `bash scripts/macos/install-launcher.sh`.
 
 ## Commandes utiles
 
@@ -55,6 +62,8 @@ L'application lance le code du dossier du projet : après un `git pull`, elle ut
 | `flask --app app seed-demo` | Ajoute des données de démonstration (si la base est vide) |
 | `flask --app app reset-db` | Efface toutes les données (confirmation demandée) |
 | `pytest` | Lance les tests |
+| `npm test --prefix desktop` | Tests de l'application de bureau (Node) |
+| `bash scripts/macos/install-desktop.sh` | Crée l'application de bureau macOS |
 
 ## Arborescence
 
@@ -88,6 +97,8 @@ atelier_tresorerie/
 │   └── js/
 │       ├── app.js      # Utilitaires partagés (window.AT), thème, menu, état d'Ollama
 │       └── pages/      # Un script par page
+├── desktop/            # Application de bureau Electron (main.cjs, lib/server.cjs, splash.html, tests)
+├── scripts/macos/      # install-desktop.sh (application de bureau), install-launcher.sh (variante navigateur)
 ├── data/               # finance.db (ignoré par git)
 ├── docs/specifications.md
 └── tests/
@@ -181,6 +192,7 @@ rien n'est appliqué sans validation. Avec Claude, les libellés concernés sont
 4. ✅ Tableau de bord : indicateurs, patrimoine sur 6 / 12 mois, revenus & dépenses, dépenses par catégorie
 5. ✅ Application Mac double-cliquable
 6. ✅ Assistant IA (Ollama ou Claude), catégorisation automatique, page Paramètres et sauvegarde
+7. ✅ Application de bureau Electron (fenêtre native, comme Atelier Projets)
 
 ## Workflow Git
 

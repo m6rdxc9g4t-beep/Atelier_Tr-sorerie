@@ -21,6 +21,9 @@ locale Ollama. Confidentialité absolue : aucune donnée financière ne doit qui
   ne jamais y ajouter de libellé, nom de compte, d'établissement, de position ou d'objectif.
 - `schema.sql` = schéma de base (v1), jamais modifié. Toute évolution = nouvelle entrée dans
   `database.MIGRATIONS` (numéro suivant) + test de migration.
+- `desktop/` : application de bureau Electron (même modèle qu'Atelier Projets). `main.cjs` = fenêtre,
+  menu, cycle de vie ; `lib/server.cjs` = lancement de `python app.py --desktop` (sans Electron, testé
+  par `npm test --prefix desktop`). Installée par `scripts/macos/install-desktop.sh`.
 - Frontend : `static/js/app.js` expose `window.AT` (api, eur, date, toast, confirm, showErrors...) ;
   un script par page dans `static/js/pages/`. Fenêtres modales = `<dialog>` natif.
 
@@ -45,6 +48,7 @@ locale Ollama. Confidentialité absolue : aucune donnée financière ne doit qui
 ## Vérifier avant de committer
 ```bash
 pytest
+npm test --prefix desktop   # si desktop/ est modifié
 python app.py   # puis ouvrir http://127.0.0.1:5050 (5000 = AirPlay sur macOS)
 ```
 
