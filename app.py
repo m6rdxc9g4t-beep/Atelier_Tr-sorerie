@@ -16,7 +16,6 @@ import database
 from api import bp as api_bp
 from config import Config
 from finance import format_eur
-from ollama_client import OllamaClient
 
 # Navigation principale (sidebar) — `icon` = tracé SVG 24×24 au trait
 NAV_ITEMS = [
@@ -36,12 +35,6 @@ NAV_ITEMS = [
      "icon": "M4 6h9m4 0h3M15 4v4M4 12h3m4 0h9M9 10v4M4 18h11m4 0h1M17 16v4"},
 ]
 
-# Pages pas encore construites : description affichée en attendant
-UPCOMING = {
-    "ai_insights": (4, "Dialogue avec vos finances via l'IA locale Ollama : analyses et conseils personnalisés."),
-    "settings": (4, "Modèle Ollama, devise, thème, catégories, export et sauvegarde de la base."),
-}
-
 MONTHS_FR = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet",
              "août", "septembre", "octobre", "novembre", "décembre"]
 
@@ -54,10 +47,6 @@ def create_app(config_overrides: dict | None = None) -> Flask:
 
     database.init_app(app)
     database.ensure_schema(app)
-
-    app.extensions["ollama"] = OllamaClient(
-        app.config["OLLAMA_URL"], app.config["OLLAMA_MODEL"], app.config["OLLAMA_TIMEOUT"]
-    )
 
     app.jinja_env.filters["eur"] = format_eur
 
@@ -93,13 +82,13 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     def budgets():
         return render_template("budgets.html")
 
-    def _upcoming_page(endpoint: str):
-        step, description = UPCOMING[endpoint]
-        item = next(i for i in NAV_ITEMS if i["endpoint"] == endpoint)
-        return render_template("placeholder.html", item=item, step=step, description=description)
+    @app.get("/ai-insights")
+    def ai_insights():
+        return render_template("ai.html")
 
-    app.add_url_rule("/ai-insights", "ai_insights", lambda: _upcoming_page("ai_insights"))
-    app.add_url_rule("/settings", "settings", lambda: _upcoming_page("settings"))
+    @app.get("/settings")
+    def settings():
+        return render_template("settings.html")
 
     app.register_blueprint(api_bp)
 
@@ -129,13 +118,17 @@ if __name__ == "__main__":
     # Port 5050 par défaut : sur macOS, le port 5000 est pris par le récepteur AirPlay,
     # ce qui donne une page blanche sur http://localhost:5000.
     #
-    # --app-mode : lancement par l'application Mac (double-clic). Serveur en arrière-plan,
-    # sans rechargement automatique ni débogueur, avec un bouton « Quitter » dans l'interface.
+    # --desktop  : lancé par l'application de bureau (fenêtre Electron, desktop/main.cjs), qui
+    #              arrête le serveur en quittant (Cmd+Q).
+    # --app-mode : lancé par l'ancien lanceur qui ouvre le navigateur ; ajoute un bouton
+    #              « Quitter l'application » dans l'interface.
+    # Dans les deux cas : sans rechargement automatique ni débogueur.
     app_mode = "--app-mode" in sys.argv
+    packaged = app_mode or "--desktop" in sys.argv
     if app_mode:
         os.environ["ATELIER_APP_MODE"] = "1"
     application = create_app({"APP_MODE": True} if app_mode else None)
     port = application.config["PORT"]
     if not os.environ.get("WERKZEUG_RUN_MAIN"):  # une seule fois, pas à chaque rechargement automatique
         print(f"\n  Atelier Trésorerie → http://127.0.0.1:{port}\n", flush=True)
-    application.run(host="127.0.0.1", port=port, debug=not app_mode, use_reloader=not app_mode, threaded=True)
+    application.run(host="127.0.0.1", port=port, debug=not packaged, use_reloader=not packaged, threaded=True)

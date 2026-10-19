@@ -30,22 +30,30 @@ ollama pull llama3.1                 # ou le modèle indiqué dans OLLAMA_MODEL
 La pastille « IA locale » de la barre latérale indique l'état en direct (vert : prêt, jaune : modèle
 manquant, corail : Ollama arrêté).
 
-## Application Mac (double-clic)
+## Application de bureau (macOS)
 
-Une fois le projet installé, créez l'application **Atelier Trésorerie** :
+Comme Atelier Projets, Atelier Trésorerie s'installe comme une vraie application : sa propre fenêtre,
+son icône dans le Dock et son menu, sans navigateur (Electron).
 
 ```bash
 cd ~/atelier_tresorerie          # dossier du projet
-bash scripts/creer_app_mac.sh
+bash scripts/macos/install-desktop.sh
 ```
 
-Elle apparaît dans le dossier Applications (et dans Launchpad / Spotlight), avec son icône.
-Un double-clic démarre le serveur en arrière-plan et ouvre le navigateur ; un nouveau double-clic
-rouvre simplement la page. Pour arrêter : « Quitter l'application » en bas de la barre latérale.
-Le journal se trouve dans `~/Library/Logs/Atelier Tresorerie.log`.
+Prérequis : Python avec les dépendances du projet (installées par le script si besoin) et Node.js
+(déjà présent pour Atelier Projets). L'application est créée dans `~/Applications`, ou sur le Bureau avec
+`bash scripts/macos/install-desktop.sh ~/Desktop` ; un exemplaire installé ailleurs (y compris l'ancien
+lanceur navigateur) est remplacé. Icône : le logo Atelier Trésorerie (`scripts/macos/AppIcon.png`).
 
-Relancez le script si vous déplacez le dossier du projet ou changez d'installation de Python.
-L'application lance le code du dossier du projet : après un `git pull`, elle utilise la nouvelle version.
+- **Double-clic** : écran de démarrage, vérification de Python, lancement du serveur local, puis l'interface.
+  Si l'application tourne déjà dans un terminal (`python app.py`), la fenêtre l'utilise telle quelle.
+- **Cmd+Q** (ou fermer la fenêtre) arrête le serveur. **Cmd+,** ouvre les Paramètres, **Cmd+1…6** les pages.
+- **Mises à jour** : l'application lit le code du dossier du projet ; un `git pull` suffit. Une nouvelle
+  dépendance Python est installée automatiquement au lancement suivant.
+- **Journal** : menu Aide → Journal de l'application (`~/Library/Logs/Atelier_Tresorerie/app.log`).
+- Relancer le script après un déplacement du dossier, un changement de Python ou de Node.
+
+Variante qui ouvre l'interface dans le navigateur : `bash scripts/macos/install-launcher.sh`.
 
 ## Commandes utiles
 
@@ -55,6 +63,8 @@ L'application lance le code du dossier du projet : après un `git pull`, elle ut
 | `flask --app app seed-demo` | Ajoute des données de démonstration (si la base est vide) |
 | `flask --app app reset-db` | Efface toutes les données (confirmation demandée) |
 | `pytest` | Lance les tests |
+| `npm test --prefix desktop` | Tests de l'application de bureau (Node) |
+| `bash scripts/macos/install-desktop.sh` | Crée l'application de bureau macOS |
 
 ## Arborescence
 
@@ -71,10 +81,15 @@ atelier_tresorerie/
 │   ├── holdings.py     #   positions (titres, crypto, or, argent) et valorisation
 │   ├── trading212.py   #   import de l'historique CSV Trading 212
 │   ├── dashboard.py    #   agrégations du tableau de bord
+│   ├── ai_context.py   #   résumé des finances transmis à l'IA (détaillé ou agrégé)
+│   ├── assistant.py    #   conversation et catégorisation par l'IA
+│   ├── settings.py     #   paramètres (moteur d'IA, clé API)
 │   └── importer.py     #   import CSV / Excel (aperçu puis validation, anti-doublons)
 ├── finance.py          # Calculs financiers purs (montants, taux d'épargne, KPI)
 ├── database.py         # Connexion SQLite, schéma, migrations, données de démo, commandes CLI
 ├── ollama_client.py    # Client de l'API locale Ollama
+├── claude_client.py    # Client Claude (Claude Code en mode non interactif, ou API) — seul appel sortant
+├── ai_providers.py     # Choix du moteur d'IA selon les paramètres
 ├── config.py           # Configuration lue depuis l'environnement / .env
 ├── schema.sql          # Schéma de base (version 1) ; évolutions = migrations dans database.py
 ├── templates/          # Pages Jinja (base, tableau de bord, comptes, transactions, budgets)
@@ -83,6 +98,8 @@ atelier_tresorerie/
 │   └── js/
 │       ├── app.js      # Utilitaires partagés (window.AT), thème, menu, état d'Ollama
 │       └── pages/      # Un script par page
+├── desktop/            # Application de bureau Electron (main.cjs, lib/server.cjs, splash.html, tests)
+├── scripts/macos/      # install-desktop.sh (application de bureau), install-launcher.sh (variante navigateur)
 ├── data/               # finance.db (ignoré par git)
 ├── docs/specifications.md
 └── tests/
@@ -106,6 +123,8 @@ l'en-tête `X-Requested-With`. Erreurs : `{"error": "...", "fields": {"champ": "
 | Trading 212 | `POST /api/import/trading212` (multipart : `file`, `account_id`, `dry_run=1` pour l'aperçu) |
 | Import | `POST /api/import/preview` (multipart : `file`, `account_id`, `mapping`) · `POST /api/import/commit` |
 | Tableau de bord | `GET /api/dashboard?months=6` (indicateurs, historique, dépenses par catégorie, opérations, budgets) |
+| Assistant IA | `GET/DELETE /api/ai/messages` · `POST /api/ai/ask` · `GET /api/ai/context` · `GET /api/ai/status?deep=1` · `POST /api/ai/categorize` · `POST /api/ai/categorize/apply` |
+| Paramètres | `GET/PATCH /api/settings` · `GET /api/system/backup` (téléchargement de la base) |
 | Santé | `GET /api/health` |
 
 ### Import de relevés
@@ -139,6 +158,25 @@ car Trading 212 fait évoluer son format ; un export qui chevauche le précéden
 - **Historique** : solde des comptes en fin de mois + positions valorisées au dernier cours connu à cette date.
 - Les graphiques utilisent Chart.js (chargé depuis jsDelivr) et suivent le thème clair / sombre.
 
+### Assistant IA
+
+Deux moteurs au choix, dans **Paramètres** :
+
+- **Ollama (par défaut)** : l'IA tourne sur le Mac, rien ne sort. Installer [Ollama](https://ollama.com/download)
+  puis un modèle (`ollama pull llama3.1`, ou `llama3.2` sur un Mac avec 8 Go de mémoire).
+- **Claude** : analyses plus fines, mais les questions et un **résumé agrégé** sont envoyés à Anthropic
+  (totaux par mois, catégorie, type de compte et type d'actif ; jamais de libellé, nom de compte,
+  de banque, de position ou d'objectif). Deux connexions possibles :
+  - *Mon abonnement* : utilise Claude Code déjà connecté sur le Mac (`claude -p`, sans aucun outil,
+    lancé dans un dossier vide, sans historique conservé) ;
+  - *Clé API* : clé créée dans la Claude Console, facturée à l'usage.
+
+Le bouton « Données transmises » de la page Assistant IA affiche le texte exact envoyé au moteur.
+Chaque moteur ne reçoit que ses propres échanges : changer de moteur ne transmet pas l'historique.
+
+La **catégorisation automatique** propose une catégorie pour les opérations qui n'en ont pas ;
+rien n'est appliqué sans validation. Avec Claude, les libellés concernés sont envoyés après confirmation.
+
 ## Conventions
 
 - **Montants en centimes entiers** (`amount_cents`) : jamais de `float` pour l'argent. `finance.to_cents()`
@@ -153,7 +191,9 @@ car Trading 212 fait évoluer son format ; un export qui chevauche le précéden
 2. ✅ API REST comptes / transactions / budgets / objectifs, pages correspondantes, import CSV / Excel
 3. ✅ Placements (actions, ETF, crypto, or, argent) et import Trading 212
 4. ✅ Tableau de bord : indicateurs, patrimoine sur 6 / 12 mois, revenus & dépenses, dépenses par catégorie
-5. Assistant IA (Ollama) : chat sur les finances, catégorisation automatique ; page Paramètres
+5. ✅ Application Mac double-cliquable
+6. ✅ Assistant IA (Ollama ou Claude), catégorisation automatique, page Paramètres et sauvegarde
+7. ✅ Application de bureau Electron (fenêtre native, comme Atelier Projets)
 
 ## Workflow Git
 

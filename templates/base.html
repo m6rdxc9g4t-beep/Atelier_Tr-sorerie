@@ -42,6 +42,7 @@
     };
   </script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='brand/atelier-brand.css') }}">
   {% block head %}{% endblock %}
 </head>
 
@@ -51,12 +52,11 @@
   <!-- Sidebar -->
   <aside id="sidebar"
          class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col border-r border-line bg-surface/95 backdrop-blur transition-transform duration-200 lg:translate-x-0">
-    <div class="flex items-center gap-3 px-6 pt-7 pb-8">
-      <img src="{{ url_for('static', filename='img/favicon-64.png') }}" alt="" class="h-10 w-10" width="40" height="40">
-      <div class="leading-tight">
-        <p class="font-bold tracking-tight">Atelier</p>
-        <p class="text-sm text-muted">Trésorerie</p>
-      </div>
+    <div class="px-6 pt-7 pb-8">
+      <button type="button" class="atelier-brand" aria-haspopup="dialog" title="À propos d'Atelier Trésorerie" data-atelier-about>
+        <span class="atelier-brand__tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10 18v-7"/><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M3 22h18"/><path d="M6 18v-7"/></svg></span>
+        <span class="atelier-brand__name"><span class="atelier-brand__prefix">atelier_</span>Trésorerie</span>
+      </button>
     </div>
 
     <nav class="flex-1 space-y-1 px-3" aria-label="Navigation principale">
@@ -71,17 +71,18 @@
       {% endfor %}
     </nav>
 
-    <div class="m-3 rounded-xl border border-line bg-raised/60 p-4 text-sm">
-      <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">IA locale</p>
+    <a href="{{ url_for('settings') }}" class="m-3 block rounded-xl border border-line bg-raised/60 p-4 text-sm transition hover:border-brand/50"
+       title="Choisir le moteur d'IA dans Paramètres">
+      <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Assistant IA</p>
       <div class="flex items-center gap-2">
-        <span id="ollama-dot" class="h-2.5 w-2.5 rounded-full bg-muted/50"></span>
-        <span id="ollama-label" class="text-muted">Vérification…</span>
+        <span id="ai-dot" class="h-2.5 w-2.5 rounded-full bg-muted/50"></span>
+        <span id="ai-label" class="truncate text-muted">Vérification…</span>
       </div>
       <p class="mt-3 flex items-center gap-1.5 text-xs text-muted">
-        {{ icon("M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z", "h-3.5 w-3.5") }}
-        100 % local, aucune donnée envoyée
+        {{ icon("M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z", "h-3.5 w-3.5 shrink-0") }}
+        <span id="ai-privacy">100 % local, aucune donnée envoyée</span>
       </p>
-    </div>
+    </a>
     {% if app_mode %}
       <button id="quit-app" type="button" class="nav-link mx-3 mb-4">
         {{ icon("M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11") }}
@@ -112,6 +113,28 @@
       {% block content %}{% endblock %}
     </main>
   </div>
+
+  {# Fenêtre « À propos » (static/brand/atelier-brand.css) : ouverte par la marque, fermée par Échap, × ou un clic à côté #}
+  <dialog id="atelier-about" class="atelier-about" aria-labelledby="atelier-about-title">
+    <div class="atelier-about__panel">
+      <button type="button" class="atelier-about__close" aria-label="Fermer" data-atelier-about-close>×</button>
+      <img class="atelier-about__logo" src="{{ url_for('static', filename='img/logo-atelier-tresorerie.webp') }}" alt="Logo Atelier Trésorerie" width="576" height="526">
+      <h2 id="atelier-about-title" class="atelier-about__name"><span class="atelier-brand__prefix">atelier_</span>Trésorerie</h2>
+      <p class="atelier-about__tagline">Comptes, budgets et placements, avec une IA qui tourne sur votre machine.</p>
+      <p class="atelier-about__suite">Suite Atelier · 100 % local</p>
+    </div>
+  </dialog>
+  <script>
+    (function () {
+      var about = document.getElementById("atelier-about");
+      if (!about || !about.showModal) return;
+      document.querySelectorAll("[data-atelier-about]").forEach(function (b) {
+        b.addEventListener("click", function () { about.showModal(); });
+      });
+      about.querySelector("[data-atelier-about-close]").addEventListener("click", function () { about.close(); });
+      about.addEventListener("click", function (e) { if (e.target === about) about.close(); });
+    })();
+  </script>
 
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
   {% block scripts %}{% endblock %}
