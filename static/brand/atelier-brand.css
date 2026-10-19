@@ -1,0 +1,74 @@
+/* Atelier — marque commune (logo + nom de l'application).
+   Source de vérité : Atelier_Projets/design-system/brand/.
+   Copiée telle quelle, avec la police, dans Ciné, Viz, Tab, Savoir et Trésorerie :
+   toute modification se fait ici puis dans chaque copie.
+
+   Balisage attendu :
+     <a class="atelier-brand" href="/">
+       <span class="atelier-brand__tile" aria-hidden="true"><svg …icône de l'app…/></span>
+       <span class="atelier-brand__name"><span class="atelier-brand__prefix">atelier_</span>Nom</span>
+     </a>
+
+   Aucune règle `display` sur __name ni `margin` sur .atelier-brand : les utilitaires de chaque app
+   (hidden, lg:inline…) gardent la main.
+
+   Police : Nunito (SIL Open Font License 1.1, voir OFL-Nunito.txt), embarquée — aucune requête réseau. */
+
+@font-face {
+  font-family: "Atelier Brand";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 1000;
+  src: url("./nunito-latin-wght-normal.woff2") format("woff2-variations"),
+    url("./nunito-latin-wght-normal.woff2") format("woff2");
+}
+
+:root {
+  /* Dégradé cyan des logos Atelier : identique dans les six applications et dans les deux thèmes. */
+  --atelier-brand-from: #38bdf8;
+  --atelier-brand-to: #0369a1;
+  --atelier-brand-icon: #ffffff;
+  --atelier-brand-font: "Atelier Brand", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+}
+
+.atelier-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.atelier-brand__tile {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.625rem;
+  color: var(--atelier-brand-icon);
+  background: linear-gradient(135deg, var(--atelier-brand-from), var(--atelier-brand-to));
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.18),
+    0 4px 14px -6px var(--atelier-brand-from);
+}
+
+.atelier-brand__tile svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  stroke-width: 2.25;
+}
+
+.atelier-brand__name {
+  font-family: var(--atelier-brand-font);
+  font-size: 1.125rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.atelier-brand__prefix {
+  font-weight: 700;
+  opacity: 0.55;
+}

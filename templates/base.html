@@ -42,6 +42,7 @@
     };
   </script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='brand/atelier-brand.css') }}">
   {% block head %}{% endblock %}
 </head>
 
@@ -51,12 +52,11 @@
   <!-- Sidebar -->
   <aside id="sidebar"
          class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col border-r border-line bg-surface/95 backdrop-blur transition-transform duration-200 lg:translate-x-0">
-    <div class="flex items-center gap-3 px-6 pt-7 pb-8">
-      <img src="{{ url_for('static', filename='img/favicon-64.png') }}" alt="" class="h-10 w-10" width="40" height="40">
-      <div class="leading-tight">
-        <p class="font-bold tracking-tight">Atelier</p>
-        <p class="text-sm text-muted">Trésorerie</p>
-      </div>
+    <div class="px-6 pt-7 pb-8">
+      <a href="{{ url_for('dashboard') }}" class="atelier-brand" title="Atelier Trésorerie">
+        <span class="atelier-brand__tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10 18v-7"/><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M3 22h18"/><path d="M6 18v-7"/></svg></span>
+        <span class="atelier-brand__name"><span class="atelier-brand__prefix">atelier_</span>Trésorerie</span>
+      </a>
     </div>
 
     <nav class="flex-1 space-y-1 px-3" aria-label="Navigation principale">
