@@ -136,6 +136,10 @@ MIGRATIONS: dict[int, str] = {
             PRIMARY KEY (holding_id, date)
         );
     """,
+    4: """
+        -- Moteur ayant produit chaque message de l'assistant (ollama / claude)
+        ALTER TABLE ai_conversations ADD COLUMN provider TEXT;
+    """,
 }
 LATEST_VERSION = max(MIGRATIONS, default=1)
 

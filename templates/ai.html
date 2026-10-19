@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+
+{% block title %}Assistant IA{% endblock %}
+{% block page_title %}Assistant IA{% endblock %}
+
+{% block content %}
+  <section class="grid grid-cols-1 gap-4 xl:grid-cols-3">
+    {# ------------------------------------------------------------ conversation #}
+    <div class="card flex min-h-[32rem] flex-col xl:col-span-2" style="height: calc(100dvh - 10rem)">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
+        <div class="flex min-w-0 items-center gap-3">
+          <span id="engine-dot" class="h-2.5 w-2.5 shrink-0 rounded-full bg-muted/50"></span>
+          <div class="min-w-0">
+            <p id="engine-label" class="truncate font-bold">Assistant</p>
+            <p id="engine-privacy" class="truncate text-xs text-muted"></p>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button id="btn-context" type="button" class="btn btn-ghost btn-sm">Données transmises</button>
+          <button id="btn-clear" type="button" class="btn btn-ghost btn-sm">Effacer</button>
+        </div>
+      </div>
+
+      <div id="thread" class="flex-1 space-y-4 overflow-y-auto px-5 py-5" aria-live="polite"></div>
+
+      <form id="composer" class="border-t border-line p-4">
+        <label for="question" class="sr-only">Votre question</label>
+        <div class="flex items-end gap-2">
+          <textarea id="question" rows="1" maxlength="2000" class="input max-h-40 min-h-[2.75rem] flex-1 resize-none py-2.5"
+                    placeholder="Posez votre question…"></textarea>
+          <button id="send" type="submit" class="btn btn-primary h-11 shrink-0" aria-label="Envoyer">
+            {{ icon("M4 12l16-8-6 16-2.5-6.5z", "h-4 w-4") }}<span class="hidden sm:inline">Envoyer</span>
+          </button>
+        </div>
+        <p class="mt-2 text-xs text-muted">Entrée pour envoyer · Maj + Entrée pour aller à la ligne</p>
+      </form>
+    </div>
+
+    {# ------------------------------------------------------------ colonne latérale #}
+    <aside class="space-y-4">
+      <div class="card p-5">
+        <h2 class="font-bold">Catégorisation automatique</h2>
+        <p id="uncat-text" class="mt-1 text-sm text-muted">…</p>
+        <button id="btn-categorize" type="button" class="btn btn-ghost mt-4 w-full">
+          {{ icon("M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z", "h-4 w-4") }} Proposer des catégories
+        </button>
+        <p class="mt-2 text-xs text-muted">Vous validez chaque proposition avant qu'elle ne soit appliquée.</p>
+      </div>
+
+      <div class="card p-5">
+        <h2 class="font-bold">Confidentialité</h2>
+        <div id="privacy-detail" class="mt-2 space-y-2 text-sm text-muted"></div>
+        <a href="{{ url_for('settings') }}" class="mt-4 inline-block text-sm font-semibold text-brand hover:underline">Changer de moteur dans Paramètres →</a>
+      </div>
+    </aside>
+  </section>
+
+  {# ------------------------------------------------------------ données transmises #}
+  <dialog id="context-dialog" class="modal modal-wide" aria-labelledby="context-title">
+    <div class="modal-head">
+      <h2 id="context-title" class="text-lg font-bold">Données transmises à l'IA</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
+    </div>
+    <div class="modal-body">
+      <p id="context-intro" class="mb-3 text-sm text-muted"></p>
+      <pre id="context-text" class="max-h-[60vh] overflow-auto whitespace-pre-wrap rounded-xl bg-canvas p-4 text-xs leading-relaxed"></pre>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-ghost" data-close>Fermer</button></div>
+  </dialog>
+
+  {# ------------------------------------------------------------ propositions de catégories #}
+  <dialog id="cat-dialog" class="modal modal-wide" aria-labelledby="cat-title">
+    <div class="modal-head">
+      <h2 id="cat-title" class="text-lg font-bold">Catégories proposées</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
+    </div>
+    <div class="modal-body">
+      <p id="cat-summary" class="mb-3 text-sm text-muted"></p>
+      <div class="max-h-[55vh] overflow-auto rounded-xl border border-line">
+        <table class="table">
+          <thead><tr>
+            <th class="w-10"><input id="cat-all" type="checkbox" class="checkbox" checked aria-label="Tout sélectionner"></th>
+            <th>Opération</th><th class="text-right">Montant</th><th class="w-56">Catégorie</th>
+          </tr></thead>
+          <tbody id="cat-rows"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+      <button type="button" id="cat-apply" class="btn btn-primary">Appliquer</button>
+    </div>
+  </dialog>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/pages/ai.js') }}"></script>
+{% endblock %}
