@@ -18,7 +18,7 @@
   function bar(percent, tone) {
     const width = Math.min(100, percent ?? 0);
     return `<div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(width)}">
-      <span style="width:${width}%; background: rgb(var(--${tone}))"></span></div>`;
+      <span style="width:${width}%; background: var(--${tone})"></span></div>`;
   }
 
   function renderTotal() {
