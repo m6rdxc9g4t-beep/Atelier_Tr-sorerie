@@ -1,7 +1,7 @@
 /* Atelier — marque commune et palette « néon monochrome » de la suite.
    Source de vérité : Atelier_Projets/design-system/brand/.
    Copiée telle quelle, avec la police, dans les huit applications de la suite
-   (Projets, Viz, Tab, Ciné, Trésorerie, Savoir, Nexus, Dates) :
+   (Projets, Viz, Tab, Ciné, Trésorerie, Savoir, Nexus, Dates, Cuisine) :
    toute modification se fait ici puis dans chaque copie.
 
    Charte (piste C validée) : chaque application est ENTIÈREMENT dans sa couleur signature.
@@ -49,6 +49,7 @@
   --atelier-sig-tresorerie: #3b5bdb;
   --atelier-sig-savoir: #9b5de5;
   --atelier-sig-cine: #e64980;
+  --atelier-sig-cuisine: #e056e2;
 
   /* Hors app identifiée : un cyan neutre. */
   --atelier-signature: #3fd8ff;
@@ -70,6 +71,7 @@
 [data-atelier-app="tresorerie"] { --atelier-signature: var(--atelier-sig-tresorerie); --atelier-signature-contrast: #ffffff; }
 [data-atelier-app="savoir"] { --atelier-signature: var(--atelier-sig-savoir); --atelier-signature-contrast: #0b0b0f; }
 [data-atelier-app="cine"] { --atelier-signature: var(--atelier-sig-cine); --atelier-signature-contrast: #0b0b0f; }
+[data-atelier-app="cuisine"] { --atelier-signature: var(--atelier-sig-cuisine); --atelier-signature-contrast: #0b0b0f; }
 
 /* ---------------------------------------------------------------------------
    2. Palette dérivée — thème CLAIR (défaut)
