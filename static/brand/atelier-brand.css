@@ -1,9 +1,19 @@
-/* Atelier — marque commune (logo + nom de l'application).
+/* Atelier — marque commune (logo, nom de l'application, couleurs signature, effets néon).
    Source de vérité : Atelier_Projets/design-system/brand/.
-   Copiée telle quelle, avec la police, dans Ciné, Viz, Tab, Savoir et Trésorerie :
+   Copiée telle quelle, avec la police, dans les huit applications de la suite
+   (Projets, Viz, Tab, Ciné, Trésorerie, Savoir, Nexus, Dates) :
    toute modification se fait ici puis dans chaque copie.
 
+   Charte « néon holographique 3D » :
+   - la base cyan électrique est commune à toutes les apps (cadres, halo, texte de la marque) ;
+   - chaque app a UNE couleur signature (icône de la tuile, bouton principal, onglet actif, données clés) ;
+   - le néon (halo, verre, bord chromé) ne s'allume qu'en thème sombre ; le thème clair reste sobre.
+
+   Couleur signature : attribut data-atelier-app sur <html> (toute l'app) ou sur un élément
+   (ex. chaque tuile du sélecteur de la suite). Il pose --atelier-signature et ses dérivés.
+
    Balisage attendu :
+     <html data-atelier-app="viz">
      <button type="button" class="atelier-brand" aria-haspopup="dialog">
        <span class="atelier-brand__tile" aria-hidden="true"><svg …icône de l'app…/></span>
        <span class="atelier-brand__name"><span class="atelier-brand__prefix">atelier_</span>Nom</span>
@@ -23,14 +33,98 @@
     url("./nunito-latin-wght-normal.woff2") format("woff2");
 }
 
+/* ---------------------------------------------------------------------------
+   1. Palette de la suite
+   --------------------------------------------------------------------------- */
 :root {
-  /* Dégradé cyan des logos Atelier : identique dans les six applications et dans les deux thèmes. */
+  /* Base commune : cyan électrique des logos (structure, halo, texte de la marque). */
+  --atelier-neon: #3fd8ff;
+  --atelier-neon-deep: #0369a1;
+  --atelier-neon-ink: #bdefff;
+  --atelier-night: #06111f;
+  --atelier-night-2: #0b2440;
+
+  /* Couleurs signature (charte, section « Couleurs signature par application »). */
+  --atelier-sig-dates: #e03131;
+  --atelier-sig-nexus: #e8590c;
+  --atelier-sig-viz: #f2c811;
+  --atelier-sig-projets: #94d82d;
+  --atelier-sig-tab: #21a366;
+  --atelier-sig-tresorerie: #3b5bdb;
+  --atelier-sig-savoir: #9b5de5;
+  --atelier-sig-cine: #e64980;
+
+  /* Hors app identifiée : la signature retombe sur le cyan commun. */
+  --atelier-signature: var(--atelier-neon);
+  /* Texte posé SUR la signature (bouton plein) : nuit, sauf sur le rouge de Dates et le bleu de Trésorerie (blanc). */
+  --atelier-signature-contrast: var(--atelier-night);
+
+  /* Compatibilité avec la version précédente (dégradé de la tuile). */
   --atelier-brand-from: #38bdf8;
   --atelier-brand-to: #0369a1;
   --atelier-brand-icon: #ffffff;
   --atelier-brand-font: "Atelier Brand", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
 }
 
+[data-atelier-app="dates"] { --atelier-signature: var(--atelier-sig-dates); --atelier-signature-contrast: #ffffff; }
+[data-atelier-app="nexus"] { --atelier-signature: var(--atelier-sig-nexus); --atelier-signature-contrast: var(--atelier-night); }
+[data-atelier-app="viz"] { --atelier-signature: var(--atelier-sig-viz); --atelier-signature-contrast: var(--atelier-night); }
+[data-atelier-app="projets"] { --atelier-signature: var(--atelier-sig-projets); --atelier-signature-contrast: var(--atelier-night); }
+[data-atelier-app="tab"] { --atelier-signature: var(--atelier-sig-tab); --atelier-signature-contrast: var(--atelier-night); }
+[data-atelier-app="tresorerie"] { --atelier-signature: var(--atelier-sig-tresorerie); --atelier-signature-contrast: #ffffff; }
+[data-atelier-app="savoir"] { --atelier-signature: var(--atelier-sig-savoir); --atelier-signature-contrast: var(--atelier-night); }
+[data-atelier-app="cine"] { --atelier-signature: var(--atelier-sig-cine); --atelier-signature-contrast: var(--atelier-night); }
+
+/* Dérivés de la signature : recalculés partout où data-atelier-app change la couleur. */
+:root,
+[data-atelier-app] {
+  --atelier-signature-soft: color-mix(in oklab, var(--atelier-signature) 16%, transparent);
+  /* Version éclaircie : icônes et texte en signature sur fond nuit. */
+  --atelier-signature-light: color-mix(in oklab, var(--atelier-signature) 78%, white);
+  --atelier-signature-glow: 0 0 0 1px color-mix(in oklab, var(--atelier-signature) 55%, transparent),
+    0 0 22px -4px color-mix(in oklab, var(--atelier-signature) 60%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   2. Effets néon (thème sombre uniquement)
+   Jetons à utiliser dans les composants de chaque app ; en thème clair ils
+   retombent sur des valeurs neutres, donc on peut s'en servir sans condition.
+   --------------------------------------------------------------------------- */
+:root {
+  --atelier-edge: transparent;                 /* Bord chromé (inset) */
+  --atelier-glow: none;                        /* Halo cyan des cartes et panneaux */
+  --atelier-glow-strong: none;                 /* Halo des modales et éléments actifs */
+  --atelier-glass: none;                       /* Reflet de verre (background-image) */
+  --atelier-text-glow: none;                   /* Halo des titres et de la marque */
+}
+
+:root[data-theme="dark"],
+:root.dark,
+[data-theme="dark"] {
+  --atelier-edge: color-mix(in oklab, var(--atelier-neon) 34%, transparent);
+  --atelier-glow: inset 0 0 0 1px color-mix(in oklab, var(--atelier-neon) 22%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 10%, transparent),
+    0 0 28px -10px color-mix(in oklab, var(--atelier-neon) 45%, transparent);
+  --atelier-glow-strong: inset 0 0 0 1px color-mix(in oklab, var(--atelier-neon) 40%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 16%, transparent),
+    0 0 48px -12px color-mix(in oklab, var(--atelier-neon) 60%, transparent);
+  --atelier-glass: linear-gradient(180deg, color-mix(in oklab, var(--atelier-neon) 7%, transparent) 0%, transparent 42%);
+  --atelier-text-glow: 0 0 14px color-mix(in oklab, var(--atelier-neon) 45%, transparent);
+}
+
+/* Classes prêtes à l'emploi (facultatives). */
+.atelier-glass {
+  background-image: var(--atelier-glass);
+  box-shadow: var(--atelier-glow);
+}
+
+.atelier-neon-text {
+  text-shadow: var(--atelier-text-glow);
+}
+
+/* ---------------------------------------------------------------------------
+   3. Marque (tuile + nom)
+   --------------------------------------------------------------------------- */
 .atelier-brand {
   display: inline-flex;
   align-items: center;
@@ -39,6 +133,7 @@
   text-decoration: none;
 }
 
+/* Tuile : verre nuit cerclé de cyan, icône dans la couleur signature (comme le badge des logos). */
 .atelier-brand__tile {
   display: grid;
   flex: none;
@@ -46,17 +141,21 @@
   width: 2rem;
   height: 2rem;
   border-radius: 0.625rem;
-  color: var(--atelier-brand-icon);
-  background: linear-gradient(135deg, var(--atelier-brand-from), var(--atelier-brand-to));
+  color: var(--atelier-signature-light);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.14) 0%, rgb(255 255 255 / 0) 45%),
+    linear-gradient(135deg, var(--atelier-night-2), var(--atelier-night));
   box-shadow:
-    inset 0 0 0 1px rgb(255 255 255 / 0.18),
-    0 4px 14px -6px var(--atelier-brand-from);
+    inset 0 0 0 1px color-mix(in oklab, var(--atelier-neon) 55%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--atelier-neon) 18%, transparent),
+    0 4px 16px -6px color-mix(in oklab, var(--atelier-neon) 70%, transparent);
 }
 
 .atelier-brand__tile svg {
   width: 1.125rem;
   height: 1.125rem;
   stroke-width: 2.25;
+  filter: drop-shadow(0 0 4px color-mix(in oklab, var(--atelier-signature) 70%, transparent));
 }
 
 .atelier-brand__name {
@@ -66,6 +165,12 @@
   line-height: 1.1;
   letter-spacing: -0.01em;
   white-space: nowrap;
+}
+
+:root[data-theme="dark"] .atelier-brand__name,
+:root.dark .atelier-brand__name {
+  color: var(--atelier-neon-ink);
+  text-shadow: var(--atelier-text-glow);
 }
 
 .atelier-brand__prefix {
@@ -82,12 +187,29 @@ button.atelier-brand {
 }
 
 .atelier-brand:focus-visible {
-  outline: 2px solid var(--atelier-brand-from);
+  outline: 2px solid var(--atelier-neon);
   outline-offset: 4px;
   border-radius: 0.75rem;
 }
 
-/* Fenêtre « À propos » (<dialog class="atelier-about">) : toujours sombre, comme les logos néon.
+/* Variante compacte (menus, listes) : tuile 1,75 rem, nom 0,9375 rem. */
+.atelier-brand__tile--sm {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.5rem;
+}
+
+.atelier-brand__tile--sm svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.atelier-brand__name--sm {
+  font-size: 0.9375rem;
+}
+
+/* ---------------------------------------------------------------------------
+   4. Fenêtre « À propos » (<dialog class="atelier-about">) : toujours sombre, comme les logos néon.
    Balisage :
      <dialog class="atelier-about" aria-labelledby="…">
        <div class="atelier-about__panel">
@@ -97,7 +219,8 @@ button.atelier-brand {
          <p class="atelier-about__tagline">…</p>
          <p class="atelier-about__suite">Suite Atelier · 100 % local</p>
        </div>
-     </dialog> */
+     </dialog>
+   --------------------------------------------------------------------------- */
 .atelier-about {
   width: min(26rem, calc(100vw - 2rem));
   max-width: none;
@@ -120,10 +243,14 @@ button.atelier-brand {
   border-radius: 1.25rem;
   text-align: center;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  background: radial-gradient(120% 75% at 50% 0%, #0c4a6e 0%, #0b1324 62%);
+  background:
+    radial-gradient(120% 75% at 50% 0%, #0c4a6e 0%, #0b1324 62%),
+    #0b1324;
   box-shadow:
-    inset 0 0 0 1px rgb(56 189 248 / 0.28),
-    0 30px 80px -24px rgb(56 189 248 / 0.5);
+    inset 0 0 0 1px rgb(63 216 255 / 0.32),
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 0 0 1px color-mix(in oklab, var(--atelier-signature) 22%, transparent),
+    0 30px 80px -24px rgb(63 216 255 / 0.55);
 }
 
 .atelier-about__logo {
@@ -145,6 +272,7 @@ button.atelier-brand {
   line-height: 1.15;
   letter-spacing: -0.01em;
   color: #f0f9ff;
+  text-shadow: 0 0 18px rgb(63 216 255 / 0.5);
 }
 
 .atelier-about__tagline {
@@ -161,8 +289,8 @@ button.atelier-brand {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #7dd3fc;
-  opacity: 0.85;
+  color: var(--atelier-signature-light);
+  opacity: 0.9;
 }
 
 .atelier-about__close {

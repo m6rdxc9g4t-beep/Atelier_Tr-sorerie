@@ -1,48 +1,73 @@
 /* Atelier Trésorerie — jetons de design.
-   Valeurs RGB séparées par des espaces pour permettre l'opacité Tailwind (bg-brand/10...). */
+   Valeurs RGB séparées par des espaces pour permettre l'opacité Tailwind (bg-brand/10...).
+
+   Charte « néon holographique 3D » de la suite Atelier (static/brand/atelier-brand.css) :
+   - base cyan commune (--atelier-neon) : halo des cartes, panneaux, anneau de focus ;
+   - couleur signature de Trésorerie = bleu roi #3B5BDB (data-atelier-app="tresorerie" sur <html>) :
+     bouton principal, navigation active, liens, données clés (taux d'épargne, patrimoine, objectifs).
+     --brand en est le miroir RGB (Tailwind et Chart.js ont besoin de triplets) ; --brand-text est
+     la version lisible pour du texte (text-brand) ;
+   - gain / perte / alerte et couleurs des catégories gardent leur sens : jamais la signature. */
 
 :root {
-  /* Mode clair : fonds neutres, encre bleu nuit */
+  /* Mode clair : sobre, sans halo. Fonds neutres, encre bleu nuit */
   --canvas: 245 246 251;
   --surface: 255 255 255;
   --raised: 238 241 249;
   --line: 223 228 239;
   --ink: 17 24 52;
   --muted: 100 110 140;
-  --brand: 76 94 204;    /* bleu nuit lumineux */
+  --brand: 59 91 219;       /* = --atelier-sig-tresorerie (bleu roi) */
+  --brand-text: 42 64 151;  /* signature 62 % + encre : texte en signature sur fond clair */
   --gain: 14 150 112;    /* émeraude */
   --loss: 214 92 80;     /* corail */
   --warn: 196 138 22;
   --lilac: 124 108 220;
+  --focus: var(--atelier-neon-deep); /* cyan foncé : visible sur fond clair */
   color-scheme: light;
 }
 
 .dark {
-  /* Mode sombre : bleu nuit profond + accents pastel */
-  --canvas: 9 13 28;
-  --surface: 15 21 42;
-  --raised: 22 30 58;
-  --line: 34 44 78;
-  --ink: 229 233 246;
-  --muted: 138 148 182;
-  --brand: 165 180 252;  /* pervenche */
+  /* Mode sombre = expression néon : bleu nuit, bordures teintées de cyan */
+  --canvas: 6 17 31;        /* #06111F */
+  --surface: 10 27 46;      /* #0A1B2E */
+  --raised: 16 40 63;       /* #10283F */
+  --line: 23 64 92;         /* #17405C */
+  --ink: 230 247 255;       /* #E6F7FF */
+  --muted: 141 180 204;     /* #8DB4CC */
+  --brand: 59 91 219;       /* = --atelier-sig-tresorerie (bleu roi) */
+  --brand-text: 97 130 230; /* = --atelier-signature-light : texte en signature sur fond nuit */
   --gain: 110 231 183;   /* menthe */
   --loss: 252 160 148;   /* corail doux */
   --warn: 252 211 77;
   --lilac: 196 181 253;
+  --focus: var(--atelier-neon);
   color-scheme: dark;
+}
+
+/* Fond de page sombre : léger halo cyan venu du haut */
+.dark body {
+  background-image: radial-gradient(120% 60% at 50% -10%, color-mix(in oklab, var(--atelier-neon) 10%, transparent), transparent 60%);
+  background-attachment: fixed;
 }
 
 /* Chiffres alignés : indispensable pour comparer des montants */
 .num { font-variant-numeric: tabular-nums; }
 
 .card {
-  background: rgb(var(--surface));
+  background-color: rgb(var(--surface));
+  background-image: var(--atelier-glass);
   border: 1px solid rgb(var(--line));
   border-radius: 1.25rem;
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
 }
-.dark .card { box-shadow: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 8px 24px rgb(0 0 0 / 0.25); }
+.dark .card { box-shadow: var(--atelier-glow), 0 8px 24px rgb(0 0 0 / 0.3); }
+
+/* Barre latérale et en-tête : panneaux de verre cerclés de cyan (sombre uniquement) */
+.app-sidebar { background-image: var(--atelier-glass); }
+.dark .app-sidebar { box-shadow: inset -1px 0 0 var(--atelier-edge), 0 0 28px -10px color-mix(in oklab, var(--atelier-neon) 45%, transparent); }
+.dark .app-header { box-shadow: inset 0 -1px 0 var(--atelier-edge), 0 8px 28px -18px color-mix(in oklab, var(--atelier-neon) 45%, transparent); }
+.dark .page-title { text-shadow: var(--atelier-text-glow); }
 
 .nav-link {
   display: flex;
@@ -56,7 +81,16 @@
   transition: background-color 0.15s, color 0.15s;
 }
 .nav-link:hover { background: rgb(var(--raised)); color: rgb(var(--ink)); }
-.nav-link.is-active { background: rgb(var(--brand) / 0.14); color: rgb(var(--brand)); }
+/* Navigation active : la signature, franchement (bleu roi, bien distinct du cyan de structure) */
+.nav-link.is-active {
+  background: var(--atelier-signature-soft);
+  color: rgb(var(--brand-text));
+  box-shadow: inset 3px 0 0 var(--atelier-signature);
+}
+.dark .nav-link.is-active {
+  background: color-mix(in oklab, var(--atelier-signature) 24%, transparent);
+  box-shadow: inset 3px 0 0 var(--atelier-signature-light), var(--atelier-signature-glow);
+}
 
 .icon-btn {
   display: grid;
@@ -93,7 +127,8 @@
   background: repeating-linear-gradient(135deg, transparent 0 12px, rgb(var(--raised) / 0.45) 12px 24px);
 }
 
-:focus-visible { outline: 2px solid rgb(var(--brand)); outline-offset: 2px; }
+/* Anneau de focus : cyan de la suite */
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
@@ -115,11 +150,13 @@
   font-weight: 700;
   font-size: 0.875rem;
   white-space: nowrap;
-  transition: opacity 0.15s, background-color 0.15s, color 0.15s;
+  transition: opacity 0.15s, background-color 0.15s, color 0.15s, box-shadow 0.15s, filter 0.15s;
 }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.btn-primary { background: rgb(var(--brand)); color: rgb(var(--canvas)); }
-.btn-primary:hover:not(:disabled) { opacity: 0.9; }
+/* Bouton principal : fond signature, texte blanc (--atelier-signature-contrast), halo bleu roi au survol */
+.btn-primary { background: var(--atelier-signature); color: var(--atelier-signature-contrast); }
+.btn-primary:hover:not(:disabled),
+.btn-primary:focus-visible { filter: brightness(1.08); box-shadow: var(--atelier-signature-glow); }
 .btn-ghost { border: 1px solid rgb(var(--line)); color: rgb(var(--ink)); }
 .btn-ghost:hover:not(:disabled) { background: rgb(var(--raised)); }
 .btn-danger { color: rgb(var(--loss)); border: 1px solid rgb(var(--loss) / 0.35); }
@@ -138,7 +175,7 @@
   font-size: 0.9rem;
 }
 textarea.input { height: auto; padding: 0.6rem 0.85rem; resize: vertical; }
-.input:focus { outline: none; border-color: rgb(var(--brand)); box-shadow: 0 0 0 3px rgb(var(--brand) / 0.2); }
+.input:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in oklab, var(--focus) 22%, transparent); }
 .input[aria-invalid="true"] { border-color: rgb(var(--loss)); }
 .field-error { margin-top: 0.3rem; font-size: 0.75rem; color: rgb(var(--loss)); }
 select.input { padding-right: 2rem; }
@@ -148,7 +185,8 @@ select.input { padding-right: 2rem; }
 .segmented input { position: absolute; opacity: 0; pointer-events: none; }
 .segmented span { display: block; padding: 0.4rem 0.9rem; border-radius: 0.7rem; font-weight: 700; font-size: 0.85rem; color: rgb(var(--muted)); }
 .segmented input:checked + span { background: rgb(var(--surface)); color: rgb(var(--ink)); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
-.segmented input:focus-visible + span { outline: 2px solid rgb(var(--brand)); }
+.dark .segmented input:checked + span { color: rgb(var(--brand-text)); box-shadow: var(--atelier-glow); }
+.segmented input:focus-visible + span { outline: 2px solid var(--focus); }
 
 .badge {
   display: inline-flex;
@@ -179,12 +217,12 @@ select.input { padding-right: 2rem; }
 .table td { padding: 0.75rem; border-bottom: 1px solid rgb(var(--line) / 0.7); vertical-align: middle; }
 .table tbody tr { transition: background-color 0.1s; }
 .table tbody tr:hover { background: rgb(var(--raised) / 0.6); }
-.table tbody tr.is-selected { background: rgb(var(--brand) / 0.08); }
+.table tbody tr.is-selected { background: var(--atelier-signature-soft); }
 
 .progress { height: 0.55rem; border-radius: 999px; background: rgb(var(--raised)); overflow: hidden; }
 .progress > span { display: block; height: 100%; border-radius: inherit; transition: width 0.4s ease; }
 
-.checkbox { width: 1rem; height: 1rem; accent-color: rgb(var(--brand)); cursor: pointer; }
+.checkbox { width: 1rem; height: 1rem; accent-color: var(--atelier-signature); cursor: pointer; }
 
 /* Fenêtres modales natives (<dialog>) */
 dialog.modal {
@@ -193,12 +231,14 @@ dialog.modal {
   padding: 0;
   border: 1px solid rgb(var(--line));
   border-radius: 1.25rem;
-  background: rgb(var(--surface));
+  background-color: rgb(var(--surface));
+  background-image: var(--atelier-glass);
   color: rgb(var(--ink));
   box-shadow: 0 24px 64px rgb(0 0 0 / 0.35);
 }
+.dark dialog.modal { box-shadow: var(--atelier-glow-strong), 0 24px 64px rgb(0 0 0 / 0.5); }
 dialog.modal.modal-wide { width: min(64rem, calc(100vw - 2rem)); }
-dialog.modal::backdrop { background: rgb(9 13 28 / 0.55); backdrop-filter: blur(3px); }
+dialog.modal::backdrop { background: rgb(6 17 31 / 0.6); backdrop-filter: blur(3px); }
 .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem 0.5rem; }
 .modal-body { padding: 0.75rem 1.5rem 1.25rem; }
 .modal-foot { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: flex-end; padding: 1rem 1.5rem 1.25rem; border-top: 1px solid rgb(var(--line)); }
@@ -206,7 +246,7 @@ dialog.modal::backdrop { background: rgb(9 13 28 / 0.55); backdrop-filter: blur(
 .swatch { width: 1.75rem; height: 1.75rem; border-radius: 999px; cursor: pointer; border: 2px solid transparent; }
 .swatch-input { position: absolute; opacity: 0; }
 .swatch-input:checked + .swatch { border-color: rgb(var(--ink)); box-shadow: 0 0 0 2px rgb(var(--surface)) inset; }
-.swatch-input:focus-visible + .swatch { outline: 2px solid rgb(var(--brand)); outline-offset: 2px; }
+.swatch-input:focus-visible + .swatch { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 .dropzone {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;
@@ -239,4 +279,5 @@ dialog.modal::backdrop { background: rgb(9 13 28 / 0.55); backdrop-filter: blur(
 }
 .engine-card:hover { border-color: rgb(var(--brand) / 0.5); }
 .engine-card:has(input:checked) { border-color: rgb(var(--brand)); background: rgb(var(--brand) / 0.08); }
-.engine-card:has(input:focus-visible) { outline: 2px solid rgb(var(--brand)); outline-offset: 2px; }
+.dark .engine-card:has(input:checked) { box-shadow: var(--atelier-signature-glow); }
+.engine-card:has(input:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }

@@ -39,6 +39,11 @@ locale Ollama. Confidentialité absolue : aucune donnée financière ne doit qui
 - Toute chaîne utilisateur insérée dans du HTML passe par `AT.esc()`.
 - UI : Tailwind avec les jetons de `static/css/app.css` (`bg-surface`, `text-ink`, `text-muted`,
   `text-gain`, `text-loss`, `bg-brand`...) — pas de couleurs codées en dur. Chiffres avec la classe `num`.
+- Charte « néon holographique 3D » de la suite Atelier : `static/brand/atelier-brand.css` est une copie
+  exacte de celle d'Atelier Projets (ne jamais l'éditer ici). `data-atelier-app="tresorerie"` sur `<html>` ;
+  `brand` = couleur signature bleu roi #3B5BDB (bouton principal, navigation active, liens, données clés),
+  `text-brand` en est la version lisible. Gain / perte / alerte et couleurs des catégories ne prennent
+  jamais la signature. Effets néon (`--atelier-glow`, `--atelier-glass`…) en sombre uniquement.
 - Textes de l'interface en français. Formatage monétaire via le filtre Jinja `|eur`.
 - Jamais d'appel réseau sortant hors `localhost` pour les données (Ollama : proxys désactivés), sauf via
   `claude_client.py` quand l'utilisateur a choisi Claude dans Paramètres. Chaque moteur ne reçoit que

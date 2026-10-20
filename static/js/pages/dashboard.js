@@ -14,7 +14,8 @@
     const rgb = (name, alpha = 1) => `rgb(${css.getPropertyValue(`--${name}`).trim()} / ${alpha})`;
     return {
       ink: rgb("ink"), muted: rgb("muted"), line: rgb("line", 0.7), surface: rgb("surface"),
-      brand: rgb("brand"), brandFill: rgb("brand", 0.14), gain: rgb("gain"), loss: rgb("loss"), lilac: rgb("lilac"),
+      // Courbe du patrimoine = donnée clé, en couleur signature (version lisible : éclaircie en sombre)
+      brand: rgb("brand-text"), brandFill: rgb("brand", 0.14), gain: rgb("gain"), loss: rgb("loss"), lilac: rgb("lilac"),
     };
   }
 
