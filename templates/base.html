@@ -24,7 +24,8 @@
   <script>
     // Couleurs pilotées par des variables CSS (voir static/css/app.css) :
     // une seule classe (bg-surface, text-ink...) fonctionne en mode clair ET sombre.
-    const v = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+    // Les jetons sont des couleurs complètes (dérivées du bleu roi) : l'opacité (bg-brand/15) passe par color-mix.
+    const v = (name) => `color-mix(in oklab, var(--${name}) calc(<alpha-value> * 100%), transparent)`;
     tailwind.config = {
       darkMode: "class",
       theme: {
@@ -53,7 +54,7 @@
 
   <!-- Sidebar -->
   <aside id="sidebar"
-         class="app-sidebar fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col border-r border-line bg-surface/95 backdrop-blur transition-transform duration-200 lg:translate-x-0">
+         class="app-sidebar fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col backdrop-blur transition-transform duration-200 lg:translate-x-0">
     <div class="px-6 pt-7 pb-8">
       <button type="button" class="atelier-brand" aria-haspopup="dialog" title="À propos d'Atelier Trésorerie" data-atelier-about>
         <span class="atelier-brand__tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10 18v-7"/><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M3 22h18"/><path d="M6 18v-7"/></svg></span>
@@ -97,7 +98,7 @@
 
   <!-- Contenu -->
   <div class="flex min-h-full flex-col lg:pl-64">
-    <header class="app-header sticky top-0 z-20 flex items-center gap-3 border-b border-line bg-canvas/80 px-4 py-4 backdrop-blur sm:px-8">
+    <header class="app-header sticky top-0 z-20 flex items-center gap-3 bg-canvas/80 px-4 py-4 backdrop-blur sm:px-8">
       <button id="menu-toggle" class="icon-btn lg:hidden" aria-label="Ouvrir le menu" aria-controls="sidebar">
         {{ icon("M4 6h16M4 12h16M4 18h16") }}
       </button>

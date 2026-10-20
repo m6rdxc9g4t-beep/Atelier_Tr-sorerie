@@ -18,7 +18,7 @@
 ---
 
 ## 3. Design UI / UX (Nouvelle Interface Visuelle)
-- **Palette de couleurs :** Tons professionnels et rassurants (Bleu nuit profond, accents émeraude pour les gains, corail doux pour les dépenses, fonds neutres épurés).
+- **Palette de couleurs :** Charte « néon monochrome » de la suite Atelier : toute l'interface est déclinée dans la couleur signature de l'application, le bleu roi #3B5BDB (banque, confiance) — fonds, surfaces, bordures et halos teintés, en clair comme en sombre. Les couleurs qui portent un sens restent distinctes : émeraude pour les gains, corail doux pour les dépenses, couleurs propres à chaque catégorie.
 - **Navigation principale (Sidebar) :**
   - Tableau de bord (`/`)
   - Comptes & Soldes (`/accounts`)

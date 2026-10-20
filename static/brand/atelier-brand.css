@@ -1,18 +1,21 @@
-/* Atelier — marque commune (logo, nom de l'application, couleurs signature, effets néon).
+/* Atelier — marque commune et palette « néon monochrome » de la suite.
    Source de vérité : Atelier_Projets/design-system/brand/.
    Copiée telle quelle, avec la police, dans les huit applications de la suite
    (Projets, Viz, Tab, Ciné, Trésorerie, Savoir, Nexus, Dates) :
    toute modification se fait ici puis dans chaque copie.
 
-   Charte « néon holographique 3D » :
-   - la base cyan électrique est commune à toutes les apps (cadres, halo, texte de la marque) ;
-   - chaque app a UNE couleur signature (icône de la tuile, bouton principal, onglet actif, données clés) ;
-   - le néon (halo, verre, bord chromé) ne s'allume qu'en thème sombre ; le thème clair reste sobre.
+   Charte (piste C validée) : chaque application est ENTIÈREMENT dans sa couleur signature.
+   Fonds, surfaces, bordures, textes, halos et grille dérivent tous de --atelier-signature,
+   par mélange (color-mix) et transparence. Aucune couleur de structure commune : pas de cyan.
+   - Sombre : fond quasi noir teinté, fine grille, cartes cerclées d'un trait néon de la couleur avec halo.
+   - Clair : fond très clair teinté, même grille, cartes blanches cerclées de la couleur avec léger halo.
+   Les couleurs qui portent un sens (statuts, types, séries de graphiques, positif / négatif) ne changent pas.
 
-   Couleur signature : attribut data-atelier-app sur <html> (toute l'app) ou sur un élément
-   (ex. chaque tuile du sélecteur de la suite). Il pose --atelier-signature et ses dérivés.
+   Activation : data-atelier-app="<app>" sur <html> (toute l'app) ou sur un élément
+   (ex. chaque tuile du sélecteur de la suite, qui prend alors SA couleur).
+   Thème sombre : :root[data-theme="dark"], :root.dark ou [data-theme="dark"] / .dark sur un ancêtre.
 
-   Balisage attendu :
+   Balisage de la marque :
      <html data-atelier-app="viz">
      <button type="button" class="atelier-brand" aria-haspopup="dialog">
        <span class="atelier-brand__tile" aria-hidden="true"><svg …icône de l'app…/></span>
@@ -22,7 +25,8 @@
    Aucune règle `display` sur __name ni `margin` / `padding` sur .atelier-brand : les utilitaires de chaque app
    (hidden, lg:inline…) gardent la main.
 
-   Police : Nunito (SIL Open Font License 1.1, voir OFL-Nunito.txt), embarquée — aucune requête réseau. */
+   Police : Nunito (SIL Open Font License 1.1, voir OFL-Nunito.txt), embarquée — aucune requête réseau.
+   Compatibilité : uniquement color-mix() (Chrome 111+, Safari 16.2+, Electron récent). */
 
 @font-face {
   font-family: "Atelier Brand";
@@ -34,17 +38,9 @@
 }
 
 /* ---------------------------------------------------------------------------
-   1. Palette de la suite
+   1. Couleurs signature
    --------------------------------------------------------------------------- */
 :root {
-  /* Base commune : cyan électrique des logos (structure, halo, texte de la marque). */
-  --atelier-neon: #3fd8ff;
-  --atelier-neon-deep: #0369a1;
-  --atelier-neon-ink: #bdefff;
-  --atelier-night: #06111f;
-  --atelier-night-2: #0b2440;
-
-  /* Couleurs signature (charte, section « Couleurs signature par application »). */
   --atelier-sig-dates: #e03131;
   --atelier-sig-nexus: #e8590c;
   --atelier-sig-viz: #f2c811;
@@ -54,68 +50,168 @@
   --atelier-sig-savoir: #9b5de5;
   --atelier-sig-cine: #e64980;
 
-  /* Hors app identifiée : la signature retombe sur le cyan commun. */
-  --atelier-signature: var(--atelier-neon);
-  /* Texte posé SUR la signature (bouton plein) : nuit, sauf sur le rouge de Dates et le bleu de Trésorerie (blanc). */
-  --atelier-signature-contrast: var(--atelier-night);
+  /* Hors app identifiée : un cyan neutre. */
+  --atelier-signature: #3fd8ff;
+  /* Texte posé SUR la signature (bouton plein) : quasi noir, sauf sur le rouge de Dates et le bleu de Trésorerie (blanc). */
+  --atelier-signature-contrast: #0b0b0f;
 
-  /* Compatibilité avec la version précédente (dégradé de la tuile). */
-  --atelier-brand-from: #38bdf8;
-  --atelier-brand-to: #0369a1;
-  --atelier-brand-icon: #ffffff;
+  /* Bases neutres sur lesquelles la signature est mélangée. */
+  --atelier-ink-black: #07070a;
+  --atelier-ink-white: #fbfbfd;
+
   --atelier-brand-font: "Atelier Brand", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
 }
 
 [data-atelier-app="dates"] { --atelier-signature: var(--atelier-sig-dates); --atelier-signature-contrast: #ffffff; }
-[data-atelier-app="nexus"] { --atelier-signature: var(--atelier-sig-nexus); --atelier-signature-contrast: var(--atelier-night); }
-[data-atelier-app="viz"] { --atelier-signature: var(--atelier-sig-viz); --atelier-signature-contrast: var(--atelier-night); }
-[data-atelier-app="projets"] { --atelier-signature: var(--atelier-sig-projets); --atelier-signature-contrast: var(--atelier-night); }
-[data-atelier-app="tab"] { --atelier-signature: var(--atelier-sig-tab); --atelier-signature-contrast: var(--atelier-night); }
+[data-atelier-app="nexus"] { --atelier-signature: var(--atelier-sig-nexus); --atelier-signature-contrast: #0b0b0f; }
+[data-atelier-app="viz"] { --atelier-signature: var(--atelier-sig-viz); --atelier-signature-contrast: #0b0b0f; }
+[data-atelier-app="projets"] { --atelier-signature: var(--atelier-sig-projets); --atelier-signature-contrast: #0b0b0f; }
+[data-atelier-app="tab"] { --atelier-signature: var(--atelier-sig-tab); --atelier-signature-contrast: #0b0b0f; }
 [data-atelier-app="tresorerie"] { --atelier-signature: var(--atelier-sig-tresorerie); --atelier-signature-contrast: #ffffff; }
-[data-atelier-app="savoir"] { --atelier-signature: var(--atelier-sig-savoir); --atelier-signature-contrast: var(--atelier-night); }
-[data-atelier-app="cine"] { --atelier-signature: var(--atelier-sig-cine); --atelier-signature-contrast: var(--atelier-night); }
+[data-atelier-app="savoir"] { --atelier-signature: var(--atelier-sig-savoir); --atelier-signature-contrast: #0b0b0f; }
+[data-atelier-app="cine"] { --atelier-signature: var(--atelier-sig-cine); --atelier-signature-contrast: #0b0b0f; }
 
-/* Dérivés de la signature : recalculés partout où data-atelier-app change la couleur. */
+/* ---------------------------------------------------------------------------
+   2. Palette dérivée — thème CLAIR (défaut)
+   Les jetons --atelier-* sont ceux que chaque app branche sur ses propres variables
+   (fond, surfaces, texte, bordures, accent…). Ils sont recalculés partout où
+   data-atelier-app change la couleur.
+   --------------------------------------------------------------------------- */
 :root,
 [data-atelier-app] {
-  --atelier-signature-soft: color-mix(in oklab, var(--atelier-signature) 16%, transparent);
-  /* Version éclaircie : icônes et texte en signature sur fond nuit. */
-  --atelier-signature-light: color-mix(in oklab, var(--atelier-signature) 78%, white);
-  --atelier-signature-glow: 0 0 0 1px color-mix(in oklab, var(--atelier-signature) 55%, transparent),
-    0 0 22px -4px color-mix(in oklab, var(--atelier-signature) 60%, transparent);
+  /* Fonds et surfaces */
+  --atelier-bg: color-mix(in oklab, var(--atelier-signature) 5%, var(--atelier-ink-white));
+  --atelier-sidebar: color-mix(in oklab, var(--atelier-signature) 3%, #ffffff);
+  --atelier-surface: #ffffff;
+  --atelier-surface-2: color-mix(in oklab, var(--atelier-signature) 7%, #ffffff);   /* survol, menus */
+  --atelier-surface-3: color-mix(in oklab, var(--atelier-signature) 12%, #ffffff);  /* sélection */
+  --atelier-field: #ffffff;                                                          /* champs de saisie */
+
+  /* Texte */
+  --atelier-text: color-mix(in oklab, var(--atelier-signature) 16%, #15161a);
+  --atelier-muted: color-mix(in oklab, var(--atelier-signature) 18%, #5b606c);
+  /* Signature utilisée comme TEXTE ou icône fine : assombrie pour rester lisible (≥ 4,5:1 sur blanc). */
+  --atelier-ink: color-mix(in oklab, var(--atelier-signature) 55%, #101114);
+
+  /* Traits */
+  --atelier-border: color-mix(in oklab, var(--atelier-signature) 60%, transparent);       /* contour des cartes */
+  --atelier-border-soft: color-mix(in oklab, var(--atelier-signature) 28%, transparent);  /* champs, boutons secondaires */
+  --atelier-line: color-mix(in oklab, var(--atelier-signature) 16%, transparent);         /* séparateurs, lignes de tableau */
+
+  /* Remplissages en transparence */
+  --atelier-signature-soft: color-mix(in oklab, var(--atelier-signature) 14%, transparent);   /* élément actif, tag */
+  --atelier-signature-faint: color-mix(in oklab, var(--atelier-signature) 7%, transparent);   /* survol */
+
+  /* Halos */
+  --atelier-glow: 0 0 0 1px color-mix(in oklab, var(--atelier-signature) 22%, transparent),
+    0 0 16px -4px color-mix(in oklab, var(--atelier-signature) 42%, transparent),
+    0 8px 20px -14px color-mix(in oklab, var(--atelier-signature) 45%, #000000);
+  --atelier-glow-strong: 0 0 0 1px color-mix(in oklab, var(--atelier-signature) 35%, transparent),
+    0 0 26px -4px color-mix(in oklab, var(--atelier-signature) 50%, transparent),
+    0 24px 48px -20px color-mix(in oklab, var(--atelier-signature) 40%, #000000);
+  --atelier-signature-glow: 0 0 16px -3px var(--atelier-signature);
+  --atelier-text-glow: 0 0 14px color-mix(in oklab, var(--atelier-signature) 35%, transparent);
+  --atelier-focus: 0 0 0 3px color-mix(in oklab, var(--atelier-signature) 30%, transparent);
+
+  /* Fond de page : fine grille + lueur en haut. Uniquement dans le raccourci :
+     background: var(--atelier-backdrop), var(--atelier-bg); (voir .atelier-backdrop) */
+  --atelier-backdrop:
+    radial-gradient(80% 60% at 50% 0%, color-mix(in oklab, var(--atelier-signature) 12%, transparent), transparent 70%),
+    linear-gradient(color-mix(in oklab, var(--atelier-signature) 7%, transparent) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, color-mix(in oklab, var(--atelier-signature) 7%, transparent) 1px, transparent 1px) 0 0 / 32px 32px;
+
+  /* Graphiques : la signature en paliers de transparence (séries « neutres » d'une seule mesure). */
+  --atelier-chart-1: var(--atelier-signature);
+  --atelier-chart-2: color-mix(in oklab, var(--atelier-signature) 60%, transparent);
+  --atelier-chart-3: color-mix(in oklab, var(--atelier-signature) 32%, transparent);
+  --atelier-chart-fill: linear-gradient(180deg, var(--atelier-signature), color-mix(in oklab, var(--atelier-signature) 25%, transparent));
 }
 
 /* ---------------------------------------------------------------------------
-   2. Effets néon (thème sombre uniquement)
-   Jetons à utiliser dans les composants de chaque app ; en thème clair ils
-   retombent sur des valeurs neutres, donc on peut s'en servir sans condition.
+   3. Palette dérivée — thème SOMBRE (néon)
    --------------------------------------------------------------------------- */
-:root {
-  --atelier-edge: transparent;                 /* Bord chromé (inset) */
-  --atelier-glow: none;                        /* Halo cyan des cartes et panneaux */
-  --atelier-glow-strong: none;                 /* Halo des modales et éléments actifs */
-  --atelier-glass: none;                       /* Reflet de verre (background-image) */
-  --atelier-text-glow: none;                   /* Halo des titres et de la marque */
-}
-
 :root[data-theme="dark"],
 :root.dark,
-[data-theme="dark"] {
-  --atelier-edge: color-mix(in oklab, var(--atelier-neon) 34%, transparent);
-  --atelier-glow: inset 0 0 0 1px color-mix(in oklab, var(--atelier-neon) 22%, transparent),
-    inset 0 1px 0 color-mix(in oklab, white 10%, transparent),
-    0 0 28px -10px color-mix(in oklab, var(--atelier-neon) 45%, transparent);
-  --atelier-glow-strong: inset 0 0 0 1px color-mix(in oklab, var(--atelier-neon) 40%, transparent),
-    inset 0 1px 0 color-mix(in oklab, white 16%, transparent),
-    0 0 48px -12px color-mix(in oklab, var(--atelier-neon) 60%, transparent);
-  --atelier-glass: linear-gradient(180deg, color-mix(in oklab, var(--atelier-neon) 7%, transparent) 0%, transparent 42%);
-  --atelier-text-glow: 0 0 14px color-mix(in oklab, var(--atelier-neon) 45%, transparent);
+[data-theme="dark"],
+.dark,
+[data-theme="dark"] [data-atelier-app],
+.dark [data-atelier-app] {
+  --atelier-bg: color-mix(in oklab, var(--atelier-signature) 6%, var(--atelier-ink-black));
+  --atelier-sidebar: color-mix(in oklab, var(--atelier-signature) 8%, var(--atelier-ink-black));
+  --atelier-surface: color-mix(in oklab, var(--atelier-signature) 9%, #0b0b0f);
+  --atelier-surface-2: color-mix(in oklab, var(--atelier-signature) 15%, #0d0d12);
+  --atelier-surface-3: color-mix(in oklab, var(--atelier-signature) 24%, #0d0d12);
+  --atelier-field: color-mix(in oklab, var(--atelier-signature) 5%, #08080b);
+
+  --atelier-text: color-mix(in oklab, var(--atelier-signature) 6%, #f6f7f9);
+  --atelier-muted: color-mix(in oklab, var(--atelier-signature) 22%, #a2a7b3);
+  /* Signature comme texte ou icône sur fond sombre : éclaircie. */
+  --atelier-ink: color-mix(in oklab, var(--atelier-signature) 82%, #ffffff);
+
+  --atelier-border: color-mix(in oklab, var(--atelier-signature) 75%, transparent);
+  --atelier-border-soft: color-mix(in oklab, var(--atelier-signature) 32%, transparent);
+  --atelier-line: color-mix(in oklab, var(--atelier-signature) 16%, transparent);
+
+  --atelier-signature-soft: color-mix(in oklab, var(--atelier-signature) 18%, transparent);
+  --atelier-signature-faint: color-mix(in oklab, var(--atelier-signature) 9%, transparent);
+
+  --atelier-glow: 0 0 0 1px color-mix(in oklab, var(--atelier-signature) 35%, transparent),
+    0 0 18px -2px color-mix(in oklab, var(--atelier-signature) 55%, transparent),
+    inset 0 0 22px -10px color-mix(in oklab, var(--atelier-signature) 60%, transparent);
+  --atelier-glow-strong: 0 0 0 1px color-mix(in oklab, var(--atelier-signature) 50%, transparent),
+    0 0 32px -2px color-mix(in oklab, var(--atelier-signature) 60%, transparent),
+    inset 0 0 26px -10px color-mix(in oklab, var(--atelier-signature) 65%, transparent),
+    0 30px 60px -24px #000000;
+  --atelier-signature-glow: 0 0 16px -2px var(--atelier-signature), inset 0 0 12px -4px var(--atelier-signature);
+  --atelier-text-glow: 0 0 18px color-mix(in oklab, var(--atelier-signature) 60%, transparent);
+  --atelier-focus: 0 0 0 3px color-mix(in oklab, var(--atelier-signature) 35%, transparent);
+
+  --atelier-backdrop:
+    radial-gradient(80% 60% at 50% 0%, color-mix(in oklab, var(--atelier-signature) 18%, transparent), transparent 70%),
+    linear-gradient(color-mix(in oklab, var(--atelier-signature) 6%, transparent) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, color-mix(in oklab, var(--atelier-signature) 6%, transparent) 1px, transparent 1px) 0 0 / 32px 32px;
+
+  --atelier-chart-fill: linear-gradient(180deg, var(--atelier-signature), color-mix(in oklab, var(--atelier-signature) 30%, transparent));
 }
 
-/* Classes prêtes à l'emploi (facultatives). */
-.atelier-glass {
-  background-image: var(--atelier-glass);
+/* ---------------------------------------------------------------------------
+   4. Classes prêtes à l'emploi (facultatives) — reproduisent la maquette validée.
+   --------------------------------------------------------------------------- */
+/* --atelier-backdrop contient des tailles de motif (« 0 0 / 32px 32px ») : il ne s'emploie QUE dans le
+   raccourci `background`, jamais dans `background-image`. Forme à utiliser :
+     background: var(--atelier-backdrop), var(--atelier-bg);
+     background-attachment: fixed; */
+.atelier-backdrop {
+  background: var(--atelier-backdrop), var(--atelier-bg);
+  background-attachment: fixed;
+}
+
+/* Carte / panneau : surface, trait néon, halo. */
+.atelier-card {
+  background-color: var(--atelier-surface);
+  border: 1px solid var(--atelier-border);
   box-shadow: var(--atelier-glow);
+}
+
+/* Bouton principal. Clair : plein. Sombre : contour néon, fond en transparence. */
+.atelier-btn-primary {
+  background: var(--atelier-signature);
+  color: var(--atelier-signature-contrast);
+  border: 1px solid var(--atelier-signature);
+  box-shadow: var(--atelier-signature-glow);
+}
+
+:root[data-theme="dark"] .atelier-btn-primary,
+:root.dark .atelier-btn-primary {
+  background: var(--atelier-signature-soft);
+  color: var(--atelier-ink);
+}
+
+/* Entrée de navigation / onglet actif : barre de couleur à gauche, fond en transparence. */
+.atelier-nav-active {
+  color: var(--atelier-text);
+  background: var(--atelier-signature-soft);
+  box-shadow: inset 3px 0 0 var(--atelier-signature), 0 0 14px -4px var(--atelier-signature);
 }
 
 .atelier-neon-text {
@@ -123,7 +219,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   3. Marque (tuile + nom)
+   5. Marque (tuile + nom)
    --------------------------------------------------------------------------- */
 .atelier-brand {
   display: inline-flex;
@@ -133,7 +229,7 @@
   text-decoration: none;
 }
 
-/* Tuile : verre nuit cerclé de cyan, icône dans la couleur signature (comme le badge des logos). */
+/* Tuile : verre cerclé de la signature. Clair : fond blanc teinté, icône assombrie. Sombre : fond nuit teinté, icône lumineuse. */
 .atelier-brand__tile {
   display: grid;
   flex: none;
@@ -141,21 +237,36 @@
   width: 2rem;
   height: 2rem;
   border-radius: 0.625rem;
-  color: var(--atelier-signature-light);
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.14) 0%, rgb(255 255 255 / 0) 45%),
-    linear-gradient(135deg, var(--atelier-night-2), var(--atelier-night));
+  color: var(--atelier-ink);
+  background: linear-gradient(180deg, #ffffff, color-mix(in oklab, var(--atelier-signature) 12%, #ffffff));
   box-shadow:
-    inset 0 0 0 1px color-mix(in oklab, var(--atelier-neon) 55%, transparent),
-    0 0 0 1px color-mix(in oklab, var(--atelier-neon) 18%, transparent),
-    0 4px 16px -6px color-mix(in oklab, var(--atelier-neon) 70%, transparent);
+    inset 0 0 0 1px var(--atelier-signature),
+    0 0 14px -4px var(--atelier-signature);
+}
+
+:root[data-theme="dark"] .atelier-brand__tile,
+:root.dark .atelier-brand__tile,
+[data-theme="dark"] .atelier-brand__tile,
+.dark .atelier-brand__tile {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.14) 0%, rgb(255 255 255 / 0) 50%),
+    color-mix(in oklab, var(--atelier-signature) 22%, #0b0b0f);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--atelier-signature) 70%, transparent),
+    0 0 18px -4px var(--atelier-signature);
 }
 
 .atelier-brand__tile svg {
   width: 1.125rem;
   height: 1.125rem;
   stroke-width: 2.25;
-  filter: drop-shadow(0 0 4px color-mix(in oklab, var(--atelier-signature) 70%, transparent));
+}
+
+:root[data-theme="dark"] .atelier-brand__tile svg,
+:root.dark .atelier-brand__tile svg,
+[data-theme="dark"] .atelier-brand__tile svg,
+.dark .atelier-brand__tile svg {
+  filter: drop-shadow(0 0 4px var(--atelier-signature));
 }
 
 .atelier-brand__name {
@@ -169,7 +280,7 @@
 
 :root[data-theme="dark"] .atelier-brand__name,
 :root.dark .atelier-brand__name {
-  color: var(--atelier-neon-ink);
+  color: var(--atelier-text);
   text-shadow: var(--atelier-text-glow);
 }
 
@@ -187,7 +298,7 @@ button.atelier-brand {
 }
 
 .atelier-brand:focus-visible {
-  outline: 2px solid var(--atelier-neon);
+  outline: 2px solid var(--atelier-signature);
   outline-offset: 4px;
   border-radius: 0.75rem;
 }
@@ -209,7 +320,7 @@ button.atelier-brand {
 }
 
 /* ---------------------------------------------------------------------------
-   4. Fenêtre « À propos » (<dialog class="atelier-about">) : toujours sombre, comme les logos néon.
+   6. Fenêtre « À propos » (<dialog class="atelier-about">) : toujours sombre néon, dans la couleur de l'app.
    Balisage :
      <dialog class="atelier-about" aria-labelledby="…">
        <div class="atelier-about__panel">
@@ -228,12 +339,12 @@ button.atelier-brand {
   padding: 0;
   border: 0;
   overflow: visible;
-  color: #e0f2fe;
+  color: color-mix(in oklab, var(--atelier-signature) 6%, #f6f7f9);
   background: transparent;
 }
 
 .atelier-about::backdrop {
-  background: rgb(2 6 23 / 0.72);
+  background: rgb(4 4 6 / 0.72);
   backdrop-filter: blur(4px);
 }
 
@@ -243,14 +354,14 @@ button.atelier-brand {
   border-radius: 1.25rem;
   text-align: center;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  border: 1px solid color-mix(in oklab, var(--atelier-signature) 75%, transparent);
   background:
-    radial-gradient(120% 75% at 50% 0%, #0c4a6e 0%, #0b1324 62%),
-    #0b1324;
+    radial-gradient(120% 75% at 50% 0%, color-mix(in oklab, var(--atelier-signature) 26%, #0b0b0f) 0%, color-mix(in oklab, var(--atelier-signature) 6%, #07070a) 62%),
+    #07070a;
   box-shadow:
-    inset 0 0 0 1px rgb(63 216 255 / 0.32),
-    inset 0 1px 0 rgb(255 255 255 / 0.12),
-    0 0 0 1px color-mix(in oklab, var(--atelier-signature) 22%, transparent),
-    0 30px 80px -24px rgb(63 216 255 / 0.55);
+    0 0 32px -2px color-mix(in oklab, var(--atelier-signature) 55%, transparent),
+    inset 0 0 26px -10px color-mix(in oklab, var(--atelier-signature) 65%, transparent),
+    0 30px 80px -24px #000000;
 }
 
 .atelier-about__logo {
@@ -261,7 +372,7 @@ button.atelier-brand {
   max-height: 16.5rem;
   margin: 0 auto;
   object-fit: contain;
-  filter: drop-shadow(0 12px 28px rgb(56 189 248 / 0.3));
+  filter: drop-shadow(0 12px 28px color-mix(in oklab, var(--atelier-signature) 35%, transparent));
 }
 
 .atelier-about__name {
@@ -271,8 +382,8 @@ button.atelier-brand {
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: -0.01em;
-  color: #f0f9ff;
-  text-shadow: 0 0 18px rgb(63 216 255 / 0.5);
+  color: #ffffff;
+  text-shadow: 0 0 18px color-mix(in oklab, var(--atelier-signature) 60%, transparent);
 }
 
 .atelier-about__tagline {
@@ -280,7 +391,7 @@ button.atelier-brand {
   max-width: 22rem;
   font-size: 0.9375rem;
   line-height: 1.5;
-  color: #a5c4d8;
+  color: color-mix(in oklab, var(--atelier-signature) 22%, #a2a7b3);
 }
 
 .atelier-about__suite {
@@ -289,7 +400,7 @@ button.atelier-brand {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--atelier-signature-light);
+  color: color-mix(in oklab, var(--atelier-signature) 82%, #ffffff);
   opacity: 0.9;
 }
 

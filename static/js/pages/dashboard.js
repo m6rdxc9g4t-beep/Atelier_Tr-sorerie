@@ -8,16 +8,42 @@
   const compact = new Intl.NumberFormat("fr-FR", { notation: "compact", maximumFractionDigits: 1 });
   const state = { data: null, months: 6, trend: "networth", charts: {} };
 
-  /** Couleurs lues dans les jetons CSS : les graphiques suivent le thème clair / sombre. */
+  /** Couleurs lues dans les jetons CSS : les graphiques suivent le thème clair / sombre.
+      Les jetons sont des color-mix() dérivés du bleu roi : on les résout en rgba() via un canvas,
+      format que Chart.js sait lire (et éclaircir au survol). */
+  const probe = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+  function resolve(name, alpha = 1) {
+    const el = document.createElement("span");
+    el.style.color = `color-mix(in srgb, var(--${name}) ${alpha * 100}%, transparent)`;
+    document.body.appendChild(el);
+    const color = getComputedStyle(el).color;
+    el.remove();
+    probe.clearRect(0, 0, 1, 1);
+    probe.fillStyle = color;
+    probe.fillRect(0, 0, 1, 1);
+    const [r, g, b, a] = probe.getImageData(0, 0, 1, 1).data;
+    return `rgba(${r}, ${g}, ${b}, ${+(a / 255).toFixed(3)})`;
+  }
   function tokens() {
-    const css = getComputedStyle(document.documentElement);
-    const rgb = (name, alpha = 1) => `rgb(${css.getPropertyValue(`--${name}`).trim()} / ${alpha})`;
     return {
-      ink: rgb("ink"), muted: rgb("muted"), line: rgb("line", 0.7), surface: rgb("surface"),
-      // Courbe du patrimoine = donnée clé, en couleur signature (version lisible : éclaircie en sombre)
-      brand: rgb("brand-text"), brandFill: rgb("brand", 0.14), gain: rgb("gain"), loss: rgb("loss"), lilac: rgb("lilac"),
+      ink: resolve("ink"), muted: resolve("muted"), line: resolve("line"), surface: resolve("surface"),
+      // Patrimoine = une seule mesure : la signature en paliers de transparence (comme --atelier-chart-fill),
+      // trait en --atelier-ink (bleu roi lisible : assombri en clair, éclairci en sombre).
+      brand: resolve("brand-text"), brandFill: resolve("brand", 0.14),
+      fillTop: resolve("brand", 0.38), fillBottom: resolve("brand", 0.02),
+      gain: resolve("gain"), loss: resolve("loss"), lilac: resolve("lilac"),
     };
   }
+
+  /** Dégradé vertical bleu roi sous la courbe (repli sur un aplat tant que la zone n'est pas mesurée). */
+  const areaFill = (t) => (ctx) => {
+    const area = ctx.chart.chartArea;
+    if (!area) return t.brandFill;
+    const g = ctx.chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
+    g.addColorStop(0, t.fillTop);
+    g.addColorStop(1, t.fillBottom);
+    return g;
+  };
 
   // ======================================================================= indicateurs
 
@@ -121,7 +147,7 @@
       const hasInvest = h.some((m) => m.investments_cents);
       const datasets = [{
         label: "Patrimoine total", data: h.map((m) => m.total_cents / 100),
-        borderColor: t.brand, backgroundColor: t.brandFill, fill: true, borderWidth: 2, tension: 0.3,
+        borderColor: t.brand, backgroundColor: areaFill(t), fill: true, borderWidth: 2, tension: 0.3,
         pointRadius: 0, pointHoverRadius: 5, pointHoverBorderWidth: 2, pointHoverBorderColor: t.surface, pointHoverBackgroundColor: t.brand,
       }];
       if (hasInvest) {
@@ -247,7 +273,7 @@
             <span class="truncate font-semibold">${esc(i.category_name)}</span>
             <span class="num shrink-0 text-xs text-muted">${eur(i.spent_cents)} / ${eur(i.amount_limit_cents)}</span>
           </div>
-          <div class="progress mt-1.5"><span style="width:${Math.min(100, i.percent || 0)}%;background:rgb(var(--${tone(i.status)}))"></span></div>
+          <div class="progress mt-1.5"><span style="width:${Math.min(100, i.percent || 0)}%;background:var(--${tone(i.status)})"></span></div>
           ${i.status === "depasse" ? `<p class="mt-1 text-xs font-semibold text-loss">⚠ Dépassé de ${eur(-i.remaining_cents)}</p>` : ""}
         </div>`).join("")}
       ${b.count > b.items.length ? `<p class="text-xs text-muted">+ ${b.count - b.items.length} autre(s) budget(s)</p>` : ""}`;

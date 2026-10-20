@@ -72,7 +72,7 @@ function createWindow() {
     minHeight: 600,
     title: PRODUCT,
     show: false,
-    backgroundColor: '#06111F', // fond sombre de l'interface : pas de flash blanc au démarrage
+    backgroundColor: '#090B14', // ≈ --atelier-bg sombre (bleu roi 6 % dans #07070A) : pas de flash blanc au démarrage
     webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, spellcheck: true },
   })
   if (bounds.maximized) mainWindow.maximize()
