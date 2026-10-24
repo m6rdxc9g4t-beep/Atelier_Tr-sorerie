@@ -24,7 +24,7 @@ class Config:
 
     # IA locale — aucune donnée ne quitte la machine
     OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434").rstrip("/")
-    OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.1")
+    OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.2:3b")
     OLLAMA_TIMEOUT = float(os.environ.get("OLLAMA_TIMEOUT", "90"))
 
     CURRENCY = os.environ.get("CURRENCY", "EUR")

@@ -24,7 +24,7 @@ La base `data/finance.db` est créée automatiquement au premier lancement.
 
 ```bash
 ollama serve
-ollama pull llama3.1                 # ou le modèle indiqué dans OLLAMA_MODEL
+ollama pull llama3.2:3b              # ou le modèle indiqué dans OLLAMA_MODEL
 ```
 
 La pastille « IA locale » de la barre latérale indique l'état en direct (vert : prêt, jaune : modèle
@@ -163,7 +163,7 @@ car Trading 212 fait évoluer son format ; un export qui chevauche le précéden
 Deux moteurs au choix, dans **Paramètres** :
 
 - **Ollama (par défaut)** : l'IA tourne sur le Mac, rien ne sort. Installer [Ollama](https://ollama.com/download)
-  puis un modèle (`ollama pull llama3.1`, ou `llama3.2` sur un Mac avec 8 Go de mémoire).
+  puis un modèle (`ollama pull llama3.2:3b` par défaut, ou `llama3.1` avec 16 Go de mémoire ou plus).
 - **Claude** : analyses plus fines, mais les questions et un **résumé agrégé** sont envoyés à Anthropic
   (totaux par mois, catégorie, type de compte et type d'actif ; jamais de libellé, nom de compte,
   de banque, de position ou d'objectif). Deux connexions possibles :

@@ -45,7 +45,7 @@ def demo(app):
 
 def test_settings_defaults_update_and_masked_key(api):
     s = api.get("/api/settings").get_json()
-    assert s["ai_provider"] == "ollama" and s["claude_mode"] == "cli" and s["ollama_model"] == "llama3.1"
+    assert s["ai_provider"] == "ollama" and s["claude_mode"] == "cli" and s["ollama_model"] == "llama3.2:3b"
     assert s["anthropic_api_key_set"] is False and "anthropic_api_key" not in s
 
     res = api.patch("/api/settings", json={"ai_provider": "claude", "claude_mode": "api",
