@@ -8,11 +8,11 @@
   <section class="grid grid-cols-1 gap-4 xl:grid-cols-3">
     {# ------------------------------------------------------------ conversation #}
     <div class="card flex min-h-[32rem] flex-col xl:col-span-2" style="height: calc(100dvh - 10rem)">
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-2.5">
         <div class="flex min-w-0 items-center gap-3">
-          <span id="engine-dot" class="h-2.5 w-2.5 shrink-0 rounded-full bg-muted/50"></span>
+          <span id="engine-dot" class="h-2 w-2 shrink-0 rounded-full bg-faint"></span>
           <div class="min-w-0">
-            <p id="engine-label" class="truncate font-bold">Assistant</p>
+            <p id="engine-label" class="truncate font-semibold">Assistant</p>
             <p id="engine-privacy" class="truncate text-xs text-muted"></p>
           </div>
         </div>
@@ -22,14 +22,14 @@
         </div>
       </div>
 
-      <div id="thread" class="flex-1 space-y-4 overflow-y-auto px-5 py-5" aria-live="polite"></div>
+      <div id="thread" class="flex-1 space-y-4 overflow-y-auto px-4 py-5" aria-live="polite"></div>
 
-      <form id="composer" class="border-t border-line p-4">
+      <form id="composer" class="border-t border-line p-3">
         <label for="question" class="sr-only">Votre question</label>
         <div class="flex items-end gap-2">
-          <textarea id="question" rows="1" maxlength="2000" class="input max-h-40 min-h-[2.75rem] flex-1 resize-none py-2.5"
+          <textarea id="question" rows="1" maxlength="2000" class="input max-h-40 min-h-[2.25rem] flex-1 resize-none py-2"
                     placeholder="Posez votre question…"></textarea>
-          <button id="send" type="submit" class="btn btn-primary h-11 shrink-0" aria-label="Envoyer">
+          <button id="send" type="submit" class="btn btn-primary h-9 shrink-0" aria-label="Envoyer">
             {{ icon("M4 12l16-8-6 16-2.5-6.5z", "h-4 w-4") }}<span class="hidden sm:inline">Envoyer</span>
           </button>
         </div>
@@ -39,19 +39,19 @@
 
     {# ------------------------------------------------------------ colonne latérale #}
     <aside class="space-y-4">
-      <div class="card p-5">
-        <h2 class="font-bold">Catégorisation automatique</h2>
+      <div class="card p-4">
+        <h2 class="section-title">Catégorisation automatique</h2>
         <p id="uncat-text" class="mt-1 text-sm text-muted">…</p>
-        <button id="btn-categorize" type="button" class="btn btn-ghost mt-4 w-full">
+        <button id="btn-categorize" type="button" class="btn btn-ghost mt-3 w-full">
           {{ icon("M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z", "h-4 w-4") }} Proposer des catégories
         </button>
         <p class="mt-2 text-xs text-muted">Vous validez chaque proposition avant qu'elle ne soit appliquée.</p>
       </div>
 
-      <div class="card p-5">
-        <h2 class="font-bold">Confidentialité</h2>
+      <div class="card p-4">
+        <h2 class="section-title">Confidentialité</h2>
         <div id="privacy-detail" class="mt-2 space-y-2 text-sm text-muted"></div>
-        <a href="{{ url_for('settings') }}" class="mt-4 inline-block text-sm font-semibold text-brand hover:underline">Changer de moteur dans Paramètres →</a>
+        <a href="{{ url_for('settings') }}" class="link mt-3">Changer de moteur dans Paramètres {{ icon("M9 6l6 6-6 6") }}</a>
       </div>
     </aside>
   </section>
@@ -64,7 +64,7 @@
     </div>
     <div class="modal-body">
       <p id="context-intro" class="mb-3 text-sm text-muted"></p>
-      <pre id="context-text" class="max-h-[60vh] overflow-auto whitespace-pre-wrap rounded-xl bg-canvas p-4 text-xs leading-relaxed"></pre>
+      <pre id="context-text" class="max-h-[60vh] overflow-auto whitespace-pre-wrap rounded-xl border border-line bg-canvas p-4 text-xs leading-relaxed"></pre>
     </div>
     <div class="modal-foot"><button type="button" class="btn btn-ghost" data-close>Fermer</button></div>
   </dialog>

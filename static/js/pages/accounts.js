@@ -27,25 +27,28 @@
     const last = a.last_transaction_date ? `Dernière opération : ${AT.date(a.last_transaction_date)}`
       : a.holding_count ? "Positions suivies sur la page Placements" : "Aucune opération";
     return `
-      <article class="card group relative overflow-hidden p-5 ${a.archived ? "opacity-60" : ""}">
-        <span class="absolute inset-x-0 top-0 h-1" style="background:${esc(color)}"></span>
+      <article class="card group relative p-4 ${a.archived ? "opacity-60" : ""}">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <h3 class="truncate font-bold">${esc(a.name)}</h3>
-            <p class="truncate text-sm text-muted">${esc(a.type_label)}${a.institution ? ` · ${esc(a.institution)}` : ""}</p>
+            <h3 class="flex items-center gap-2 font-semibold">
+              <span class="h-2 w-2 shrink-0 rounded-full" style="background:${esc(color)}" aria-hidden="true"></span>
+              <span class="truncate">${esc(a.name)}</span>
+            </h3>
+            <p class="mt-0.5 truncate pl-4 text-xs text-muted">${esc(a.type_label)}${a.institution ? ` · ${esc(a.institution)}` : ""}</p>
           </div>
-          <button class="icon-btn h-9 w-9 shrink-0" data-edit="${a.id}" aria-label="Modifier ${esc(a.name)}">
+          <button class="icon-btn -mr-1 -mt-1" data-edit="${a.id}" aria-label="Modifier ${esc(a.name)}">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16v4zM13.5 6.5l4 4"/></svg>
           </button>
         </div>
-        <p class="num mt-5 text-2xl font-extrabold tracking-tight ${a.total_value_cents < 0 ? "text-loss" : ""}">${eur(a.total_value_cents)}</p>
+        <p class="num mt-4 text-2xl font-semibold tracking-tight ${a.total_value_cents < 0 ? "text-loss" : ""}">${eur(a.total_value_cents)}</p>
         ${a.holding_count ? `<p class="num mt-1 text-xs text-muted">
-            <a class="font-semibold text-brand hover:underline" href="/investments">${a.holding_count} position${a.holding_count > 1 ? "s" : ""} ${eur(a.holdings_value_cents)}</a>
+            <a class="font-medium text-brand hover:underline" href="/investments">${a.holding_count} position${a.holding_count > 1 ? "s" : ""} ${eur(a.holdings_value_cents)}</a>
             · liquidités ${eur(a.balance_cents)}</p>` : ""}
-        <div class="mt-4 flex items-center justify-between gap-2 text-xs text-muted">
+        <div class="mt-3 flex items-center justify-between gap-2 border-t border-line pt-3 text-xs text-muted">
           <span class="truncate">${esc(last)}</span>
-          ${a.transaction_count ? `<a class="shrink-0 font-semibold text-brand hover:underline" href="/transactions?account_id=${a.id}">
-            ${a.transaction_count} opération${a.transaction_count > 1 ? "s" : ""} →
+          ${a.transaction_count ? `<a class="link shrink-0 text-xs" href="/transactions?account_id=${a.id}">
+            ${a.transaction_count} opération${a.transaction_count > 1 ? "s" : ""}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
           </a>` : ""}
         </div>
         ${a.archived ? '<span class="badge mt-3">Archivé</span>' : ""}
@@ -60,7 +63,7 @@
     if (!accounts.length) {
       groupsEl.innerHTML = `
         <div class="card mx-auto max-w-lg p-10 text-center">
-          <p class="text-lg font-bold">Aucun compte pour le moment</p>
+          <p class="text-lg font-semibold">Aucun compte pour le moment</p>
           <p class="mt-2 text-muted">Créez votre premier compte pour commencer à suivre vos opérations.</p>
           <button class="btn btn-primary mt-6" data-new>Créer un compte</button>
         </div>`;
@@ -70,8 +73,8 @@
     const types = TYPE_ORDER.filter((type) => accounts.some((a) => a.type === type && !a.archived));
     const breakdown = types.map((type) => {
       const subtotal = accounts.filter((a) => a.type === type && !a.archived).reduce((s, a) => s + a.total_value_cents, 0);
-      return `<span class="chip"><span class="font-semibold text-ink">${TYPE_TITLES[type]}</span>
-        <span class="num ml-1">${eur(subtotal)}</span></span>`;
+      return `<span class="chip"><span class="text-ink-2">${TYPE_TITLES[type]}</span>
+        <span class="num ml-1 font-medium text-ink">${eur(subtotal)}</span></span>`;
     }).join("");
     const sorted = [...accounts].sort((a, b) =>
       a.archived - b.archived || TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type) || a.name.localeCompare(b.name));
@@ -86,7 +89,7 @@
       accounts = data.items;
       render();
     } catch (err) {
-      groupsEl.innerHTML = `<p class="text-loss">${esc(err.message)}</p>`;
+      groupsEl.innerHTML = `<p class="text-danger">${esc(err.message)}</p>`;
     }
   }
 

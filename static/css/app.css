@@ -1,37 +1,63 @@
-/* Atelier Trésorerie — jetons de design.
+/* Atelier Trésorerie — jetons de design et composants.
 
-   Charte « néon monochrome » de la suite Atelier (static/brand/atelier-brand.css, copie exacte) :
-   toute l'application est dans sa couleur signature, le bleu roi #3B5BDB (data-atelier-app="tresorerie"
-   sur <html>). Fonds, surfaces, bordures, textes secondaires et halos sont dérivés de la signature par
-   le kit (--atelier-*), en clair comme en sombre (.dark sur <html>) ; ce fichier les branche sur les
-   jetons de l'app. Les jetons sont des couleurs complètes : Tailwind leur applique l'opacité
-   (bg-brand/10...) par color-mix (voir templates/base.html).
-   Gain / perte / alerte, lilas (placements) et couleurs des catégories gardent leur sens : jamais la signature. */
+   Charte v2 « Linear » de la suite Atelier (règles : Atelier_Deploy/DESIGN.md) :
+   structure neutre en gris froids, clair et sombre, plate au repos, traits de 1 px, police Inter.
+   static/brand/atelier-brand.css est une copie exacte de celle d'Atelier Projets (ne jamais l'éditer ici) ;
+   data-atelier-app="tresorerie" sur <html> fait de la signature, le bleu roi #3c72da, l'accent de l'app :
+   bouton principal, sélection, focus, liens, icône, courbe du patrimoine. Rien d'autre n'est teinté.
+   Ce fichier branche les jetons de l'app sur les jetons --atelier-* du kit. Ce sont des couleurs
+   complètes : Tailwind leur applique l'opacité (bg-brand/10...) par color-mix (voir templates/base.html).
+   Gain / perte / alerte, lilas (placements) et couleurs des catégories gardent leur sens et leurs valeurs :
+   jamais la signature. */
 
 :root {
-  --canvas: var(--atelier-bg);            /* fond de page */
-  --sidebar: var(--atelier-sidebar);
-  --surface: var(--atelier-surface);      /* cartes, panneaux */
-  --raised: var(--atelier-surface-2);     /* survol, menus, pistes */
-  --selected: var(--atelier-surface-3);   /* sélection */
+  --canvas: var(--atelier-bg);            /* fond de la zone principale */
+  --sidebar: var(--atelier-sidebar);      /* barre latérale, en-têtes de tableau */
+  --surface: var(--atelier-surface);      /* cartes, panneaux, boutons */
+  --raised: var(--atelier-surface-2);     /* survol, pistes */
+  --selected: var(--atelier-surface-3);   /* élément courant (navigation), bouton pressé */
   --field: var(--atelier-field);          /* champs de saisie */
   --line: var(--atelier-line);            /* séparateurs, lignes de tableau */
   --border: var(--atelier-border);        /* contour des cartes */
   --border-soft: var(--atelier-border-soft); /* champs, boutons secondaires */
   --ink: var(--atelier-text);             /* texte */
+  --ink-2: color-mix(in oklab, var(--atelier-text) 78%, var(--atelier-muted)); /* libellés de navigation et de champ */
   --muted: var(--atelier-muted);          /* texte secondaire */
+  --faint: var(--atelier-faint);          /* compteurs, icônes au repos */
   --brand: var(--atelier-signature);      /* accent : bleu roi */
   --brand-text: var(--atelier-ink);       /* signature en texte / icône, lisible (text-brand) */
-  /* Couleurs sémantiques : inchangées */
+  --danger: var(--atelier-down);          /* erreurs, actions destructrices */
+  /* Couleurs de données : inchangées */
   --gain: rgb(14 150 112);    /* émeraude */
   --loss: rgb(214 92 80);     /* corail */
   --warn: rgb(196 138 22);
   --lilac: rgb(124 108 220);
+
+  /* Typographie : base 13 px sur ordinateur, 14–15 px sur téléphone (échelle Tailwind branchée dessus) */
+  --fs-xs: 0.75rem;     /* 12 px : méta, aides */
+  --fs-sm: 0.8125rem;   /* 13 px : texte courant */
+  --fs-base: 0.875rem;  /* 14 px */
+  --fs-lg: 0.9375rem;   /* 15 px : titres de section */
+  --fs-xl: 1.125rem;    /* 18 px */
+  --fs-2xl: 1.375rem;   /* 22 px : montants clés */
+  --fs-3xl: 1.625rem;   /* 26 px */
+  --fs-4xl: 1.875rem;   /* 30 px */
+  --side-w: 232px;
+  --top-h: 44px;
   color-scheme: light;
 }
 
+@media (max-width: 760px) {
+  :root {
+    --fs-xs: 0.78125rem; /* 12,5 px */
+    --fs-sm: 0.875rem;   /* 14 px */
+    --fs-base: 0.9375rem;
+    --fs-lg: 1rem;
+  }
+}
+
 .dark {
-  /* Les jetons --atelier-* passent d'eux-mêmes en version néon sombre ; seules les couleurs sémantiques changent ici. */
+  /* Les jetons --atelier-* passent d'eux-mêmes en sombre ; seules les couleurs de données changent ici. */
   --gain: rgb(110 231 183);   /* menthe */
   --loss: rgb(252 160 148);   /* corail doux */
   --warn: rgb(252 211 77);
@@ -39,246 +65,361 @@
   color-scheme: dark;
 }
 
-/* Fond de page : fine grille + lueur bleu roi en haut (les deux thèmes).
-   Raccourci `background` obligatoire : --atelier-backdrop contient position et taille de la grille
-   (« 0 0 / 32px 32px »), invalides dans background-image. */
+/* ------------------------------------------------------------------ base */
+
 body {
-  background: var(--atelier-backdrop), var(--atelier-bg);
-  background-attachment: fixed;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--atelier-font);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  font-feature-settings: "cv11", "ss03";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+::selection { background: color-mix(in oklab, var(--brand) 30%, transparent); color: var(--ink); }
+* { scrollbar-width: thin; scrollbar-color: var(--border-soft) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--border-soft); border-radius: 10px; border: 3px solid var(--canvas); }
+::-webkit-scrollbar-track { background: transparent; }
+a { text-underline-offset: 3px; text-decoration-thickness: 1px; }
+code { font-family: var(--atelier-font-mono); font-size: 0.92em; }
 
 /* Chiffres alignés : indispensable pour comparer des montants */
-.num { font-variant-numeric: tabular-nums; }
+.num, .table { font-variant-numeric: tabular-nums; }
 
-/* Cartes : surface, trait néon de la signature, halo */
-.card {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 1.25rem;
-  box-shadow: var(--atelier-glow);
+/* Focus clavier : anneau de la signature, commun à tout élément focalisable */
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* L'attribut hidden doit toujours l'emporter sur display: flex/inline-flex des composants */
+[hidden] { display: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0ms !important; animation-duration: 0ms !important; }
 }
 
-/* Barre latérale et en-tête */
+/* Icônes au trait (16 px, trait 1,75) */
+.ic { width: 1rem; height: 1rem; flex: none; }
+
+/* ------------------------------------------------------------------ coquille */
+
 .app-sidebar {
-  background-color: color-mix(in oklab, var(--sidebar) 92%, transparent);
-  border-right: 1px solid var(--border-soft);
+  width: var(--side-w);
+  padding: 12px 8px 8px;
+  background: var(--sidebar);
+  border-right: 1px solid var(--line);
 }
-.app-header { border-bottom: 1px solid var(--line); }
-/* Titre de page avec halo ; marge négative compensée pour que `truncate` (overflow: hidden) ne coupe pas le halo net */
-.page-title { text-shadow: var(--atelier-text-glow); padding: 0.35em 0.6em; margin: -0.35em -0.6em; }
+.app-brand { padding: 4px 8px 12px; }
+.app-brand .atelier-brand { margin: -4px; padding: 4px; }
+.app-brand .atelier-brand:hover { background: var(--raised); }
 
 .nav-link {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.65rem 0.9rem;
-  border-radius: 0.85rem;
-  font-weight: 600;
-  font-size: 0.925rem;
-  color: var(--muted);
-  transition: background-color 0.15s, color 0.15s;
+  gap: 10px;
+  width: 100%;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: var(--atelier-radius-md);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ink-2);
+  text-align: left;
+  transition: background-color 0.12s, color 0.12s;
 }
-.nav-link:hover { background: var(--atelier-signature-faint); color: var(--ink); }
-/* Navigation active : barre bleu roi à gauche, fond en transparence, halo (comme .atelier-nav-active) */
-.nav-link.is-active {
-  color: var(--ink);
-  background: var(--atelier-signature-soft);
-  box-shadow: inset 3px 0 0 var(--atelier-signature), 0 0 14px -4px var(--atelier-signature);
-}
-.nav-link.is-active svg { color: var(--brand-text); }
+.nav-link svg { width: 1rem; height: 1rem; color: var(--faint); }
+.nav-link:hover { background: var(--raised); color: var(--ink); }
+/* Entrée courante : fond neutre, texte et icône pleins (pas de barre de couleur, pas d'accent) */
+.nav-link.is-active { background: var(--selected); color: var(--ink); }
+.nav-link.is-active svg { color: var(--ink); }
 
+.nav-sec { padding: 16px 8px 6px; font-size: 0.71875rem; font-weight: 500; color: var(--faint); }
+
+/* Pied de la barre latérale : état de l'assistant, thème */
+.side-status {
+  display: block;
+  margin: 0 0 8px;
+  padding: 8px;
+  border-radius: var(--atelier-radius-md);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  transition: background-color 0.12s;
+}
+.side-status:hover { background: var(--raised); }
+
+.app-main { padding-left: 0; }
+@media (min-width: 1024px) { .app-main { padding-left: var(--side-w); } }
+
+.app-header {
+  min-height: var(--top-h);
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in oklab, var(--canvas) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px);
+  -webkit-backdrop-filter: saturate(1.4) blur(10px);
+}
+.page-title { font-size: var(--fs-sm); font-weight: 600; line-height: 1.2; }
+
+/* Bouton icône discret (30 px) */
 .icon-btn {
   display: grid;
   place-items: center;
-  height: 2.5rem;
-  width: 2.5rem;
-  border-radius: 0.85rem;
-  border: 1px solid var(--border-soft);
-  background: var(--surface);
+  flex: none;
+  height: 30px;
+  width: 30px;
+  border-radius: var(--atelier-radius-md);
+  border: 1px solid transparent;
+  background: transparent;
   color: var(--muted);
-  transition: color 0.15s, background-color 0.15s;
+  transition: color 0.12s, background-color 0.12s;
 }
 .icon-btn:hover { color: var(--ink); background: var(--raised); }
+.icon-btn:active { background: var(--selected); }
 
-/* Pastille (tag) : fond en transparence, texte et trait de la signature */
+/* ------------------------------------------------------------------ surfaces */
+
+/* Carte / panneau : surface, trait de 1 px, plat au repos */
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--atelier-radius-lg);
+}
+
+/* Bandeau d'indicateurs : un seul panneau, cellules séparées par des filets */
+.stat-strip {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--atelier-radius-lg);
+}
+.stat-strip > * { background: var(--surface); padding: 14px 16px; min-width: 0; }
+
+/* Titre de section dans une carte */
+.section-title { font-size: var(--fs-sm); font-weight: 600; color: var(--ink); }
+
+/* Pastille neutre (mois affiché, sous-totaux) */
 .chip {
-  border-radius: 999px;
-  border: 1px solid var(--border-soft);
-  background: var(--atelier-signature-soft);
-  padding: 0.25rem 0.7rem;
-  font-size: 0.75rem;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--atelier-radius-sm);
+  background: var(--raised);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Lien d'action discret (« Tout voir », « Gérer ») */
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--fs-sm);
+  font-weight: 500;
   color: var(--brand-text);
 }
+.link:hover { text-decoration: underline; }
+.link svg { width: 0.875rem; height: 0.875rem; }
 
-/* Zone réservée aux composants des étapes suivantes */
-.placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  border: 1.5px dashed var(--border-soft);
-  border-radius: 1rem;
-  color: var(--muted);
-  font-size: 0.875rem;
-  background: repeating-linear-gradient(135deg, transparent 0 12px, color-mix(in oklab, var(--raised) 45%, transparent) 12px 24px);
-}
-
-/* Focus : contour bleu roi */
-:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
-
-@media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; }
-}
-
-/* ------------------------------------------------------------------ Étape 2 : composants */
-
-/* L'attribut hidden doit toujours l'emporter sur display: flex/inline-flex des composants */
-[hidden] { display: none !important; }
+/* ------------------------------------------------------------------ boutons */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
-  height: 2.5rem;
-  padding: 0 1rem;
-  border-radius: 0.85rem;
-  font-weight: 700;
-  font-size: 0.875rem;
+  gap: 0.375rem;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: var(--atelier-radius-md);
+  border: 1px solid var(--border-soft);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1;
   white-space: nowrap;
-  transition: opacity 0.15s, background-color 0.15s, color 0.15s, box-shadow 0.15s, filter 0.15s;
+  transition: background-color 0.12s, color 0.12s, border-color 0.12s;
 }
-.btn:disabled { opacity: 0.45; cursor: not-allowed; }
-/* Bouton principal (comme .atelier-btn-primary du kit).
-   Clair : plein bleu roi, texte blanc. Sombre : contour néon, fond en transparence, texte bleu roi éclairci. */
+.btn:hover:not(:disabled) { background: var(--raised); }
+.btn:active:not(:disabled) { background: var(--selected); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn svg { width: 0.875rem; height: 0.875rem; flex: none; }
+/* Bouton principal : plein, dans les deux thèmes (comme .atelier-btn-primary du kit) */
 .btn-primary {
   background: var(--atelier-signature);
+  border-color: transparent;
   color: var(--atelier-signature-contrast);
-  border: 1px solid var(--atelier-signature);
-  box-shadow: var(--atelier-signature-glow);
 }
-.dark .btn-primary { background: var(--atelier-signature-soft); color: var(--brand-text); }
-.btn-primary:hover:not(:disabled) { filter: brightness(1.1); }
-.dark .btn-primary:hover:not(:disabled) { filter: none; background: color-mix(in oklab, var(--atelier-signature) 30%, transparent); }
-.btn-ghost { border: 1px solid var(--border-soft); background: var(--surface); color: var(--ink); }
-.btn-ghost:hover:not(:disabled) { background: var(--raised); }
-.btn-danger { color: var(--loss); border: 1px solid color-mix(in oklab, var(--loss) 35%, transparent); }
-.btn-danger:hover:not(:disabled) { background: color-mix(in oklab, var(--loss) 10%, transparent); }
-.btn-sm { height: 2rem; padding: 0 0.75rem; font-size: 0.8rem; border-radius: 0.7rem; }
+.btn-primary:hover:not(:disabled) { background: var(--atelier-signature-hover); }
+.btn-primary:active:not(:disabled) { background: var(--atelier-signature-hover); }
+/* Bouton secondaire (nom historique « ghost ») : surface + trait */
+.btn-ghost { background: var(--surface); }
+/* Filtre choisi (pastilles de comptes) : pressé, neutre */
+.btn[aria-selected="true"], .btn[aria-pressed="true"] { background: var(--selected); border-color: var(--border-soft); color: var(--ink); }
+.btn-danger { color: var(--danger); border-color: color-mix(in oklab, var(--danger) 35%, var(--border-soft)); }
+.btn-danger:hover:not(:disabled) { background: color-mix(in oklab, var(--danger) 9%, var(--surface)); }
+.btn-sm { height: 26px; padding: 0 10px; font-size: var(--fs-xs); border-radius: var(--atelier-radius-sm); }
+.btn-lg { height: 36px; padding: 0 16px; font-size: var(--fs-base); }
+/* Téléphone : cibles tactiles plus hautes */
+@media (max-width: 760px) {
+  .btn { height: 36px; }
+  .btn-sm { height: 32px; }
+  .icon-btn { width: 36px; height: 36px; }
+}
 
-.field-label { display: block; margin-bottom: 0.35rem; font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+/* ------------------------------------------------------------------ champs */
+
+.field-label { display: block; margin-bottom: 6px; font-size: var(--fs-sm); font-weight: 500; color: var(--ink-2); }
 .input {
   width: 100%;
-  height: 2.6rem;
-  padding: 0 0.85rem;
-  border-radius: 0.8rem;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: var(--atelier-radius-md);
   border: 1px solid var(--border-soft);
   background: var(--field);
   color: var(--ink);
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
+  transition: border-color 0.12s, box-shadow 0.12s;
 }
-textarea.input { height: auto; padding: 0.6rem 0.85rem; resize: vertical; }
+.input::placeholder { color: var(--faint); }
+.input:hover { border-color: color-mix(in oklab, var(--border-soft) 60%, var(--muted)); }
+textarea.input { height: auto; padding: 8px 10px; resize: vertical; line-height: 1.45; }
 .input:focus { outline: none; border-color: var(--brand); box-shadow: var(--atelier-focus); }
-.input[aria-invalid="true"] { border-color: var(--loss); }
-.field-error { margin-top: 0.3rem; font-size: 0.75rem; color: var(--loss); }
-select.input { padding-right: 2rem; }
+.input[aria-invalid="true"] { border-color: var(--danger); }
+.input:disabled { opacity: 0.5; cursor: not-allowed; }
+.field-error { margin-top: 4px; font-size: var(--fs-xs); color: var(--danger); }
+select.input { padding-right: 1.75rem; }
+@media (max-width: 760px) { .input { height: 40px; } }
 
-.segmented { display: inline-flex; padding: 0.25rem; gap: 0.25rem; border-radius: 0.9rem; border: 1px solid var(--border-soft); background: var(--atelier-signature-faint); }
-.segmented label { cursor: pointer; }
+/* Contrôle segmenté (périodes, sens de l'opération, thème) */
+.segmented { display: inline-flex; padding: 2px; gap: 2px; border-radius: var(--atelier-radius-md); background: var(--raised); }
+.segmented label, .segmented button { cursor: pointer; }
 .segmented input { position: absolute; opacity: 0; pointer-events: none; }
-.segmented span { display: block; padding: 0.4rem 0.9rem; border-radius: 0.7rem; font-weight: 700; font-size: 0.85rem; color: var(--muted); }
-.segmented input:checked + span { background: var(--selected); color: var(--ink); box-shadow: 0 0 10px -4px var(--atelier-signature); }
-.segmented input:focus-visible + span { outline: 2px solid var(--brand); }
+.segmented span, .segmented button {
+  display: flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px;
+  border-radius: var(--atelier-radius-sm);
+  font-size: var(--fs-xs); font-weight: 500; line-height: 1; color: var(--muted);
+  transition: color 0.12s, background-color 0.12s;
+}
+.segmented label:hover span, .segmented button:hover { color: var(--ink); }
+.segmented input:checked + span, .segmented button[aria-pressed="true"] {
+  background: var(--surface); color: var(--ink);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 0 0 1px var(--line);
+}
+.segmented input:focus-visible + span { outline: 2px solid var(--brand); outline-offset: 1px; }
+.segmented button svg { width: 0.875rem; height: 0.875rem; }
+.segmented--icons button { padding: 0 7px; }
 
+/* Étiquette (catégorie, statut) : trait fin, pastille de couleur de la catégorie */
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.375rem;
   max-width: 100%;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: var(--raised);
-  color: var(--ink);
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--atelier-radius-sm);
+  border: 1px solid var(--line);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ink-2);
   white-space: nowrap;
 }
 .badge .dot { width: 0.5rem; height: 0.5rem; border-radius: 999px; flex: none; }
-.badge-gain { background: color-mix(in oklab, var(--gain) 14%, transparent); color: var(--gain); }
-.badge-loss { background: color-mix(in oklab, var(--loss) 14%, transparent); color: var(--loss); }
-.badge-warn { background: color-mix(in oklab, var(--warn) 16%, transparent); color: var(--warn); }
+.badge-gain { border-color: transparent; background: color-mix(in oklab, var(--gain) 14%, transparent); color: var(--gain); }
+.badge-loss { border-color: transparent; background: color-mix(in oklab, var(--loss) 14%, transparent); color: var(--loss); }
+.badge-warn { border-color: transparent; background: color-mix(in oklab, var(--warn) 16%, transparent); color: var(--warn); }
 
-.table { width: 100%; font-size: 0.875rem; border-collapse: separate; border-spacing: 0; }
+/* ------------------------------------------------------------------ tableaux denses */
+
+.table { width: 100%; font-size: var(--fs-sm); border-collapse: separate; border-spacing: 0; }
 .table th {
   position: sticky; top: 0; z-index: 1;
-  padding: 0.7rem 0.75rem; text-align: left; font-size: 0.72rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
-  background: var(--surface); border-bottom: 1px solid var(--line);
+  height: 32px; padding: 0 12px; text-align: left;
+  font-size: var(--fs-xs); font-weight: 500; color: var(--muted); white-space: nowrap;
+  background: var(--sidebar); border-bottom: 1px solid var(--line);
 }
-.table th button { text-transform: inherit; letter-spacing: inherit; font-weight: inherit; }
-.table td { padding: 0.75rem; border-bottom: 1px solid color-mix(in oklab, var(--line) 70%, transparent); vertical-align: middle; }
+.table th.text-right { text-align: right; }
+.table th button { font: inherit; color: inherit; }
+.table th button:hover { color: var(--ink); }
+.table td { height: 40px; padding: 6px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.table tbody tr:last-child td { border-bottom: 0; }
+.table td:first-child, .table th:first-child { padding-left: 16px; }
+.table td:last-child, .table th:last-child { padding-right: 16px; }
 .table tbody tr { transition: background-color 0.1s; }
-.table tbody tr:hover { background: var(--atelier-signature-faint); }
-.table tbody tr.is-selected { background: var(--selected); }
+.table tbody tr:hover { background: var(--raised); }
+.table tbody tr.is-selected { background: var(--atelier-signature-soft); }
 
-.progress { height: 0.55rem; border-radius: 999px; background: var(--raised); overflow: hidden; }
-.progress > span { display: block; height: 100%; border-radius: inherit; transition: width 0.4s ease; }
+.progress { height: 6px; border-radius: 3px; background: var(--raised); overflow: hidden; }
+.progress > span { display: block; height: 100%; border-radius: inherit; transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 
-.checkbox { width: 1rem; height: 1rem; accent-color: var(--atelier-signature); cursor: pointer; }
+.checkbox { width: 14px; height: 14px; accent-color: var(--atelier-signature); cursor: pointer; }
 
-/* Fenêtres modales natives (<dialog>) */
+/* ------------------------------------------------------------------ fenêtres modales natives (<dialog>) */
+
 dialog.modal {
   width: min(32rem, calc(100vw - 2rem));
   max-height: calc(100dvh - 2rem);
   padding: 0;
   border: 1px solid var(--border);
-  border-radius: 1.25rem;
+  border-radius: var(--atelier-radius-lg);
   background-color: var(--surface);
   color: var(--ink);
   box-shadow: var(--atelier-glow-strong);
 }
 dialog.modal.modal-wide { width: min(64rem, calc(100vw - 2rem)); }
-dialog.modal::backdrop { background: color-mix(in oklab, color-mix(in oklab, var(--atelier-signature) 10%, var(--atelier-ink-black)) 55%, transparent); backdrop-filter: blur(3px); }
-.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem 0.5rem; }
-.modal-body { padding: 0.75rem 1.5rem 1.25rem; }
-.modal-foot { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: flex-end; padding: 1rem 1.5rem 1.25rem; border-top: 1px solid var(--line); }
+dialog.modal::backdrop { background: rgb(10 11 13 / 0.45); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px 6px 20px; }
+.modal-head h2 { font-size: var(--fs-lg); font-weight: 600; }
+.modal-body { padding: 10px 20px 18px; }
+.modal-foot { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; padding: 12px 20px; border-top: 1px solid var(--line); }
 
-.swatch { width: 1.75rem; height: 1.75rem; border-radius: 999px; cursor: pointer; border: 2px solid transparent; }
+.swatch { width: 1.5rem; height: 1.5rem; border-radius: 999px; cursor: pointer; border: 2px solid transparent; }
 .swatch-input { position: absolute; opacity: 0; }
 .swatch-input:checked + .swatch { border-color: var(--ink); box-shadow: 0 0 0 2px var(--surface) inset; }
 .swatch-input:focus-visible + .swatch { outline: 2px solid var(--brand); outline-offset: 2px; }
 
 .dropzone {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;
-  padding: 2rem 1rem; border: 1.5px dashed var(--border-soft); border-radius: 1rem; text-align: center;
-  color: var(--muted); cursor: pointer; transition: border-color 0.15s, background-color 0.15s;
+  padding: 2rem 1rem; border: 1px dashed var(--border-soft); border-radius: var(--atelier-radius-lg); text-align: center;
+  color: var(--muted); cursor: pointer; transition: border-color 0.12s, background-color 0.12s;
 }
-.dropzone:hover, .dropzone.is-over { border-color: var(--brand); background: var(--atelier-signature-faint); }
+.dropzone:hover, .dropzone.is-over { border-color: var(--brand); background: var(--raised); }
 
-.skeleton { border-radius: 0.6rem; background: linear-gradient(90deg, var(--raised) 25%, var(--line) 50%, var(--raised) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
-@keyframes shimmer { to { background-position: -200% 0; } }
+/* Chargement : bloc neutre qui respire (pas de reflet coloré) */
+.skeleton { border-radius: var(--atelier-radius-sm); background: var(--raised); animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.55; } }
 
+/* Notifications : panneau flottant (seul cas d'ombre avec les dialogues) */
 #toasts { position: fixed; right: 1rem; bottom: 1rem; z-index: 60; display: flex; flex-direction: column; gap: 0.5rem; }
 .toast {
-  display: flex; align-items: center; gap: 0.6rem; max-width: 24rem; padding: 0.75rem 1rem;
-  border-radius: 0.9rem; font-size: 0.875rem; font-weight: 600;
-  background: var(--ink); color: var(--canvas);
-  box-shadow: 0 12px 32px rgb(0 0 0 / 0.3); animation: toast-in 0.2s ease-out;
+  display: flex; align-items: center; gap: 0.6rem; max-width: 24rem; padding: 10px 14px;
+  border-radius: var(--atelier-radius-md); font-size: var(--fs-sm); font-weight: 500;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--border);
+  box-shadow: var(--atelier-glow-strong); animation: toast-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.toast-error { background: var(--loss); color: var(--canvas); }
-@keyframes toast-in { from { transform: translateY(8px); opacity: 0; } }
+.toast-error { color: var(--danger); border-color: color-mix(in oklab, var(--danger) 30%, var(--border)); }
+@keyframes toast-in { from { transform: translateY(6px); opacity: 0; } }
 
-/* Cartes de choix du moteur d'IA (Paramètres) */
+/* Cartes de choix du moteur d'IA (Paramètres) : la sélection prend le voile de la signature */
 .engine-card {
   display: block;
   cursor: pointer;
-  padding: 1rem 1.1rem;
-  border-radius: 1rem;
-  border: 1.5px solid var(--border-soft);
-  transition: border-color 0.15s, background-color 0.15s;
+  padding: 12px 14px;
+  border-radius: var(--atelier-radius-lg);
+  border: 1px solid var(--border-soft);
+  transition: border-color 0.12s, background-color 0.12s;
 }
-.engine-card:hover { border-color: color-mix(in oklab, var(--brand) 50%, transparent); }
-.engine-card:has(input:checked) { border-color: var(--brand); background: var(--atelier-signature-soft); box-shadow: var(--atelier-signature-glow); }
+.engine-card:hover { background: var(--raised); }
+.engine-card:has(input:checked) { border-color: color-mix(in oklab, var(--brand) 55%, transparent); background: var(--atelier-signature-soft); }
 .engine-card:has(input:focus-visible) { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* Marque dans l'état vide (bienvenue) : icône de l'app en grand */
+.atelier-brand__tile--xl { width: 3rem; height: 3rem; border-radius: 0.75rem; }
+.atelier-brand__tile--xl svg { width: 1.5rem; height: 1.5rem; stroke-width: 1.9; }

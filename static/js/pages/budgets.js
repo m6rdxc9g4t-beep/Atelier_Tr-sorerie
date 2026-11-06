@@ -25,7 +25,7 @@
     const el = $("budget-total");
     if (!data.items.length) {
       el.innerHTML = `
-        <p class="font-bold">Aucun budget pour ${esc(AT.monthLabel(month).toLowerCase())}</p>
+        <p class="font-semibold">Aucun budget pour ${esc(AT.monthLabel(month).toLowerCase())}</p>
         <p class="mt-1 text-sm text-muted">Fixez un plafond par catégorie pour suivre vos dépenses, ou reprenez ceux du mois précédent.</p>`;
       return;
     }
@@ -35,11 +35,11 @@
     el.innerHTML = `
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p class="text-sm font-medium text-muted">Dépensé sur les catégories budgétées</p>
-          <p class="num mt-1 text-3xl font-extrabold tracking-tight">${eur(data.total_spent_cents)}
-            <span class="text-base font-semibold text-muted">/ ${eur(data.total_limit_cents)}</span></p>
+          <p class="text-xs font-medium text-muted">Dépensé sur les catégories budgétées</p>
+          <p class="num mt-1 text-2xl font-semibold tracking-tight">${eur(data.total_spent_cents)}
+            <span class="text-base font-medium text-muted">/ ${eur(data.total_limit_cents)}</span></p>
         </div>
-        <p class="num text-sm font-bold text-${tone}">
+        <p class="num text-sm font-medium text-${tone}">
           ${left >= 0 ? `Reste ${eur(left)}` : `Dépassement de ${eur(-left)}`}
         </p>
       </div>
@@ -55,21 +55,21 @@
     list.innerHTML = data.items.map((b) => {
       const tone = TONE[b.status];
       const remaining = b.remaining_cents >= 0
-        ? `<span class="text-muted">Reste</span> <strong class="num">${eur(b.remaining_cents)}</strong>`
-        : `<strong class="num text-loss">Dépassé de ${eur(-b.remaining_cents)}</strong>`;
+        ? `<span class="text-muted">Reste</span> <span class="num font-medium">${eur(b.remaining_cents)}</span>`
+        : `<span class="num font-medium text-loss">Dépassé de ${eur(-b.remaining_cents)}</span>`;
       return `
-        <button class="block w-full rounded-xl p-2 -m-2 text-left transition hover:bg-raised/60" data-budget="${b.id}">
+        <button class="-mx-2 block w-[calc(100%+1rem)] rounded-xl px-2 py-2.5 text-left transition hover:bg-raised" data-budget="${b.id}">
           <div class="flex items-center justify-between gap-3">
-            <span class="flex min-w-0 items-center gap-2 font-semibold">
+            <span class="flex min-w-0 items-center gap-2 font-medium">
               <span class="h-2.5 w-2.5 shrink-0 rounded-full" style="background:${esc(b.category_color)}"></span>
               <span class="truncate">${esc(b.category_name)}</span>
             </span>
-            <span class="num shrink-0 text-sm"><strong>${eur(b.spent_cents)}</strong>
+            <span class="num shrink-0 text-sm"><span class="font-medium">${eur(b.spent_cents)}</span>
               <span class="text-muted">/ ${eur(b.amount_limit_cents)}</span></span>
           </div>
           <div class="mt-2">${bar(b.percent, tone)}</div>
           <div class="mt-1.5 flex justify-between text-xs">
-            <span class="num text-${tone} font-semibold">${b.percent === null ? "—" : `${Math.round(b.percent)} %`}</span>
+            <span class="num text-${tone} font-medium">${b.percent === null ? "—" : `${Math.round(b.percent)} %`}</span>
             <span>${remaining}</span>
           </div>
         </button>`;
@@ -80,13 +80,13 @@
     const card = $("unbudgeted-card");
     card.classList.toggle("hidden", !data.unbudgeted.length);
     $("unbudgeted-list").innerHTML = data.unbudgeted.map((u) => `
-      <li class="flex items-center justify-between gap-3 py-3">
+      <li class="flex items-center justify-between gap-3 py-2.5">
         <span class="flex min-w-0 items-center gap-2">
           <span class="h-2.5 w-2.5 shrink-0 rounded-full" style="background:${esc(u.category_color)}"></span>
-          <span class="truncate font-semibold">${esc(u.category_name)}</span>
+          <span class="truncate font-medium">${esc(u.category_name)}</span>
         </span>
         <span class="flex items-center gap-3">
-          <span class="num text-sm font-bold">${eur(u.spent_cents)}</span>
+          <span class="num text-sm font-medium">${eur(u.spent_cents)}</span>
           <button class="btn btn-ghost btn-sm" data-quick="${u.category_id}" data-spent="${u.spent_cents}">Fixer un budget</button>
         </span>
       </li>`).join("");
@@ -193,12 +193,12 @@
       if (g.monthly_needed_cents) meta.push(`${eur(g.monthly_needed_cents)} / mois`);
       if (g.account_name) meta.push(`Suit « ${esc(g.account_name)} »`);
       return `
-        <button class="block w-full rounded-xl border border-line p-4 text-left transition hover:bg-raised/60" data-goal="${g.id}">
+        <button class="block w-full rounded-xl border border-line p-3 text-left transition hover:bg-raised" data-goal="${g.id}">
           <div class="flex items-center justify-between gap-2">
-            <span class="truncate font-semibold">${esc(g.name)}</span>
-            ${done ? '<span class="badge badge-gain">Atteint</span>' : `<span class="num text-sm font-bold text-brand">${Math.round(g.percent)} %</span>`}
+            <span class="truncate font-medium">${esc(g.name)}</span>
+            ${done ? '<span class="badge badge-gain">Atteint</span>' : `<span class="num text-sm font-medium text-brand">${Math.round(g.percent)} %</span>`}
           </div>
-          <p class="num mt-2 text-sm"><strong>${eur(g.progress_cents)}</strong> <span class="text-muted">/ ${eur(g.target_amount_cents)}</span></p>
+          <p class="num mt-1.5 text-sm"><span class="font-medium">${eur(g.progress_cents)}</span> <span class="text-muted">/ ${eur(g.target_amount_cents)}</span></p>
           <div class="mt-2">${bar(g.percent, done ? "gain" : "brand")}</div>
           ${meta.length ? `<p class="mt-2 text-xs text-muted">${meta.join(" · ")}</p>` : ""}
         </button>`;

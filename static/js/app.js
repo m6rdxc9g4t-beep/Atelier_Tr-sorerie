@@ -210,13 +210,21 @@
 
   // ======================================================================= mise en page
 
-  // ---------- Thème clair / sombre ----------
+  // ---------- Thème Système / Clair / Sombre (préférence commune à la suite : static/brand/atelier-theme.js) ----------
   const root = document.documentElement;
-  document.getElementById("theme-toggle")?.addEventListener("click", () => {
-    const dark = root.classList.toggle("dark");
-    try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (e) { /* stockage indisponible */ }
-    document.dispatchEvent(new CustomEvent("themechange", { detail: { dark } })); // pour Chart.js (étape 3)
-  });
+  const themeButtons = document.querySelectorAll("[data-theme-set]");
+  const showThemePref = () => {
+    const pref = window.atelierTheme ? window.atelierTheme.get() : "system";
+    themeButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.themeSet === pref)));
+  };
+  themeButtons.forEach((b) => b.addEventListener("click", () => window.atelierTheme?.set(b.dataset.themeSet)));
+  window.addEventListener("atelier-theme", showThemePref);
+  showThemePref();
+  // Thème réellement affiché qui change (choix, système, autre app de la suite) : les graphiques relisent leurs couleurs.
+  new MutationObserver(() => {
+    showThemePref();
+    document.dispatchEvent(new CustomEvent("themechange", { detail: { dark: root.classList.contains("dark") } }));
+  }).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
 
   // ---------- Sidebar mobile ----------
   const sidebar = document.getElementById("sidebar");
@@ -244,7 +252,7 @@
     try {
       const { ai } = await AT.api("GET", "/api/health");
       const { tone, text } = AT.aiState(ai);
-      if (dot) dot.className = `h-2.5 w-2.5 rounded-full bg-${tone}`;
+      if (dot) dot.className = `h-2 w-2 shrink-0 rounded-full bg-${tone}`;
       if (label) { label.textContent = text; label.title = ai.error || ""; }
       if (privacy) privacy.textContent = ai.local ? "100 % local, aucune donnée envoyée" : "Claude : résumé chiffré envoyé";
       document.dispatchEvent(new CustomEvent("aistatus", { detail: ai }));
@@ -265,7 +273,7 @@ document.getElementById("quit-app")?.addEventListener("click", async () => {
   document.body.innerHTML = `
     <main style="min-height:100vh;display:grid;place-items:center;text-align:center;padding:2rem">
       <div>
-        <p style="font-size:1.25rem;font-weight:800">Atelier Trésorerie est fermé.</p>
+        <p style="font-size:1.125rem;font-weight:600">Atelier Trésorerie est fermé.</p>
         <p style="margin-top:.5rem;opacity:.7">Vous pouvez fermer cet onglet. Double-cliquez sur l'application pour la relancer.</p>
       </div>
     </main>`;

@@ -6,13 +6,13 @@
 
 {% block content %}
   <div id="no-account" class="card mx-auto hidden max-w-xl p-10 text-center">
-    <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-lilac/15 text-lilac">
-      {{ icon("M3 17l5-5 4 4 8-8M14 8h6v6M3 21h18", "h-7 w-7") }}
+    <div class="mx-auto grid h-11 w-11 place-items-center rounded-2xl bg-raised text-muted">
+      {{ icon("M3 17l5-5 4 4 8-8M14 8h6v6M3 21h18", "h-5 w-5") }}
     </div>
-    <h2 class="mt-5 text-xl font-bold">Aucun compte d'investissement</h2>
+    <h2 class="mt-4 text-lg font-semibold">Aucun compte d'investissement</h2>
     <p class="mt-2 text-muted">
       Les positions (actions, ETF, crypto, or, argent…) sont rattachées à un compte de type
-      <strong class="text-ink">Investissement</strong> : par exemple « Trading 212 », « PEA » ou « Or physique ».
+      <strong class="font-medium text-ink">Investissement</strong> : par exemple « Trading 212 », « PEA » ou « Or physique ».
     </p>
     <div class="mt-6 flex flex-wrap justify-center gap-2">
       <button id="quick-t212" class="btn btn-primary" type="button">Créer un compte « Trading 212 »</button>
@@ -21,17 +21,17 @@
   </div>
 
   <div id="main" class="hidden">
-    <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Synthèse des placements">
+    <section class="stat-strip grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" aria-label="Synthèse des placements">
       {{ kpi_card("Valeur des positions", "—", "ink", "Quantité × dernier cours connu", "kpi-value") }}
       {{ kpi_card("Montant investi", "—", "ink", "Prix de revient, frais inclus", "kpi-cost") }}
       {{ kpi_card("Plus-value latente", "—", "gain", "Par rapport au montant investi", "kpi-gain") }}
-      {{ kpi_card("Liquidités", "—", "brand", "Espèces sur les comptes d'investissement", "kpi-cash") }}
+      {{ kpi_card("Liquidités", "—", "ink", "Espèces sur les comptes d'investissement", "kpi-cash") }}
     </section>
 
-    <section class="mt-6 flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:justify-between">
-      <div id="account-pills" class="flex flex-wrap gap-2" role="tablist" aria-label="Filtrer par compte"></div>
+    <section class="mt-4 flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:justify-between">
+      <div id="account-pills" class="flex flex-wrap gap-1.5" role="tablist" aria-label="Filtrer par compte"></div>
       <div class="flex flex-wrap items-center gap-2">
-        <label class="mr-1 flex items-center gap-2 text-sm text-muted">
+        <label class="mr-1 flex cursor-pointer items-center gap-2 text-xs text-muted hover:text-ink">
           <input id="show-closed" type="checkbox" class="checkbox"> Positions soldées
         </label>
         <button id="btn-prices" class="btn btn-ghost" type="button">{{ icon("M4 4v6h6M20 20v-6h-6M5 15a7 7 0 0 0 12 3M19 9A7 7 0 0 0 7 6", "h-4 w-4") }} Mettre à jour les cours</button>
@@ -40,9 +40,9 @@
       </div>
     </section>
 
-    <section id="allocation" class="card mt-4 p-5"></section>
+    <section id="allocation" class="card mt-3 p-4"></section>
 
-    <section class="card mt-4 overflow-hidden">
+    <section class="card mt-3 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="table">
           <thead>
@@ -196,15 +196,15 @@
             <select id="t212-account" class="input"></select>
           </div>
           <details class="rounded-xl bg-raised/60 p-3 text-xs text-muted">
-            <summary class="cursor-pointer font-semibold text-ink">Comment obtenir le fichier ?</summary>
+            <summary class="cursor-pointer font-medium text-ink">Comment obtenir le fichier ?</summary>
             <p class="mt-2">Dans Trading 212, ouvrez l'historique de votre compte, utilisez le bouton d'export,
               choisissez la période et incluez ordres, dividendes et transactions. Vous recevez un fichier CSV.</p>
             <p class="mt-2">Vous pouvez réimporter un export plus récent : les opérations déjà présentes sont ignorées.</p>
           </details>
         </div>
         <label id="t212-drop" class="dropzone md:col-span-2" for="t212-file">
-          {{ icon("M12 15V3m0 0L8 7m4-4 4 4M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4", "h-7 w-7") }}
-          <span id="t212-file-name" class="font-semibold text-ink">Glissez l'export CSV ici ou cliquez pour choisir</span>
+          {{ icon("M12 15V3m0 0L8 7m4-4 4 4M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4", "h-6 w-6 text-faint") }}
+          <span id="t212-file-name" class="font-medium text-ink">Glissez l'export CSV ici ou cliquez pour choisir</span>
           <span class="text-xs">Fichier CSV exporté depuis Trading 212</span>
           <input id="t212-file" type="file" accept=".csv" class="sr-only">
         </label>
@@ -214,16 +214,16 @@
         <div id="t212-summary" class="flex flex-wrap gap-2"></div>
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <div class="rounded-xl border border-line">
-            <p class="border-b border-line px-4 py-2.5 text-sm font-bold">Opérations à importer</p>
+            <p class="border-b border-line px-4 py-2.5 text-sm font-semibold">Opérations à importer</p>
             <table class="table"><tbody id="t212-kinds"></tbody></table>
           </div>
           <div class="rounded-xl border border-line">
-            <p class="border-b border-line px-4 py-2.5 text-sm font-bold">Positions après import</p>
+            <p class="border-b border-line px-4 py-2.5 text-sm font-semibold">Positions après import</p>
             <div class="max-h-64 overflow-auto"><table class="table"><tbody id="t212-positions"></tbody></table></div>
           </div>
         </div>
         <details id="t212-ignored-box" class="text-sm">
-          <summary class="cursor-pointer font-semibold">Lignes ignorées</summary>
+          <summary class="cursor-pointer font-medium">Lignes ignorées</summary>
           <ul id="t212-ignored" class="mt-2 space-y-1 text-xs text-muted"></ul>
         </details>
       </div>
