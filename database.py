@@ -140,6 +140,34 @@ MIGRATIONS: dict[int, str] = {
         -- Moteur ayant produit chaque message de l'assistant (ollama / claude)
         ALTER TABLE ai_conversations ADD COLUMN provider TEXT;
     """,
+    5: """
+        -- Assistant d'import : règles de classement, lots d'import (rapport, annulation)
+        CREATE TABLE category_rules (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            pattern     TEXT    NOT NULL,
+            match_type  TEXT    NOT NULL DEFAULT 'contient'
+                        CHECK (match_type IN ('contient', 'commence', 'commercant')),
+            direction   TEXT    NOT NULL DEFAULT 'tous' CHECK (direction IN ('tous', 'debit', 'credit')),
+            account_id  INTEGER REFERENCES accounts(id) ON DELETE CASCADE,   -- NULL = tous les comptes
+            category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+            created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+        );
+        CREATE INDEX idx_rules_category ON category_rules(category_id);
+
+        CREATE TABLE import_batches (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            account_id INTEGER NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+            filename   TEXT    NOT NULL,
+            inserted   INTEGER NOT NULL DEFAULT 0,
+            skipped    INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT    NOT NULL DEFAULT (datetime('now'))
+        );
+
+        ALTER TABLE transactions ADD COLUMN import_batch_id INTEGER REFERENCES import_batches(id) ON DELETE SET NULL;
+        -- Origine de la catégorie : fichier, regle, historique, defaut, ia, virement, manuel
+        ALTER TABLE transactions ADD COLUMN category_source TEXT;
+        CREATE INDEX idx_transactions_batch ON transactions(import_batch_id);
+    """,
 }
 LATEST_VERSION = max(MIGRATIONS, default=1)
 

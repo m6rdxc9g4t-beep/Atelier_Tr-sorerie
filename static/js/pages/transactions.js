@@ -103,7 +103,9 @@
       <span><strong class="text-ink">${d.total}</strong> opération${d.total > 1 ? "s" : ""}</span>
       <span>Entrées <strong class="num text-gain">${eur(d.income_cents, { signed: true })}</strong></span>
       <span>Sorties <strong class="num text-loss">${eur(d.expense_cents)}</strong></span>
-      <span>Solde net <strong class="num text-ink">${eur(d.net_cents, { signed: true })}</strong></span>`;
+      <span>Solde net <strong class="num text-ink">${eur(d.net_cents, { signed: true })}</strong></span>
+      ${state.filters.import_batch_id ? `<span class="chip">Opérations d'un import
+        <a class="ml-1 font-semibold text-brand hover:underline" href="/imports?report=${encodeURIComponent(state.filters.import_batch_id)}">voir le rapport</a></span>` : ""}`;
   }
 
   function renderBulk() {
@@ -159,6 +161,26 @@
   const txForm = $("tx-form");
   const F = txForm.elements;
   let editing = null;
+  let ruleSuggestion = null;
+
+  function toggleRuleRow() {
+    const show = !!(editing && ruleSuggestion && ruleSuggestion.pattern && !editing.transfer_group && F.category_id.value);
+    $("tx-rule-row").classList.toggle("hidden", !show);
+    $("tx-rule-row").classList.toggle("flex", show);
+  }
+
+  async function loadRuleSuggestion(t) {
+    ruleSuggestion = null;
+    $("tx-rule").checked = false;
+    toggleRuleRow();
+    if (!t || t.transfer_group) return;
+    try {
+      ruleSuggestion = await api("GET", `/api/transactions/${t.id}/rule-suggestion`);
+      $("tx-rule-merchant").textContent = `« ${ruleSuggestion.merchant || ""} »`;
+    } catch { ruleSuggestion = null; }
+    if (editing === t) toggleRuleRow();
+  }
+  F.category_id.addEventListener("change", toggleRuleRow);
 
   function openTx(t = null) {
     editing = t;
@@ -191,6 +213,7 @@
     }
     txDialog.showModal();
     F.amount.focus();
+    loadRuleSuggestion(t);
   }
 
   txForm.addEventListener("submit", async (e) => {
@@ -207,8 +230,14 @@
     if (!F.account_id.disabled) body.account_id = F.account_id.value;
     try {
       await api(editing ? "PATCH" : "POST", editing ? `/api/transactions/${editing.id}` : "/api/transactions", body);
+      let message = editing ? "Opération mise à jour." : "Opération ajoutée.";
+      if (editing && $("tx-rule").checked && ruleSuggestion?.pattern && body.category_id) {
+        const rule = await api("POST", "/api/rules", { pattern: ruleSuggestion.pattern, match_type: "commercant", category_id: body.category_id });
+        const applied = await api("POST", "/api/rules/apply", { rule_id: rule.id });
+        message = `Règle créée pour ${ruleSuggestion.merchant}${applied.updated ? ` : ${applied.updated} autre(s) opération(s) reclassée(s)` : ""}.`;
+      }
       txDialog.close();
-      toast(editing ? "Opération mise à jour." : "Opération ajoutée.");
+      toast(message);
       load();
     } catch (err) {
       AT.showErrors(txForm, err);
@@ -257,7 +286,8 @@
   });
   $("bulk-clear").addEventListener("click", () => { state.selected.clear(); render(); });
 
-  // ======================================================================= import
+  // ======================================================================= import (assistant)
+  // 1. fichier → 2. vérification (classement en cascade, virements, corrections, IA) → 3. rapport
 
   const importDialog = $("import-dialog");
   const fileInput = $("imp-file");
@@ -267,15 +297,40 @@
     ["debit", "Débit"], ["credit", "Crédit"], ["category", "Catégorie"],
   ];
   const PREVIEW_LIMIT = 300;
-  const imp = { file: null, preview: null, selected: new Set() };
+  const imp = { file: null, preview: null, selected: new Set(), learn: new Map(), view: "all", step: "file", batchId: null };
+  let categoryOptions = "";
+
+  /** Message affiché dans la fenêtre (les toasts passent derrière une fenêtre modale). */
+  function note(text) {
+    $("imp-note").textContent = text;
+    $("imp-note").classList.toggle("hidden", !text);
+  }
+
+  function setStep(step) {
+    imp.step = step;
+    $("import-step-file").classList.toggle("hidden", step === "report");
+    $("import-step-preview").classList.toggle("hidden", step !== "preview");
+    $("import-step-report").classList.toggle("hidden", step !== "report");
+    $("imp-commit").classList.toggle("hidden", step === "report");
+    $("imp-cancel").textContent = step === "report" ? "Fermer" : "Annuler";
+    drop.classList.toggle("is-compact", step === "preview");
+    note("");
+    $("import-dialog-title").textContent = step === "report" ? "Rapport d'import" : "Importer un relevé";
+    document.querySelectorAll("#imp-steps [data-step]").forEach((li) => {
+      li.classList.toggle("font-bold", li.dataset.step === step);
+      li.classList.toggle("text-brand", li.dataset.step === step);
+    });
+  }
 
   function resetImport() {
-    imp.file = null;
-    imp.preview = null;
+    Object.assign(imp, { file: null, preview: null, batchId: null, view: "all" });
     imp.selected.clear();
+    imp.learn.clear();
     fileInput.value = "";
+    document.querySelector('input[name="imp-view"][value="all"]').checked = true;
     $("imp-file-name").textContent = "Glissez un fichier ici ou cliquez pour choisir";
-    $("import-step-preview").classList.add("hidden");
+    $("import-step-report").innerHTML = "";
+    setStep("file");
     $("imp-commit").disabled = true;
     $("imp-commit").textContent = "Importer";
   }
@@ -287,6 +342,8 @@
     }
     resetImport();
     if (state.filters.account_id) $("imp-account").value = state.filters.account_id;
+    categoryOptions = '<option value="">À classer</option>' + state.categories
+      .map((c) => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
     importDialog.showModal();
   }
 
@@ -306,6 +363,9 @@
     try {
       imp.preview = await api("POST", "/api/import/preview", fd);
       imp.selected = new Set(imp.preview.rows.map((r, i) => (r.status === "ok" ? i : -1)).filter((i) => i >= 0));
+      imp.learn.clear();
+      setStep("preview");
+      $("imp-mapping-box").open = !!imp.preview.mapping_errors;
       renderPreview();
     } catch (err) {
       toast(err.message, "error");
@@ -314,9 +374,7 @@
     }
   }
 
-  function renderPreview() {
-    const p = imp.preview;
-    $("import-step-preview").classList.remove("hidden");
+  function renderMapping(p) {
     const options = ['<option value="">—</option>']
       .concat(p.headers.map((h, i) => `<option value="${i}">${esc(h)}</option>`)).join("");
     $("imp-mapping").innerHTML = MAPPING_FIELDS.map(([key, label]) => `
@@ -328,47 +386,161 @@
       const v = p.mapping[key];
       $(`map-${key}`).value = v === null || v === undefined ? "" : String(v);
     }
+  }
 
-    if (p.mapping_errors) {
-      // Colonnes non reconnues automatiquement : l'utilisateur les choisit ci-dessus
-      $("imp-summary").innerHTML = `<p class="rounded-xl bg-warn/15 px-3 py-2 text-sm">
-        Certaines colonnes n'ont pas été reconnues : ${esc(Object.values(p.mapping_errors).join(" "))}</p>`;
-      $("imp-rows").innerHTML = "";
-      $("imp-more").textContent = "";
-      updateCommitButton();
-      return;
-    }
-    const s = p.summary;
+  const okRows = () => (imp.preview ? imp.preview.rows.filter((r) => r.status === "ok") : []);
+  const todoRows = () => okRows().filter((r) => !r.category_id);
+
+  function renderImportSummary() {
+    const s = imp.preview.summary;
     $("imp-summary").innerHTML = `
       <span class="badge">${s.total} ligne${s.total > 1 ? "s" : ""}</span>
       <span class="badge badge-gain">${s.ok} nouvelle${s.ok > 1 ? "s" : ""}</span>
       ${s.duplicates ? `<span class="badge badge-warn">${s.duplicates} déjà présente${s.duplicates > 1 ? "s" : ""}</span>` : ""}
       ${s.errors ? `<span class="badge badge-loss">${s.errors} illisible${s.errors > 1 ? "s" : ""}</span>` : ""}`;
-
-    const STATE = {
-      ok: '<span class="badge badge-gain">Nouvelle</span>',
-      duplicate: '<span class="badge badge-warn">Doublon</span>',
-    };
-    $("imp-rows").innerHTML = p.rows.slice(0, PREVIEW_LIMIT).map((r, i) => {
-      if (r.status === "error") {
-        return `<tr class="text-muted">
-          <td></td><td class="num">${r.line}</td>
-          <td colspan="4" class="text-xs">${esc((r.raw || []).join(" · ")).slice(0, 160)}</td>
-          <td><span class="badge badge-loss" title="${esc(r.error)}">${esc(r.error)}</span></td></tr>`;
-      }
-      return `<tr>
-        <td><input type="checkbox" class="checkbox" data-imp="${i}" ${imp.selected.has(i) ? "checked" : ""} aria-label="Importer la ligne ${r.line}"></td>
-        <td class="num text-muted">${r.line}</td>
-        <td class="num whitespace-nowrap">${AT.date(r.date)}</td>
-        <td class="max-w-[18rem] truncate">${esc(r.label)}</td>
-        <td class="whitespace-nowrap text-muted">${esc(r.category_name || "—")}</td>
-        <td class="num whitespace-nowrap text-right font-semibold ${AT.amountClass(r.amount_cents)}">${eur(r.amount_cents, { signed: true })}</td>
-        <td>${STATE[r.status]}</td></tr>`;
-    }).join("");
-    $("imp-more").textContent = p.rows.length > PREVIEW_LIMIT
-      ? `Aperçu limité aux ${PREVIEW_LIMIT} premières lignes ; les ${p.rows.length - PREVIEW_LIMIT} suivantes seront importées selon leur état.`
+    // Origine des catégories, recalculée après chaque correction
+    const counts = {};
+    okRows().forEach((r) => { const k = r.category_id ? r.category_source || "manuel" : "aucune"; counts[k] = (counts[k] || 0) + 1; });
+    const order = ["regle", "manuel", "fichier", "historique", "defaut", "ia", "virement", "aucune"];
+    $("imp-sources").innerHTML = okRows().length
+      ? '<span class="text-muted">Classement :</span>' + order.filter((k) => counts[k])
+        .map((k) => `<span class="inline-flex items-center gap-1">${AT.sourceBadge(k)}<span class="num">${counts[k]}</span></span>`).join("")
       : "";
+    const todo = todoRows().length;
+    $("imp-ai").classList.toggle("hidden", !todo);
+    $("imp-ai").querySelector("span").textContent = `Classer ${todo > 1 ? `les ${todo} restantes` : "la dernière"} avec l'IA`;
+    const n = imp.learn.size;
+    $("imp-learn-row").classList.toggle("hidden", !n);
+    $("imp-learn-row").classList.toggle("flex", !!n);
+    $("imp-learn-label").textContent = `Mémoriser mes corrections comme règle${n > 1 ? "s" : ""} pour les prochains imports (${n} commerçant${n > 1 ? "s" : ""})`;
+  }
+
+  function rowHtmlImport(r, i) {
+    if (r.status === "error") {
+      return `<tr class="text-muted">
+        <td></td><td class="hidden md:table-cell num">l. ${r.line}</td>
+        <td colspan="3" class="text-xs">${esc((r.raw || []).join(" · ")).slice(0, 160)}</td><td></td>
+        <td class="hidden sm:table-cell"><span class="badge badge-loss" title="${esc(r.error)}">${esc(r.error)}</span></td></tr>`;
+    }
+    const dup = r.status === "duplicate";
+    const badge = dup ? '<span class="badge badge-warn">Doublon</span>'
+      : r.transfer ? `<span class="badge" title="${esc(r.transfer.label)} du ${AT.date(r.transfer.date)}">↔ ${esc(r.transfer.account_name)}</span>`
+        : '<span class="badge badge-gain">Nouvelle</span>';
+    return `<tr class="${dup ? "text-muted" : ""}">
+      <td><input type="checkbox" class="checkbox" data-imp="${i}" ${imp.selected.has(i) ? "checked" : ""} aria-label="Importer la ligne ${r.line}"></td>
+      <td class="hidden whitespace-nowrap md:table-cell num">${AT.date(r.date)}</td>
+      <td class="max-w-[16rem]"><span class="block truncate font-semibold" title="${esc(r.label)}">${esc(r.merchant || r.label)}</span>
+        <span class="block truncate text-xs text-muted">${esc(r.label)}</span></td>
+      <td>${dup ? esc(r.category_name || "—")
+        : `<select class="input h-8 min-w-[9rem] py-0 text-sm" data-cat="${i}" aria-label="Catégorie de la ligne ${r.line}">${categoryOptions}</select>`}</td>
+      <td class="hidden lg:table-cell">${dup ? "" : AT.sourceBadge(r.category_id ? r.category_source : null)}</td>
+      <td class="num whitespace-nowrap text-right font-semibold ${AT.amountClass(r.amount_cents)}">${eur(r.amount_cents, { signed: true })}</td>
+      <td class="hidden sm:table-cell">${badge}</td></tr>`;
+  }
+
+  function renderRows() {
+    const p = imp.preview;
+    const visible = p.rows.map((r, i) => [r, i]).filter(([r]) =>
+      imp.view === "todo" ? r.status === "ok" && !r.category_id
+        : imp.view === "transfer" ? !!r.transfer : true);
+    $("imp-rows").innerHTML = visible.slice(0, PREVIEW_LIMIT).map(([r, i]) => rowHtmlImport(r, i)).join("")
+      || `<tr><td colspan="7" class="p-6 text-center text-muted">${imp.view === "todo" ? "Tout est classé." : "Aucune ligne."}</td></tr>`;
+    $("imp-rows").querySelectorAll("[data-cat]").forEach((sel) => { sel.value = p.rows[sel.dataset.cat].category_id || ""; });
+    $("imp-more").textContent = visible.length > PREVIEW_LIMIT
+      ? `Aperçu limité aux ${PREVIEW_LIMIT} premières lignes ; les ${visible.length - PREVIEW_LIMIT} suivantes seront importées selon leur état.`
+      : "";
+  }
+
+  function renderPreview() {
+    const p = imp.preview;
+    renderMapping(p);
+    if (p.mapping_errors) {
+      // Colonnes non reconnues automatiquement : l'utilisateur les choisit ci-dessus
+      $("imp-summary").innerHTML = `<p class="rounded-xl bg-warn/15 px-3 py-2 text-sm">
+        Certaines colonnes n'ont pas été reconnues : ${esc(Object.values(p.mapping_errors).join(" "))}</p>`;
+      $("imp-sources").innerHTML = "";
+      $("imp-rows").innerHTML = "";
+      $("imp-more").textContent = "";
+      $("imp-ai").classList.add("hidden");
+      updateCommitButton();
+      return;
+    }
+    renderImportSummary();
+    renderRows();
     updateCommitButton();
+  }
+
+  /** Correction d'une catégorie : appliquée aux autres lignes du même commerçant, puis mémorisable. */
+  function setCategory(index, categoryId) {
+    const row = imp.preview.rows[index];
+    const cat = state.categories.find((c) => c.id === categoryId) || null;
+    const apply = (r) => Object.assign(r, {
+      category_id: categoryId, category_name: cat ? cat.name : null,
+      category_source: categoryId ? "manuel" : null, transfer: categoryId && cat?.kind === "transfert" ? r.transfer : null,
+    });
+    apply(row);
+    let others = 0;
+    if (row.merchant_key && categoryId) {
+      imp.preview.rows.forEach((r) => {
+        if (r !== row && r.status === "ok" && r.merchant_key === row.merchant_key && !r.transfer
+            && !["regle", "fichier", "manuel"].includes(r.category_source)
+            && Math.sign(r.amount_cents) === Math.sign(row.amount_cents)) {
+          apply(r);
+          others += 1;
+        }
+      });
+      imp.learn.set(row.merchant_key, categoryId);
+    } else if (row.merchant_key) {
+      imp.learn.delete(row.merchant_key);
+    }
+    note(others ? `Appliqué aussi aux ${others} autre(s) ligne(s) « ${row.merchant} ».` : "");
+    renderImportSummary();
+    renderRows();
+  }
+
+  async function classifyWithAI() {
+    const todo = imp.preview.rows.map((r, i) => [r, i]).filter(([r]) => r.status === "ok" && !r.category_id);
+    if (!todo.length) return;
+    const btn = $("imp-ai");
+    let engine;
+    try { engine = await api("GET", "/api/ai/status"); } catch { engine = { local: true }; }
+    if (!engine.local && !(await AT.confirm(
+      `Votre moteur d'IA est ${engine.label || "Claude"} : les libellés des ${todo.length} opération(s) à classer seront envoyés à Anthropic (sans montant de solde ni nom de compte). Continuer ?`,
+      { confirmLabel: "Envoyer", danger: false }))) return;
+    btn.disabled = true;
+    const label = btn.querySelector("span");
+    let done = 0;
+    try {
+      // Par paquets de commerçants : l'IA ne voit chaque commerçant qu'une fois
+      const groups = new Map();
+      todo.forEach(([r, i]) => {
+        const k = `${r.merchant_key || r.label}|${r.amount_cents > 0}`;
+        if (!groups.has(k)) groups.set(k, []);
+        groups.get(k).push([r, i]);
+      });
+      const keys = [...groups.keys()];
+      for (let start = 0; start < keys.length; start += 30) {
+        label.textContent = `L'IA classe… ${Math.min(start + 30, keys.length)}/${keys.length} commerçants`;
+        const items = keys.slice(start, start + 30).flatMap((k) => groups.get(k))
+          .map(([r, i]) => ({ key: i, label: r.label, amount_cents: r.amount_cents }));
+        const res = await api("POST", "/api/import/ai-categorize", { items });
+        res.items.forEach((s) => {
+          const r = imp.preview.rows[s.key];
+          if (r && !r.category_id) {
+            Object.assign(r, { category_id: s.category_id, category_name: s.category_name, category_source: "ia" });
+            done += 1;
+          }
+        });
+      }
+      note(done ? `L'IA a proposé une catégorie pour ${done} opération(s) : vérifiez les lignes marquées « IA ».`
+        : "L'IA n'a pas trouvé de catégorie sûre pour ces opérations.");
+    } catch (err) {
+      note(err.message);
+    } finally {
+      btn.disabled = false;
+      renderImportSummary();
+      renderRows();
+    }
   }
 
   function updateCommitButton() {
@@ -378,6 +550,21 @@
     const selectable = imp.preview ? imp.preview.rows.filter((r) => r.status !== "error").length : 0;
     $("imp-select-all").checked = n > 0 && n === selectable;
     $("imp-select-all").indeterminate = n > 0 && n < selectable;
+  }
+
+  async function showReport(batchId) {
+    imp.batchId = batchId;
+    setStep("report");
+    const box = $("import-step-report");
+    box.innerHTML = '<div class="skeleton h-40"></div>';
+    try {
+      const report = await api("GET", `/api/imports/${batchId}/report`);
+      AT.importReport.render(box, report, {
+        onUndo: () => { importDialog.close(); load(); },
+      });
+    } catch (err) {
+      box.innerHTML = `<p class="text-muted">${esc(err.message)}</p>`;
+    }
   }
 
   function chooseFile(file) {
@@ -393,8 +580,17 @@
   drop.addEventListener("drop", (e) => { e.preventDefault(); chooseFile(e.dataTransfer.files[0]); });
   $("imp-account").addEventListener("change", () => imp.file && runPreview(imp.preview ? currentMapping() : null));
   $("imp-mapping").addEventListener("change", () => runPreview(currentMapping()));
+  $("imp-ai").addEventListener("click", classifyWithAI);
+  document.querySelectorAll('input[name="imp-view"]').forEach((el) => el.addEventListener("change", () => {
+    imp.view = el.value;
+    renderRows();
+  }));
 
   $("imp-rows").addEventListener("change", (e) => {
+    if (e.target.dataset.cat !== undefined) {
+      setCategory(Number(e.target.dataset.cat), e.target.value ? Number(e.target.value) : null);
+      return;
+    }
     const i = e.target.dataset.imp;
     if (i === undefined) return;
     e.target.checked ? imp.selected.add(Number(i)) : imp.selected.delete(Number(i));
@@ -404,19 +600,35 @@
     imp.selected = new Set(e.target.checked
       ? imp.preview.rows.map((r, i) => (r.status !== "error" ? i : -1)).filter((i) => i >= 0)
       : []);
-    renderPreview();
+    renderRows();
+    updateCommitButton();
   });
 
   $("imp-commit").addEventListener("click", async () => {
     const rows = [...imp.selected].sort((a, b) => a - b).map((i) => imp.preview.rows[i])
-      .map(({ date, label, amount_cents, category_id, import_hash }) => ({ date, label, amount_cents, category_id, import_hash }));
+      .map((r) => ({
+        date: r.date, label: r.label, amount_cents: r.amount_cents, category_id: r.category_id,
+        category_source: r.category_source, import_hash: r.import_hash,
+        transfer_with: r.transfer ? r.transfer.transaction_id : null,
+      }));
+    const learn = $("imp-learn").checked
+      ? [...imp.learn].map(([pattern, category_id]) => ({ pattern, category_id }))
+      : [];
     $("imp-commit").disabled = true;
     try {
-      const res = await api("POST", "/api/import/commit", { account_id: imp.preview.account_id, rows });
-      importDialog.close();
-      toast(`${res.inserted} opération(s) importée(s)${res.skipped ? `, ${res.skipped} doublon(s) ignoré(s)` : ""}.`);
+      const res = await api("POST", "/api/import/commit", {
+        account_id: imp.preview.account_id, filename: imp.preview.filename, rows, learn,
+      });
+      const extras = [
+        res.skipped ? `${res.skipped} doublon(s) ignoré(s)` : "",
+        res.transfers_linked ? `${res.transfers_linked} virement(s) lié(s)` : "",
+        res.rules_created ? `${res.rules_created} règle(s) mémorisée(s)` : "",
+      ].filter(Boolean).join(", ");
+      toast(`${res.inserted} opération(s) importée(s)${extras ? ` — ${extras}` : ""}.`);
       state.page = 1;
       load();
+      if (res.batch_id) showReport(res.batch_id);
+      else importDialog.close();
     } catch (err) {
       toast(err.message, "error");
       $("imp-commit").disabled = false;

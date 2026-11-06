@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+
+{% block title %}Imports & Règles{% endblock %}
+{% block page_title %}Imports & Règles{% endblock %}
+
+{% block content %}
+  {# ------------------------------------------------------------ récurrences #}
+  <section class="grid grid-cols-1 gap-4 sm:grid-cols-3" aria-label="Opérations récurrentes">
+    <div class="card p-5">
+      <p class="text-sm font-medium text-muted">Prélèvements récurrents</p>
+      <p id="kpi-debits" class="num mt-2 text-2xl font-extrabold tracking-tight text-loss sm:text-3xl"><span class="skeleton inline-block h-8 w-28 align-middle"></span></p>
+      <p class="mt-2 text-xs text-muted">par mois : abonnements, factures, loyer…</p>
+    </div>
+    <div class="card p-5">
+      <p class="text-sm font-medium text-muted">Revenus réguliers</p>
+      <p id="kpi-credits" class="num mt-2 text-2xl font-extrabold tracking-tight text-gain sm:text-3xl"><span class="skeleton inline-block h-8 w-28 align-middle"></span></p>
+      <p class="mt-2 text-xs text-muted">par mois : salaire, loyers perçus…</p>
+    </div>
+    <div class="card p-5">
+      <p class="text-sm font-medium text-muted">Échéances des 31 prochains jours</p>
+      <p id="kpi-upcoming" class="num mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl"><span class="skeleton inline-block h-8 w-28 align-middle"></span></p>
+      <p id="kpi-upcoming-hint" class="mt-2 text-xs text-muted"></p>
+    </div>
+  </section>
+
+  <section class="card mt-4 overflow-hidden">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
+      <div>
+        <h2 class="font-bold">Opérations récurrentes</h2>
+        <p class="text-sm text-muted">Détectées automatiquement : même commerçant, à intervalle régulier, montant stable.</p>
+      </div>
+      <select id="rec-account" class="input h-9 w-auto min-w-[12rem]" aria-label="Compte"></select>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead><tr><th>Commerçant</th><th class="hidden md:table-cell">Catégorie</th><th>Rythme</th>
+          <th class="hidden sm:table-cell">Prochaine</th><th class="text-right">Montant</th><th class="hidden lg:table-cell text-right">Par mois</th></tr></thead>
+        <tbody id="rec-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  {# ------------------------------------------------------------ historique des imports #}
+  <section class="card mt-6 overflow-hidden">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
+      <div>
+        <h2 class="font-bold">Historique des imports</h2>
+        <p class="text-sm text-muted">Chaque relevé importé, avec son rapport. Un import peut être annulé d'un clic.</p>
+      </div>
+      <a href="{{ url_for('transactions') }}" class="btn btn-ghost btn-sm">
+        {{ icon("M12 15V3m0 0L8 7m4-4 4 4M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4", "h-4 w-4") }} Importer un relevé
+      </a>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead><tr><th>Importé le</th><th>Fichier</th><th class="hidden md:table-cell">Période</th>
+          <th class="text-right">Opérations</th><th class="hidden lg:table-cell text-right">Entrées</th>
+          <th class="hidden lg:table-cell text-right">Sorties</th><th></th></tr></thead>
+        <tbody id="batch-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  {# ------------------------------------------------------------ règles #}
+  <section class="card mt-6 overflow-hidden">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
+      <div>
+        <h2 class="font-bold">Règles de classement</h2>
+        <p class="text-sm text-muted">Appliquées en premier à chaque import. Les corrections faites pendant un import s'ajoutent ici.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button id="btn-apply-rules" class="btn btn-ghost btn-sm" type="button">Appliquer aux opérations existantes</button>
+        <button id="btn-new-rule" class="btn btn-primary btn-sm" type="button">{{ icon("M12 5v14M5 12h14", "h-4 w-4") }} Nouvelle règle</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead><tr><th>Si le libellé…</th><th>Alors</th><th class="hidden md:table-cell">Sens</th>
+          <th class="hidden md:table-cell">Compte</th><th class="hidden sm:table-cell text-right">Reconnues</th><th></th></tr></thead>
+        <tbody id="rule-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  {# ------------------------------------------------------------ fenêtre rapport #}
+  <dialog id="report-dialog" class="modal modal-wide" aria-labelledby="report-title">
+    <div class="modal-head">
+      <h2 id="report-title" class="text-lg font-bold">Rapport d'import</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
+    </div>
+    <div id="report-body" class="modal-body"></div>
+    <div class="modal-foot"><button type="button" class="btn btn-ghost" data-close>Fermer</button></div>
+  </dialog>
+
+  {# ------------------------------------------------------------ fenêtre règle #}
+  <dialog id="rule-dialog" class="modal" aria-labelledby="rule-title">
+    <form id="rule-form" novalidate>
+      <div class="modal-head">
+        <h2 id="rule-title" class="text-lg font-bold">Nouvelle règle</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
+      </div>
+      <div class="modal-body grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div data-field>
+          <label class="field-label" for="r-type">Si le libellé</label>
+          <select id="r-type" name="match_type" class="input">
+            <option value="contient">contient</option>
+            <option value="commence">commence par</option>
+            <option value="commercant">est du commerçant</option>
+          </select>
+        </div>
+        <div data-field>
+          <label class="field-label" for="r-pattern">Texte</label>
+          <input id="r-pattern" name="pattern" class="input" maxlength="120" required placeholder="Ex. boulangerie">
+        </div>
+        <div class="sm:col-span-2" data-field>
+          <label class="field-label" for="r-category">Alors classer dans</label>
+          <select id="r-category" name="category_id" class="input"></select>
+        </div>
+        <div data-field>
+          <label class="field-label" for="r-direction">Pour</label>
+          <select id="r-direction" name="direction" class="input">
+            <option value="tous">entrées et sorties</option>
+            <option value="debit">les sorties seulement</option>
+            <option value="credit">les entrées seulement</option>
+          </select>
+        </div>
+        <div data-field>
+          <label class="field-label" for="r-account">Sur le compte</label>
+          <select id="r-account" name="account_id" class="input"></select>
+        </div>
+        <p class="text-xs text-muted sm:col-span-2">
+          Majuscules, accents et ponctuation sont ignorés. Une règle propre à un compte passe avant une règle générale,
+          et un motif long avant un motif court.
+        </p>
+      </div>
+      <div class="modal-foot">
+        <button type="button" id="rule-delete" class="btn btn-danger mr-auto">Supprimer</button>
+        <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/import-report.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pages/imports.js') }}"></script>
+{% endblock %}

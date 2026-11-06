@@ -27,6 +27,8 @@ NAV_ITEMS = [
      "icon": "M3 17l5-5 4 4 8-8M14 8h6v6M3 21h18"},
     {"endpoint": "transactions", "label": "Transactions",
      "icon": "M4 7h14m0 0-4-4m4 4-4 4M20 17H6m0 0 4-4m-4 4 4 4"},
+    {"endpoint": "imports", "label": "Imports & Règles",
+     "icon": "M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"},
     {"endpoint": "budgets", "label": "Budgets & Objectifs",
      "icon": "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 12h.01"},
     {"endpoint": "ai_insights", "label": "Assistant IA",
@@ -77,6 +79,10 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     @app.get("/transactions")
     def transactions():
         return render_template("transactions.html")
+
+    @app.get("/imports")
+    def imports():
+        return render_template("imports.html")
 
     @app.get("/budgets")
     def budgets():

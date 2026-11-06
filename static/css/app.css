@@ -256,6 +256,8 @@ dialog.modal::backdrop { background: color-mix(in oklab, color-mix(in oklab, var
   color: var(--muted); cursor: pointer; transition: border-color 0.15s, background-color 0.15s;
 }
 .dropzone:hover, .dropzone.is-over { border-color: var(--brand); background: var(--atelier-signature-faint); }
+.dropzone.is-compact { flex-direction: row; padding: 0.7rem 1rem; }
+.dropzone.is-compact svg, .dropzone.is-compact .text-xs { display: none; }
 
 .skeleton { border-radius: 0.6rem; background: linear-gradient(90deg, var(--raised) 25%, var(--line) 50%, var(--raised) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
 @keyframes shimmer { to { background-position: -200% 0; } }

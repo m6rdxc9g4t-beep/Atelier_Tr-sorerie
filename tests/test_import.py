@@ -55,7 +55,8 @@ def test_csv_preview_commit_and_dedupe(api):
     assert res.status_code == 200, res.get_json()
     data = res.get_json()
     assert data["headers"][:3] == ["Date opération", "Date valeur", "Libellé"]
-    assert data["summary"] == {"total": 5, "ok": 4, "duplicates": 0, "errors": 1}
+    assert data["summary"] == {"total": 5, "ok": 4, "duplicates": 0, "errors": 1, "transfers": 0,
+                               "sources": {"defaut": 4}}
     ok = [r for r in data["rows"] if r["status"] == "ok"]
     assert [r["amount_cents"] for r in ok] == [285000, -95000, -6745, -6745]
     assert ok[2]["import_hash"] != ok[3]["import_hash"]  # deux achats identiques le même jour
@@ -63,14 +64,16 @@ def test_csv_preview_commit_and_dedupe(api):
     assert error["line"] == 9 and "date" in error["error"].lower()
 
     res = api.post("/api/import/commit", json={"account_id": acc, "rows": ok})
-    assert res.status_code == 201 and res.get_json() == {"inserted": 4, "skipped": 0}
+    body = res.get_json()
+    assert res.status_code == 201 and (body["inserted"], body["skipped"]) == (4, 0) and body["batch_id"]
 
     # Réimporter le même fichier : tout est détecté comme doublon
     again = _preview(api, acc, BANK_CSV).get_json()
     assert again["summary"]["duplicates"] == 4 and again["summary"]["ok"] == 0
     # Et même si on force la validation, rien n'est inséré deux fois
     res = api.post("/api/import/commit", json={"account_id": acc, "rows": [r for r in again["rows"] if r.get("import_hash")]})
-    assert res.get_json() == {"inserted": 0, "skipped": 4}
+    body = res.get_json()
+    assert (body["inserted"], body["skipped"], body["batch_id"]) == (0, 4, None)
 
 
 def test_manual_entry_detected_as_duplicate(api):

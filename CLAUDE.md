@@ -12,6 +12,11 @@ locale Ollama. Confidentialité absolue : aucune donnée financière ne doit qui
 - `services/` : toutes les règles métier et le SQL. Chaque fonction reçoit une connexion SQLite,
   ne dépend pas de Flask, valide ses entrées avec `Validator` et lève `ValidationError` (400),
   `NotFoundError` (404) ou `ConflictError` (409) — `api.py` les convertit en JSON.
+- Assistant d'import : `merchants.py` (commerçant d'un libellé, dictionnaire), `rules.py` (règles),
+  `classifier.py` (cascade règle → relevé → historique → commerçant connu, chaque résultat porte sa source
+  dans `transactions.category_source`), `insights.py` (récurrences, montants inhabituels, virements internes),
+  `imports.py` (lots `import_batches` : rapport, annulation). Une catégorie `manuel` ou `regle` n'est jamais
+  écrasée automatiquement.
 - `finance.py` : calculs financiers purs (montants, taux, KPI).
 - `database.py` : connexion (`get_db()`), schéma, migrations, CLI. Erreurs fichier/SQLite → `DatabaseError`.
 - `ollama_client.py` : seul point de contact avec Ollama ; erreurs → `OllamaError`.

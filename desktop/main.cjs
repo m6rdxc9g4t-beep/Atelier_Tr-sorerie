@@ -127,6 +127,7 @@ function buildMenu() {
     ['Transactions', '/transactions', '4'],
     ['Budgets & Objectifs', '/budgets', '5'],
     ['Assistant IA', '/ai-insights', '6'],
+    ['Imports & Règles', '/imports', '7'],
   ]
   const template = [
     ...(isMac
