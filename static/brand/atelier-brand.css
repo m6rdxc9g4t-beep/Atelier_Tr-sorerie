@@ -68,9 +68,9 @@
   --atelier-sig-ops: #895bd5;
   --atelier-sig-mission: #b55d00;
   --atelier-sig-datamind: #6967e1;
-  --atelier-sig-suivi: #008295;
+  --atelier-sig-suivi: #8a5fb8;
   --atelier-sig-dates: #db373a;
-  --atelier-sig-cuisine: #8568a7;
+  --atelier-sig-cuisine: #3a6c97;
   --atelier-sig-dressing: #a16464;
 
   /* Hors app identifiée (portail, suite) : l'indigo de la suite. */
@@ -198,6 +198,58 @@
   --atelier-up: #4cc38a;
   --atelier-warn: #f0b44c;
   --atelier-down: #ff6b6b;
+}
+
+/* ---------------------------------------------------------------------------
+   3 bis. Apps du foyer (Dates, Suivi, Cuisine) : crème en clair, bleu nuit en sombre.
+   Seulement quand l'app entière est marquée (<html data-atelier-app="…">) : le sélecteur de la suite,
+   qui marque ses entrées une à une, garde la structure neutre. Même rôle de chaque jeton qu'aux §2 et §3.
+   --------------------------------------------------------------------------- */
+:root[data-atelier-app="dates"],
+:root[data-atelier-app="suivi"],
+:root[data-atelier-app="cuisine"] {
+  --atelier-bg: #f8f4ec;
+  --atelier-sidebar: #f1ebdf;
+  --atelier-surface: #fffdf8;
+  --atelier-surface-2: #efe8db;
+  --atelier-surface-3: #e6ddcc;
+  --atelier-field: #fffdf8;
+
+  --atelier-text: #1f1b16;
+  --atelier-muted: #665d51;
+  --atelier-faint: #6f6659;
+
+  --atelier-border: #e4dac8;
+  --atelier-border-soft: #d3c6ae;
+  --atelier-line: #e4dac8;
+
+  --atelier-glow: 0 1px 2px rgb(40 30 15 / 0.05);
+  --atelier-glow-strong: 0 1px 2px rgb(40 30 15 / 0.07), 0 8px 24px -8px rgb(40 30 15 / 0.2);
+}
+
+:root[data-atelier-app="dates"][data-theme="dark"],
+:root[data-atelier-app="suivi"][data-theme="dark"],
+:root[data-atelier-app="cuisine"][data-theme="dark"],
+:root.dark[data-atelier-app="dates"],
+:root.dark[data-atelier-app="suivi"],
+:root.dark[data-atelier-app="cuisine"] {
+  --atelier-bg: #0b1220;
+  --atelier-sidebar: #0e1626;
+  --atelier-surface: #121b2d;
+  --atelier-surface-2: #172238;
+  --atelier-surface-3: #1f2c46;
+  --atelier-field: #0f1829;
+
+  --atelier-text: #e6eaf2;
+  --atelier-muted: #9aa6bb;
+  --atelier-faint: #8b97ad;
+
+  --atelier-border: #1f2a40;
+  --atelier-border-soft: #2d3b57;
+  --atelier-line: #1f2a40;
+
+  --atelier-glow: none;
+  --atelier-glow-strong: 0 1px 2px rgb(0 0 0 / 0.45), 0 12px 32px -10px rgb(2 6 18 / 0.75);
 }
 
 /* ---------------------------------------------------------------------------
