@@ -218,13 +218,13 @@
   --atelier-bg: color-mix(in oklab, var(--atelier-signature) 5%, #fbfbfd);
   --atelier-sidebar: color-mix(in oklab, var(--atelier-signature) 8%, #f6f6f8);
   --atelier-surface: #ffffff;
-  --atelier-surface-2: color-mix(in oklab, var(--atelier-signature) 8%, #ffffff);
-  --atelier-surface-3: color-mix(in oklab, var(--atelier-signature) 14%, #ffffff);
+  --atelier-surface-2: color-mix(in oklab, var(--atelier-signature) 8%, #f1f1f4);   /* survol, rail des segments */
+  --atelier-surface-3: color-mix(in oklab, var(--atelier-signature) 16%, #e6e6ec);  /* sélection, entrée courante */
   --atelier-field: #ffffff;
 
   --atelier-text: color-mix(in oklab, var(--atelier-signature) 16%, #15161a);
-  --atelier-muted: color-mix(in oklab, var(--atelier-signature) 18%, #545964);
-  --atelier-faint: color-mix(in oklab, var(--atelier-signature) 18%, #5f6470);
+  --atelier-muted: color-mix(in oklab, var(--atelier-signature) 18%, #4f5460);
+  --atelier-faint: color-mix(in oklab, var(--atelier-signature) 18%, #565b66);
   --atelier-ink: color-mix(in oklab, var(--atelier-signature) 62%, #000000);
 
   --atelier-border: color-mix(in oklab, var(--atelier-signature) 16%, #e4e5e9);
@@ -240,6 +240,14 @@
 :root.dark[data-atelier-app="cuisine"] {
   /* Lilas plus lumineux sur fond sombre, comme avant. */
   --atelier-signature: #c8b5f2;
+}
+
+/* La tuile de la marque garde le lilas du thème clair (même icône que l'app, glyphe blanc lisible). */
+:root[data-atelier-app="cuisine"][data-theme="dark"] .atelier-brand__tile,
+:root.dark[data-atelier-app="cuisine"] .atelier-brand__tile,
+:root[data-atelier-app="cuisine"][data-theme="dark"] .atelier-about__icon,
+:root.dark[data-atelier-app="cuisine"] .atelier-about__icon {
+  background: linear-gradient(180deg, color-mix(in oklab, #9b84dc 78%, #ffffff), #9b84dc);
 }
 
 :root[data-atelier-app="dates"][data-theme="dark"],
