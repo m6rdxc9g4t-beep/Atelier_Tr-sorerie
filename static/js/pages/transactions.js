@@ -78,14 +78,14 @@
   function rowHtml(t) {
     const [statusLabel, statusClass] = STATUS[t.status] || [t.status, ""];
     const transfer = t.transfer_group
-      ? '<span class="badge ml-2 align-middle" title="Virement entre comptes">⇄</span>' : "";
+      ? '<span class="badge ml-2 h-5 px-1.5 align-middle text-muted" title="Virement entre comptes"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4"/></svg><span class="sr-only">Virement</span></span>' : "";
     return `
       <tr class="cursor-pointer ${state.selected.has(t.id) ? "is-selected" : ""}" data-id="${t.id}">
         <td><input type="checkbox" class="checkbox" data-select="${t.id}" ${state.selected.has(t.id) ? "checked" : ""}
              aria-label="Sélectionner ${esc(t.label)}"></td>
         <td class="num hidden whitespace-nowrap text-muted sm:table-cell">${AT.date(t.date)}</td>
         <td class="max-w-[13rem] sm:max-w-[22rem]">
-          <p class="truncate font-semibold">${esc(t.label)}${transfer}</p>
+          <p class="truncate font-medium">${esc(t.label)}${transfer}</p>
           <p class="num text-xs text-muted sm:hidden">${AT.date(t.date)}</p>
           ${t.notes ? `<p class="truncate text-xs text-muted">${esc(t.notes)}</p>` : ""}
         </td>
@@ -94,16 +94,16 @@
           <span class="mr-1.5 inline-block h-2 w-2 rounded-full" style="background:${esc(t.account_color || "#a5b4fc")}"></span>${esc(t.account_name)}
         </td>
         <td class="hidden lg:table-cell"><span class="badge ${statusClass}">${statusLabel}</span></td>
-        <td class="num whitespace-nowrap text-right font-bold ${AT.amountClass(t.amount_cents)}">${eur(t.amount_cents, { signed: true })}</td>
+        <td class="num whitespace-nowrap text-right font-medium ${AT.amountClass(t.amount_cents)}">${eur(t.amount_cents, { signed: true })}</td>
       </tr>`;
   }
 
   function renderSummary(d) {
     $("summary").innerHTML = `
-      <span><strong class="text-ink">${d.total}</strong> opération${d.total > 1 ? "s" : ""}</span>
-      <span>Entrées <strong class="num text-gain">${eur(d.income_cents, { signed: true })}</strong></span>
-      <span>Sorties <strong class="num text-loss">${eur(d.expense_cents)}</strong></span>
-      <span>Solde net <strong class="num text-ink">${eur(d.net_cents, { signed: true })}</strong></span>`;
+      <span><span class="num font-medium text-ink">${d.total}</span> opération${d.total > 1 ? "s" : ""}</span>
+      <span>Entrées <span class="num font-medium text-gain">${eur(d.income_cents, { signed: true })}</span></span>
+      <span>Sorties <span class="num font-medium text-loss">${eur(d.expense_cents)}</span></span>
+      <span>Solde net <span class="num font-medium text-ink">${eur(d.net_cents, { signed: true })}</span></span>`;
   }
 
   function renderBulk() {
@@ -125,7 +125,7 @@
     emptyEl.classList.toggle("hidden", d.items.length > 0);
     emptyEl.innerHTML = hasFilters
       ? "Aucune opération ne correspond à ces filtres."
-      : 'Aucune opération pour le moment. <button class="font-semibold text-brand hover:underline" data-new>Ajoutez-en une</button> ou importez un relevé.';
+      : 'Aucune opération pour le moment. <button class="link" data-new>Ajoutez-en une</button> ou importez un relevé.';
     $("page-info").textContent = d.total ? `Page ${d.page} sur ${d.pages}` : "";
     $("page-prev").disabled = d.page <= 1;
     $("page-next").disabled = d.page >= d.pages;
@@ -322,7 +322,7 @@
     $("imp-mapping").innerHTML = MAPPING_FIELDS.map(([key, label]) => `
       <div>
         <label class="field-label" for="map-${key}">${label}</label>
-        <select id="map-${key}" name="${key}" class="input h-9 text-sm">${options}</select>
+        <select id="map-${key}" name="${key}" class="input">${options}</select>
       </div>`).join("");
     for (const [key] of MAPPING_FIELDS) {
       const v = p.mapping[key];
@@ -331,7 +331,7 @@
 
     if (p.mapping_errors) {
       // Colonnes non reconnues automatiquement : l'utilisateur les choisit ci-dessus
-      $("imp-summary").innerHTML = `<p class="rounded-xl bg-warn/15 px-3 py-2 text-sm">
+      $("imp-summary").innerHTML = `<p class="rounded-xl border border-warn/40 bg-warn/10 px-3 py-2 text-sm">
         Certaines colonnes n'ont pas été reconnues : ${esc(Object.values(p.mapping_errors).join(" "))}</p>`;
       $("imp-rows").innerHTML = "";
       $("imp-more").textContent = "";
@@ -362,7 +362,7 @@
         <td class="num whitespace-nowrap">${AT.date(r.date)}</td>
         <td class="max-w-[18rem] truncate">${esc(r.label)}</td>
         <td class="whitespace-nowrap text-muted">${esc(r.category_name || "—")}</td>
-        <td class="num whitespace-nowrap text-right font-semibold ${AT.amountClass(r.amount_cents)}">${eur(r.amount_cents, { signed: true })}</td>
+        <td class="num whitespace-nowrap text-right font-medium ${AT.amountClass(r.amount_cents)}">${eur(r.amount_cents, { signed: true })}</td>
         <td>${STATE[r.status]}</td></tr>`;
     }).join("");
     $("imp-more").textContent = p.rows.length > PREVIEW_LIMIT

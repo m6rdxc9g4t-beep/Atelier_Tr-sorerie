@@ -100,3 +100,18 @@ def test_ping_and_shutdown_only_in_app_mode(client, tmp_path, monkeypatch):
     assert app_mode.post("/api/system/shutdown").status_code == 403          # en-tête anti-CSRF exigé
     assert app_mode.post("/api/system/shutdown", headers=headers).get_json() == {"ok": True}
     assert len(killed) == 1
+
+
+def test_brand_v2_assets_and_theme(client):
+    """Charte v2 : marque, thème partagé et police Inter servis en local, aucune police distante."""
+    html = client.get("/").get_data(as_text=True)
+    assert 'data-atelier-app="tresorerie"' in html
+    assert html.index("brand/atelier-theme.js") < html.index("css/app.css")  # thème posé avant les styles
+    assert "fonts.googleapis.com" not in html
+    assert "atelier-brand__tile" in html and 'class="atelier-brand__prefix">Atelier </span>Trésorerie' in html
+    for value in ("system", "light", "dark"):
+        assert f'data-theme-set="{value}"' in html
+    for asset in ("brand/atelier-theme.js", "brand/inter-latin-wght-normal.woff2", "brand/inter-latin-ext-wght-normal.woff2"):
+        assert client.get(f"/static/{asset}").status_code == 200
+    css = client.get("/static/brand/atelier-brand.css").get_data(as_text=True)
+    assert "--atelier-sig-tresorerie: #3c72da" in css and "Nunito" not in css

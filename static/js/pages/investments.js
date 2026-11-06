@@ -35,7 +35,7 @@
     $("account-pills").innerHTML = pills.map((a) => {
       const active = state.accountId === a.id;
       return `<button type="button" role="tab" aria-selected="${active}" data-account="${a.id ?? ""}"
-        class="btn btn-sm ${active ? "btn-primary" : "btn-ghost"}">${esc(a.name)}</button>`;
+        class="btn btn-sm btn-ghost">${esc(a.name)}</button>`;
     }).join("");
   }
 
@@ -60,17 +60,17 @@
     const parts = byType.map((t) => ({ ...t, share: (t.value_cents / totals.value_cents) * 100 }));
     el.innerHTML = `
       <div class="mb-3 flex items-center justify-between">
-        <h2 class="font-bold">Répartition</h2>
+        <h2 class="section-title">Répartition</h2>
         <span class="num text-sm text-muted">${eur(totals.value_cents)}</span>
       </div>
-      <div class="flex h-3 overflow-hidden rounded-full bg-raised" role="img"
+      <div class="flex h-2 gap-px overflow-hidden rounded bg-raised" role="img"
            aria-label="${esc(parts.map((p) => `${p.label} ${Math.round(p.share)} %`).join(", "))}">
         ${parts.map((p) => `<span style="width:${p.share}%;background:${TYPE_COLORS[p.asset_type]}" title="${esc(p.label)}"></span>`).join("")}
       </div>
-      <div class="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm">
+      <div class="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs">
         ${parts.map((p) => `<span class="flex items-center gap-2">
-          <span class="h-2.5 w-2.5 rounded-full" style="background:${TYPE_COLORS[p.asset_type]}"></span>
-          ${esc(p.label)} <strong class="num">${Math.round(p.share)} %</strong>
+          <span class="h-2 w-2 rounded-full" style="background:${TYPE_COLORS[p.asset_type]}"></span>
+          <span class="text-ink-2">${esc(p.label)}</span> <span class="num font-medium">${Math.round(p.share)} %</span>
           <span class="num text-muted">${eur(p.value_cents)}</span></span>`).join("")}
       </div>`;
   }
@@ -91,11 +91,11 @@
       <tr class="cursor-pointer ${h.closed ? "opacity-60" : ""}" data-id="${h.id}">
         <td class="max-w-[16rem] sm:max-w-[22rem]">
           <div class="flex items-center gap-2">
-            <span class="h-2.5 w-2.5 shrink-0 rounded-full" style="background:${TYPE_COLORS[h.asset_type]}" title="${esc(h.asset_label)}"></span>
-            <p class="truncate font-semibold">${esc(h.name)}</p>
+            <span class="h-2 w-2 shrink-0 rounded-full" style="background:${TYPE_COLORS[h.asset_type]}" title="${esc(h.asset_label)}"></span>
+            <p class="truncate font-medium">${esc(h.name)}</p>
             ${h.closed ? '<span class="badge">Soldée</span>' : ""}
           </div>
-          <p class="truncate pl-[1.1rem] text-xs text-muted">${esc(h.asset_label)}${subtitle(h) ? ` · ${esc(subtitle(h))}` : ""}</p>
+          <p class="truncate pl-4 text-xs text-muted">${esc(h.asset_label)}${subtitle(h) ? ` · ${esc(subtitle(h))}` : ""}</p>
         </td>
         <td class="hidden whitespace-nowrap text-muted md:table-cell">${esc(h.account_name)}</td>
         <td class="num hidden whitespace-nowrap text-right sm:table-cell">${qty(h)}</td>
@@ -106,10 +106,10 @@
         <td class="num hidden whitespace-nowrap text-right md:table-cell">
           ${h.price_cents === null ? '<span class="text-muted">—</span>' : eur(h.price_cents)}${priceDate}
         </td>
-        <td class="num whitespace-nowrap text-right font-bold">
+        <td class="num whitespace-nowrap text-right font-medium">
           ${eur(h.value_cents)}<p class="text-xs font-normal text-muted">${h.weight_percent} %</p>
         </td>
-        <td class="num hidden whitespace-nowrap text-right font-semibold sm:table-cell ${gainClass(h.gain_cents)}">
+        <td class="num hidden whitespace-nowrap text-right font-medium sm:table-cell ${gainClass(h.gain_cents)}">
           ${h.price_cents === null ? '<span class="text-muted">—</span>' : `${eur(h.gain_cents, { signed: true })}<p class="text-xs">${pct(h.gain_percent)}</p>`}
         </td>
       </tr>`;
@@ -119,7 +119,7 @@
     const items = state.data.items;
     $("rows").innerHTML = items.map(rowHtml).join("");
     $("empty").classList.toggle("hidden", items.length > 0);
-    $("empty").innerHTML = 'Aucune position. <button class="font-semibold text-brand hover:underline" data-new>Ajoutez-en une</button> ou importez votre historique Trading 212.';
+    $("empty").innerHTML = 'Aucune position. <button class="link" data-new>Ajoutez-en une</button> ou importez votre historique Trading 212.';
   }
 
   async function loadAccounts() {
@@ -259,10 +259,10 @@
     if (!items.length) { toast("Aucune position à mettre à jour.", "error"); return; }
     $("prices-rows").innerHTML = items.map((h) => `
       <tr>
-        <td><p class="font-semibold">${esc(h.name)}</p><p class="text-xs text-muted">${esc(UNIT_PRICE[h.unit])}${subtitle(h) ? ` · ${esc(subtitle(h))}` : ""}</p></td>
+        <td><p class="font-medium">${esc(h.name)}</p><p class="text-xs text-muted">${esc(UNIT_PRICE[h.unit])}${subtitle(h) ? ` · ${esc(subtitle(h))}` : ""}</p></td>
         <td class="num text-right">${h.price_cents === null ? "—" : eur(h.price_cents)}
           ${h.price_updated_at ? `<p class="text-xs text-muted">${AT.date(h.price_updated_at)}</p>` : ""}</td>
-        <td data-field><input class="input num h-9" name="p-${h.id}" data-id="${h.id}" inputmode="decimal"
+        <td data-field><input class="input num h-[30px]" name="p-${h.id}" data-id="${h.id}" inputmode="decimal"
              placeholder="${h.price_cents === null ? "0,00" : AT.toInput(h.price_cents)}" aria-label="Nouveau cours de ${esc(h.name)}"></td>
       </tr>`).join("");
     pricesDialog.showModal();
@@ -330,7 +330,7 @@
       <span class="badge">Liquidités ${eur(s.cash_change_cents, { signed: true })}</span>`;
     $("t212-kinds").innerHTML = p.by_kind.length
       ? p.by_kind.map((k) => `<tr><td>${esc(k.label)}</td><td class="num text-right text-muted">${k.count}</td>
-          <td class="num text-right font-semibold ${AT.amountClass(k.amount_cents)}">${eur(k.amount_cents, { signed: true })}</td></tr>`).join("")
+          <td class="num text-right font-medium ${AT.amountClass(k.amount_cents)}">${eur(k.amount_cents, { signed: true })}</td></tr>`).join("")
       : '<tr><td class="text-muted">Rien de nouveau dans ce fichier.</td></tr>';
     $("t212-positions").innerHTML = p.positions.length
       ? p.positions.map((pos) => `<tr class="${pos.quantity ? "" : "text-muted"}">
@@ -340,7 +340,7 @@
       : '<tr><td class="text-muted">Aucun achat ni vente.</td></tr>';
     $("t212-ignored-box").hidden = !p.ignored.length;
     $("t212-ignored").innerHTML = p.ignored.map((i) =>
-      `<li>Ligne ${i.line} · <strong>${esc(i.action)}</strong> — ${esc(i.reason)}</li>`).join("");
+      `<li>Ligne ${i.line} · <span class="font-medium text-ink-2">${esc(i.action)}</span> — ${esc(i.reason)}</li>`).join("");
     $("t212-commit").disabled = s.new === 0;
     $("t212-commit").textContent = s.new ? `Importer ${s.new} opération${s.new > 1 ? "s" : ""}` : "Rien à importer";
   }

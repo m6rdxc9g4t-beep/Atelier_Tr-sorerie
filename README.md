@@ -43,7 +43,7 @@ bash scripts/macos/install-desktop.sh
 Prérequis : Python avec les dépendances du projet (installées par le script si besoin) et Node.js
 (déjà présent pour Atelier Projets). L'application est créée dans `~/Applications`, ou sur le Bureau avec
 `bash scripts/macos/install-desktop.sh ~/Desktop` ; un exemplaire installé ailleurs (y compris l'ancien
-lanceur navigateur) est remplacé. Icône : le logo Atelier Trésorerie (`scripts/macos/AppIcon.png`).
+lanceur navigateur) est remplacé. Icône : l'icône carrée de l'app, portefeuille blanc sur dégradé bleu roi (`scripts/macos/AppIcon.png`).
 
 - **Double-clic** : écran de démarrage, vérification de Python, lancement du serveur local, puis l'interface.
   Si l'application tourne déjà dans un terminal (`python app.py`), la fenêtre l'utilise telle quelle.

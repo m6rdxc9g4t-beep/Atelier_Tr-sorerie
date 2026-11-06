@@ -1,10 +1,11 @@
 <!doctype html>
-<html lang="fr" class="dark" data-atelier-app="tresorerie">
+<html lang="fr" data-atelier-app="tresorerie">
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'unsafe-inline'" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'" />
     <title>Atelier Trésorerie</title>
-    <!-- Mêmes jetons de couleur que l'interface (charte néon monochrome bleu roi) -->
+    <!-- Mêmes jetons que l'interface (charte v2 « Linear ») ; thème du système (Système / Clair / Sombre) -->
+    <script src="../static/brand/atelier-theme.js"></script>
     <link rel="stylesheet" href="../static/brand/atelier-brand.css" />
     <link rel="stylesheet" href="../static/css/app.css" />
     <style>
@@ -18,7 +19,9 @@
         place-items: center;
         background: var(--canvas);
         color: var(--ink);
-        font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+        font: 13px/1.45 var(--atelier-font);
+        font-feature-settings: "cv11", "ss03";
+        -webkit-font-smoothing: antialiased;
         -webkit-user-select: none;
         user-select: none;
         -webkit-app-region: drag;
@@ -26,15 +29,22 @@
       main {
         text-align: center;
       }
-      img {
-        width: 132px;
-        height: 132px;
+      .atelier-brand__tile {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto;
+        border-radius: 14px;
+      }
+      .atelier-brand__tile svg {
+        width: 30px;
+        height: 30px;
+        stroke-width: 1.9;
       }
       h1 {
-        margin: 14px 0 6px;
-        font-size: 20px;
-        font-weight: 800;
-        letter-spacing: 0.02em;
+        margin: 16px 0 4px;
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: -0.012em;
       }
       p {
         margin: 0;
@@ -42,10 +52,10 @@
         min-height: 1.5em;
       }
       .bar {
-        width: 160px;
-        height: 4px;
+        width: 140px;
+        height: 3px;
         margin: 18px auto 0;
-        border-radius: 999px;
+        border-radius: 3px;
         background: var(--raised);
         overflow: hidden;
       }
@@ -60,8 +70,8 @@
       small {
         display: block;
         margin-top: 14px;
-        color: var(--muted);
-        opacity: 0.8;
+        font-size: 12px;
+        color: var(--faint);
       }
       @keyframes slide {
         from { transform: translateX(-100%); }
@@ -74,8 +84,12 @@
   </head>
   <body>
     <main>
-      <img src="../static/img/logo-atelier-tresorerie.png" alt="" />
-      <h1>Atelier Trésorerie</h1>
+      <span class="atelier-brand__tile" aria-hidden="true"
+        ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
+          <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" /></svg
+      ></span>
+      <h1><span class="atelier-brand__prefix">Atelier </span>Trésorerie</h1>
       <p id="status" role="status">Démarrage…</p>
       <div class="bar" aria-hidden="true"><span></span></div>
       <small id="hint"></small>

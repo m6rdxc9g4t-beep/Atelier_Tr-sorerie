@@ -7,13 +7,13 @@
 {% block content %}
   <section class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
     <div>
-      <p class="text-sm font-medium text-muted">Patrimoine total</p>
-      <p id="total-balance" class="num mt-1 text-3xl font-extrabold tracking-tight sm:text-4xl">
-        <span class="skeleton inline-block h-9 w-48 align-middle"></span>
+      <p class="text-xs font-medium text-muted">Patrimoine total</p>
+      <p id="total-balance" class="num mt-1 text-3xl font-semibold tracking-tight">
+        <span class="skeleton inline-block h-8 w-48 align-middle"></span>
       </p>
     </div>
     <div class="flex flex-wrap items-center gap-2">
-      <label class="mr-2 flex items-center gap-2 text-sm text-muted">
+      <label class="mr-2 flex cursor-pointer items-center gap-2 text-xs text-muted hover:text-ink">
         <input id="show-archived" type="checkbox" class="checkbox"> Comptes archivés
       </label>
       <button id="btn-transfer" class="btn btn-ghost">
@@ -25,9 +25,9 @@
     </div>
   </section>
 
-  <div id="accounts-groups" class="mt-6 space-y-5" aria-live="polite">
+  <div id="accounts-groups" class="mt-5 space-y-4" aria-live="polite">
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      <div class="skeleton h-40"></div><div class="skeleton h-40"></div><div class="skeleton h-40"></div>
+      <div class="skeleton h-36"></div><div class="skeleton h-36"></div><div class="skeleton h-36"></div>
     </div>
   </div>
 
@@ -35,7 +35,7 @@
   <dialog id="account-dialog" class="modal" aria-labelledby="account-dialog-title">
     <form id="account-form" novalidate>
       <div class="modal-head">
-        <h2 id="account-dialog-title" class="text-lg font-bold">Nouveau compte</h2>
+        <h2 id="account-dialog-title">Nouveau compte</h2>
         <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
       </div>
       <div class="modal-body grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -66,7 +66,7 @@
           <legend class="field-label">Couleur</legend>
           <div id="acc-colors" class="flex flex-wrap gap-2"></div>
         </fieldset>
-        <label id="acc-archived-row" class="flex items-center gap-2 text-sm sm:col-span-2">
+        <label id="acc-archived-row" class="flex cursor-pointer items-center gap-2 text-sm sm:col-span-2">
           <input type="checkbox" name="archived" class="checkbox"> Archiver ce compte (masqué, historique conservé)
         </label>
       </div>
@@ -82,7 +82,7 @@
   <dialog id="transfer-dialog" class="modal" aria-labelledby="transfer-dialog-title">
     <form id="transfer-form" novalidate>
       <div class="modal-head">
-        <h2 id="transfer-dialog-title" class="text-lg font-bold">Virement entre comptes</h2>
+        <h2 id="transfer-dialog-title">Virement entre comptes</h2>
         <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
       </div>
       <div class="modal-body grid grid-cols-1 gap-4 sm:grid-cols-2">

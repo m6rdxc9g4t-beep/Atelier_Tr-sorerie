@@ -39,14 +39,21 @@ locale Ollama. Confidentialité absolue : aucune donnée financière ne doit qui
 - Toute chaîne utilisateur insérée dans du HTML passe par `AT.esc()`.
 - UI : Tailwind avec les jetons de `static/css/app.css` (`bg-surface`, `text-ink`, `text-muted`,
   `text-gain`, `text-loss`, `bg-brand`...) — pas de couleurs codées en dur. Chiffres avec la classe `num`.
-- Charte « néon monochrome » de la suite Atelier : toute l'app est dans sa couleur signature, le
-  **bleu roi #3B5BDB**, en clair comme en sombre. `static/brand/atelier-brand.css` est une copie exacte de
-  celle d'Atelier Projets (ne jamais l'éditer ici) ; `data-atelier-app="tresorerie"` sur `<html>`.
-  Les jetons de `app.css` (`--canvas`, `--surface`, `--line`, `--border`, `--ink`, `--muted`, `--brand`…)
-  sont branchés sur les jetons `--atelier-*` du kit (fond, surfaces, traits, textes, halos dérivés du bleu
-  roi) ; ce sont des couleurs complètes (`var(--x)`, jamais `rgb(var(--x))`), l'opacité Tailwind passe par
-  `color-mix`. `text-brand` = signature lisible (`--atelier-ink`). Bouton principal plein en clair, contour
-  néon en sombre. Gain / perte / alerte, lilas et couleurs des catégories ne prennent jamais la signature.
+- Charte v2 « Linear » de la suite Atelier (règles : `Atelier_Deploy/DESIGN.md`) : structure neutre en gris froids,
+  clair et sombre, plate au repos, traits de 1 px, police Inter embarquée (`--atelier-font`), base 13 px.
+  La signature, le **bleu roi #3c72da**, ne sert qu'à l'accent : bouton principal (plein dans les deux thèmes),
+  sélection, focus, liens, icône de l'app, courbe du patrimoine. `static/brand/` (`atelier-brand.css`,
+  `atelier-theme.js`, Inter + licence) est une copie exacte de celle d'Atelier Projets (ne jamais l'éditer ici) ;
+  `data-atelier-app="tresorerie"` sur `<html>`. Les jetons de `app.css` (`--canvas`, `--surface`, `--raised`,
+  `--selected`, `--line`, `--ink`, `--muted`, `--faint`, `--brand`…) sont branchés sur les jetons `--atelier-*` ;
+  ce sont des couleurs complètes (`var(--x)`, jamais `rgb(var(--x))`), l'opacité Tailwind passe par `color-mix`.
+  `text-brand` = signature lisible (`--atelier-ink`). Le thème Tailwind (couleurs, police, tailles `--fs-*`,
+  graisses, rayons 5 / 7 / 10 px) est branché sur ces variables dans `templates/base.html`. Pas de halo, de lueur,
+  d'ombre au repos ni de barre de couleur latérale ; navigation courante = fond neutre (`--selected`).
+  Gain / perte / alerte, lilas et couleurs des catégories ne changent pas et ne prennent jamais la signature.
+- Thème Système / Clair / Sombre : préférence commune à la suite, lue et écrite par `static/brand/atelier-theme.js`
+  (chargé en premier dans `<head>`) ; le sélecteur de la barre latérale appelle `window.atelierTheme.set(pref)`.
+  Les graphiques se redessinent sur l'événement `themechange` (émis par `app.js` quand `data-theme` change).
 - Textes de l'interface en français. Formatage monétaire via le filtre Jinja `|eur`.
 - Jamais d'appel réseau sortant hors `localhost` pour les données (Ollama : proxys désactivés), sauf via
   `claude_client.py` quand l'utilisateur a choisi Claude dans Paramètres. Chaque moteur ne reçoit que

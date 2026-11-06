@@ -19,7 +19,7 @@
     const el = $("api-key-state");
     if (saved.anthropic_api_key_set) {
       el.innerHTML = `Clé enregistrée : <span class="num">${esc(saved.anthropic_api_key_hint)}</span> ·
-        <button type="button" id="api-key-delete" class="font-semibold text-loss hover:underline">Supprimer</button>`;
+        <button type="button" id="api-key-delete" class="font-medium text-danger hover:underline">Supprimer</button>`;
       F.anthropic_api_key.placeholder = "Laisser vide pour conserver la clé";
     } else {
       el.textContent = "Aucune clé enregistrée.";
@@ -59,7 +59,7 @@
       const { database: db } = await api("GET", "/api/health");
       const stats = [["Comptes", db.accounts], ["Opérations", db.transactions], ["Catégories", db.categories], ["Budgets", db.budgets]];
       $("db-stats").innerHTML = stats.map(([k, v]) =>
-        `<div class="rounded-xl bg-raised/60 p-3"><dt class="text-xs text-muted">${k}</dt><dd class="num mt-1 text-lg font-bold">${v ?? "—"}</dd></div>`).join("");
+        `<div class="rounded-xl border border-line px-3 py-2.5"><dt class="text-xs text-muted">${k}</dt><dd class="num mt-0.5 text-lg font-semibold">${v ?? "—"}</dd></div>`).join("");
     } catch (err) { /* facultatif */ }
   }
 

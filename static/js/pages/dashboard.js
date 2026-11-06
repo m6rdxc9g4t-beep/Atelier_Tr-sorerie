@@ -4,7 +4,8 @@
   const { esc, eur, api, toast } = AT;
   const $ = (id) => document.getElementById(id);
 
-  const FONT = "Manrope, system-ui, sans-serif";
+  // Police de l'interface (Inter embarquée, --atelier-font) : les graphiques parlent la même langue que la page.
+  const FONT = getComputedStyle(document.body).fontFamily;
   const compact = new Intl.NumberFormat("fr-FR", { notation: "compact", maximumFractionDigits: 1 });
   const state = { data: null, months: 6, trend: "networth", charts: {} };
 
@@ -51,10 +52,10 @@
     if (value === null || value === undefined) { el.textContent = label ? `— ${label}` : ""; return; }
     const up = value > 0;
     const good = value === 0 ? null : up === goodWhenUp;
-    const arrow = value === 0 ? "=" : up ? "▲" : "▼";
+    const arrow = value === 0 ? "=" : `<svg class="inline h-3 w-3 align-[-1px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${up ? "M7 17 17 7M8 7h9v9" : "M7 7l10 10M17 8v9H8"}"/></svg><span class="sr-only">${up ? "en hausse" : "en baisse"}</span>`;
     const tone = good === null ? "text-muted" : good ? "text-gain" : "text-loss";
     const number = Math.abs(value).toLocaleString("fr-FR", { maximumFractionDigits: 1 });
-    el.innerHTML = `<span class="${tone} font-semibold">${arrow} ${number}${suffix}</span> <span>${esc(label)}</span>`;
+    el.innerHTML = `<span class="${tone} font-medium">${arrow} ${number}${suffix}</span> <span>${esc(label)}</span>`;
   }
 
   function renderKpis() {
@@ -62,17 +63,17 @@
     const set = (id, text, cls = "") => {
       const v = $(`kpi-${id}`).querySelector("[data-value]");
       v.textContent = text;
-      v.className = `num mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl ${cls}`;
+      v.className = `num mt-1.5 text-2xl font-semibold tracking-tight ${cls}`;
     };
     const atDate = `vs ${prev} (au ${day})`;
     set("networth", eur(k.net_worth_cents), k.net_worth_cents < 0 ? "text-loss" : "");
     $("kpi-networth").querySelector("[data-delta]").innerHTML =
-      `<span class="${k.net_worth_change_cents >= 0 ? "text-gain" : "text-loss"} font-semibold">${eur(k.net_worth_change_cents, { signed: true })}</span> depuis fin ${esc(prev)}`;
+      `<span class="${k.net_worth_change_cents >= 0 ? "text-gain" : "text-loss"} font-medium">${eur(k.net_worth_change_cents, { signed: true })}</span> depuis fin ${esc(prev)}`;
     set("income", eur(k.income_cents), "text-gain");
     delta($("kpi-income").querySelector("[data-delta]"), k.income_change_percent, { label: atDate });
     set("expense", eur(-k.expense_cents), "text-loss");
     delta($("kpi-expense").querySelector("[data-delta]"), k.expense_change_percent, { label: atDate, goodWhenUp: false });
-    set("savings", k.savings_rate === null ? "—" : `${k.savings_rate.toLocaleString("fr-FR")} %`, "text-brand");
+    set("savings", k.savings_rate === null ? "—" : `${k.savings_rate.toLocaleString("fr-FR")} %`);
     delta($("kpi-savings").querySelector("[data-delta]"), k.savings_rate_change, {
       suffix: " pt", label: k.savings_rate === null ? "aucun revenu ce mois-ci" : atDate,
     });
@@ -231,10 +232,10 @@
     $("donut-legend").innerHTML = c.items.map((i) => {
       const href = i.other ? `/transactions?month=${c.month}&type=expense`
         : `/transactions?month=${c.month}&category_id=${i.category_id ?? "none"}`;
-      return `<li><a class="flex items-center justify-between gap-3 rounded-lg px-1 py-0.5 hover:bg-raised/60" href="${href}">
+      return `<li><a class="-mx-2 flex items-center justify-between gap-3 rounded-lg px-2 py-1 hover:bg-raised" href="${href}">
         <span class="flex min-w-0 items-center gap-2"><span class="h-2.5 w-2.5 shrink-0 rounded-sm" style="background:${esc(i.color)}"></span>
           <span class="truncate">${esc(i.name)}</span></span>
-        <span class="num shrink-0"><strong>${eur(i.amount_cents)}</strong> <span class="text-muted">${Math.round(i.percent)} %</span></span>
+        <span class="num shrink-0"><span class="font-medium">${eur(i.amount_cents)}</span> <span class="inline-block w-9 text-right text-muted">${Math.round(i.percent)} %</span></span>
       </a></li>`;
     }).join("");
   }
@@ -245,36 +246,36 @@
     const items = state.data.recent;
     $("recent").innerHTML = items.length ? items.map((t) => `
       <tr>
-        <td class="num hidden w-28 whitespace-nowrap pl-6 text-muted sm:table-cell">${AT.date(t.date)}</td>
-        <td class="max-w-[13rem] pl-6 sm:max-w-[20rem] sm:pl-3"><p class="truncate font-semibold">${esc(t.label)}</p>
+        <td class="num hidden w-28 whitespace-nowrap text-muted sm:table-cell">${AT.date(t.date)}</td>
+        <td class="max-w-[13rem] sm:max-w-[20rem]"><p class="truncate font-medium">${esc(t.label)}</p>
           <p class="truncate text-xs text-muted"><span class="sm:hidden">${AT.date(t.date)} · </span>${esc(t.account_name)}</p></td>
         <td class="hidden sm:table-cell">${t.category_id
           ? `<span class="badge"><span class="dot" style="background:${esc(t.category_color)}"></span>${esc(t.category_name)}</span>`
           : '<span class="badge text-muted">Non catégorisée</span>'}</td>
-        <td class="num whitespace-nowrap pr-6 text-right font-bold ${AT.amountClass(t.amount_cents)}">${eur(t.amount_cents, { signed: true })}</td>
+        <td class="num whitespace-nowrap text-right font-medium ${AT.amountClass(t.amount_cents)}">${eur(t.amount_cents, { signed: true })}</td>
       </tr>`).join("")
-      : '<tr><td class="px-6 py-8 text-center text-muted">Aucune opération pour le moment.</td></tr>';
+      : '<tr><td class="py-8 text-center text-muted">Aucune opération pour le moment.</td></tr>';
   }
 
   function renderBudgets() {
     const b = state.data.budgets;
     if (!b.count) {
       $("budgets").innerHTML = `<p class="text-sm text-muted">Aucun budget ce mois-ci.
-        <a class="font-semibold text-brand hover:underline" href="/budgets">Fixer des plafonds</a> pour suivre vos dépenses.</p>`;
+        <a class="link" href="/budgets">Fixer des plafonds</a> pour suivre vos dépenses.</p>`;
       return;
     }
     const tone = (s) => ({ ok: "gain", attention: "warn", depasse: "loss" })[s];
     const pctTotal = b.total_limit_cents ? Math.round((b.total_spent_cents / b.total_limit_cents) * 100) : 0;
     $("budgets").innerHTML = `
-      <p class="num text-sm"><strong>${eur(b.total_spent_cents)}</strong> <span class="text-muted">sur ${eur(b.total_limit_cents)} budgétés · ${pctTotal} %</span></p>
+      <p class="num text-sm"><span class="font-semibold">${eur(b.total_spent_cents)}</span> <span class="text-muted">sur ${eur(b.total_limit_cents)} budgétés · ${pctTotal} %</span></p>
       ${b.items.map((i) => `
         <div>
           <div class="flex items-center justify-between gap-2 text-sm">
-            <span class="truncate font-semibold">${esc(i.category_name)}</span>
+            <span class="truncate font-medium">${esc(i.category_name)}</span>
             <span class="num shrink-0 text-xs text-muted">${eur(i.spent_cents)} / ${eur(i.amount_limit_cents)}</span>
           </div>
           <div class="progress mt-1.5"><span style="width:${Math.min(100, i.percent || 0)}%;background:var(--${tone(i.status)})"></span></div>
-          ${i.status === "depasse" ? `<p class="mt-1 text-xs font-semibold text-loss">⚠ Dépassé de ${eur(-i.remaining_cents)}</p>` : ""}
+          ${i.status === "depasse" ? `<p class="mt-1 text-xs font-medium text-loss">Dépassé de ${eur(-i.remaining_cents)}</p>` : ""}
         </div>`).join("")}
       ${b.count > b.items.length ? `<p class="text-xs text-muted">+ ${b.count - b.items.length} autre(s) budget(s)</p>` : ""}`;
   }
