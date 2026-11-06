@@ -47,7 +47,7 @@ lanceur navigateur) est remplacé. Icône : le logo Atelier Trésorerie (`script
 
 - **Double-clic** : écran de démarrage, vérification de Python, lancement du serveur local, puis l'interface.
   Si l'application tourne déjà dans un terminal (`python app.py`), la fenêtre l'utilise telle quelle.
-- **Cmd+Q** (ou fermer la fenêtre) arrête le serveur. **Cmd+,** ouvre les Paramètres, **Cmd+1…6** les pages.
+- **Cmd+Q** (ou fermer la fenêtre) arrête le serveur. **Cmd+,** ouvre les Paramètres, **Cmd+1…7** les pages.
 - **Mises à jour** : l'application lit le code du dossier du projet ; un `git pull` suffit. Une nouvelle
   dépendance Python est installée automatiquement au lancement suivant.
 - **Journal** : menu Aide → Journal de l'application (`~/Library/Logs/Atelier_Tresorerie/app.log`).
@@ -80,6 +80,11 @@ atelier_tresorerie/
 │   ├── budgets.py      #   budgets mensuels et objectifs d'épargne
 │   ├── holdings.py     #   positions (titres, crypto, or, argent) et valorisation
 │   ├── trading212.py   #   import de l'historique CSV Trading 212
+│   ├── merchants.py    #   commerçant derrière un libellé bancaire + dictionnaire des commerçants courants
+│   ├── rules.py        #   règles de classement (« si le libellé contient X → catégorie Y »)
+│   ├── classifier.py   #   classement en cascade : règle → relevé → historique → commerçant connu
+│   ├── insights.py     #   opérations récurrentes, montants inhabituels, virements entre comptes
+│   ├── imports.py      #   lots d'import : historique, rapport, annulation, commentaire de l'IA
 │   ├── dashboard.py    #   agrégations du tableau de bord
 │   ├── ai_context.py   #   résumé des finances transmis à l'IA (détaillé ou agrégé)
 │   ├── assistant.py    #   conversation et catégorisation par l'IA
@@ -121,7 +126,10 @@ l'en-tête `X-Requested-With`. Erreurs : `{"error": "...", "fields": {"champ": "
 | Objectifs | `GET/POST /api/goals` · `PATCH/DELETE /api/goals/<id>` |
 | Positions | `GET/POST /api/holdings` · `GET/PATCH/DELETE /api/holdings/<id>` · `POST /api/holdings/prices` |
 | Trading 212 | `POST /api/import/trading212` (multipart : `file`, `account_id`, `dry_run=1` pour l'aperçu) |
-| Import | `POST /api/import/preview` (multipart : `file`, `account_id`, `mapping`) · `POST /api/import/commit` |
+| Import | `POST /api/import/preview` (multipart : `file`, `account_id`, `mapping`) · `POST /api/import/commit` · `POST /api/import/ai-categorize` |
+| Lots d'import | `GET /api/imports` · `GET /api/imports/<id>/report` · `DELETE /api/imports/<id>` (annule l'import) · `POST /api/imports/<id>/explain` |
+| Règles | `GET/POST /api/rules` · `PATCH/DELETE /api/rules/<id>` · `POST /api/rules/apply` · `GET /api/transactions/<id>/rule-suggestion` |
+| Récurrences | `GET /api/insights/recurring?account_id=` |
 | Tableau de bord | `GET /api/dashboard?months=6` (indicateurs, historique, dépenses par catégorie, opérations, budgets) |
 | Assistant IA | `GET/DELETE /api/ai/messages` · `POST /api/ai/ask` · `GET /api/ai/context` · `GET /api/ai/status?deep=1` · `POST /api/ai/categorize` · `POST /api/ai/categorize/apply` |
 | Paramètres | `GET/PATCH /api/settings` · `GET /api/system/backup` (téléchargement de la base) |
@@ -133,7 +141,29 @@ Formats acceptés : `.csv` (séparateur et encodage détectés automatiquement) 
 Les colonnes Date / Libellé / Montant (ou Débit + Crédit) sont reconnues dans les exports des
 banques françaises ; sinon on les choisit à la main dans l'aperçu. Chaque ligne reçoit une
 empreinte : réimporter un relevé, ou un relevé qui chevauche le précédent, ne crée pas de doublons.
-Les catégories sont reprises du fichier ou devinées à partir des opérations déjà catégorisées.
+
+### Assistant d'import
+
+L'import se fait en trois étapes : **fichier → vérification → rapport**.
+
+1. **Lecture et nettoyage** : chaque libellé est ramené à son commerçant
+   (`PRLV SEPA EDF CLIENTS PARTICULIERS ID: FR12…` → « EDF », `CB CARREFOUR MARKET 12/10 X4974` → « Carrefour »).
+2. **Classement en cascade**, la première source qui répond l'emporte :
+   vos **règles** → la catégorie fournie par le **relevé** → votre **historique** (même libellé, puis même
+   commerçant) → le dictionnaire des **commerçants connus** (EDF, Free, SNCF, Carrefour, Netflix, URSSAF…).
+   Chaque ligne affiche l'origine de sa catégorie. Le bouton « Classer le reste avec l'IA » envoie les
+   lignes restantes au moteur choisi, une seule fois par commerçant (confirmation demandée avec Claude).
+3. **Détections** : les **virements entre vos comptes** (montant opposé dans un autre compte à ±3 jours, avec
+   un libellé de virement) sont liés automatiquement et exclus des revenus et dépenses.
+4. **Corrections et apprentissage** : changer la catégorie d'une ligne l'applique aux autres lignes du même
+   commerçant ; à la validation, ces corrections deviennent des **règles** pour les imports suivants.
+   La fenêtre d'une opération propose aussi « Toujours classer ce commerçant ici ».
+5. **Rapport** : entrées et sorties, répartition par catégorie, origine des catégories, virements reconnus,
+   échéances récurrentes, montants inhabituels, nouveaux commerçants — et un avis de l'IA à la demande
+   (avec Claude, seuls des totaux par catégorie sont envoyés). Un import peut être **annulé** d'un clic.
+
+La page **Imports & Règles** regroupe l'historique des imports, les règles de classement et les
+**opérations récurrentes** détectées (abonnements, factures, salaire) avec les échéances du mois à venir.
 
 ### Placements (actions, ETF, crypto, or, argent)
 
@@ -194,6 +224,7 @@ rien n'est appliqué sans validation. Avec Claude, les libellés concernés sont
 5. ✅ Application Mac double-cliquable
 6. ✅ Assistant IA (Ollama ou Claude), catégorisation automatique, page Paramètres et sauvegarde
 7. ✅ Application de bureau Electron (fenêtre native, comme Atelier Projets)
+8. ✅ Assistant d'import : classement en cascade, règles apprises, virements internes, rapport et annulation, récurrences
 
 ## Workflow Git
 

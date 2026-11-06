@@ -8,6 +8,7 @@
   {# ------------------------------------------------------------ barre d'outils #}
   <section class="card p-4">
     <form id="filters" class="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-12" role="search">
+      <input type="hidden" name="import_batch_id" id="f-batch">
       <div class="col-span-2 md:col-span-4 xl:col-span-4">
         <label class="sr-only" for="f-q">Rechercher</label>
         <input id="f-q" name="q" type="search" class="input" placeholder="Rechercher un libellé, une note…">
@@ -140,6 +141,11 @@
         <p id="tx-category-hint" class="text-xs text-muted sm:col-span-2">
           Sans catégorie, l'application propose celle des opérations au libellé similaire.
         </p>
+        <label id="tx-rule-row" class="hidden items-start gap-2 rounded-xl border border-line p-3 text-sm sm:col-span-2">
+          <input id="tx-rule" type="checkbox" class="checkbox mt-0.5">
+          <span>Toujours classer <strong id="tx-rule-merchant"></strong> dans cette catégorie
+            <span class="block text-xs text-muted">Crée une règle, appliquée aux prochains imports et aux opérations déjà classées automatiquement.</span></span>
+        </label>
       </div>
       <div class="modal-foot">
         <button type="button" id="tx-delete" class="btn btn-danger mr-auto">Supprimer</button>
@@ -149,10 +155,15 @@
     </form>
   </dialog>
 
-  {# ------------------------------------------------------------ fenêtre import #}
+  {# ------------------------------------------------------------ fenêtre import (assistant) #}
   <dialog id="import-dialog" class="modal modal-wide" aria-labelledby="import-dialog-title">
     <div class="modal-head">
-      <h2 id="import-dialog-title" class="text-lg font-bold">Importer un relevé</h2>
+      <div>
+        <h2 id="import-dialog-title" class="text-lg font-bold">Importer un relevé</h2>
+        <ol id="imp-steps" class="mt-1 flex flex-wrap gap-x-4 text-xs text-muted" aria-label="Étapes">
+          <li data-step="file">1. Fichier</li><li data-step="preview">2. Vérification</li><li data-step="report">3. Rapport</li>
+        </ol>
+      </div>
       <button type="button" class="icon-btn" data-close aria-label="Fermer">{{ icon("M6 6l12 12M18 6 6 18", "h-4 w-4") }}</button>
     </div>
 
@@ -171,35 +182,56 @@
         </label>
       </div>
 
-      {# Étape 2 : correspondance des colonnes + aperçu #}
+      {# Étape 2 : correspondance des colonnes, classement, vérification #}
       <div id="import-step-preview" class="hidden space-y-4">
-        <div>
-          <p class="mb-2 text-sm font-semibold">Colonnes détectées <span class="font-normal text-muted">— corrigez si besoin</span></p>
-          <div id="imp-mapping" class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6"></div>
-        </div>
+        <details id="imp-mapping-box">
+          <summary class="cursor-pointer text-sm font-semibold">Colonnes détectées <span class="font-normal text-muted">— corrigez si besoin</span></summary>
+          <div id="imp-mapping" class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6"></div>
+        </details>
         <div id="imp-summary" class="flex flex-wrap gap-2"></div>
+        <div id="imp-sources" class="flex flex-wrap items-center gap-2 text-sm"></div>
+        <p id="imp-note" class="hidden rounded-xl bg-brand/10 px-3 py-2 text-sm" role="status" aria-live="polite"></p>
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="segmented" role="radiogroup" aria-label="Lignes affichées">
+            <label><input type="radio" name="imp-view" value="all" checked><span>Toutes</span></label>
+            <label><input type="radio" name="imp-view" value="todo"><span>À classer</span></label>
+            <label><input type="radio" name="imp-view" value="transfer"><span>Virements</span></label>
+          </div>
+          <button type="button" id="imp-ai" class="btn btn-ghost btn-sm ml-auto hidden">
+            {{ icon("M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z", "h-4 w-4") }} <span>Classer le reste avec l'IA</span>
+          </button>
+        </div>
         <div class="max-h-[45vh] overflow-auto rounded-xl border border-line">
           <table class="table">
             <thead>
               <tr>
                 <th class="w-10"><input id="imp-select-all" type="checkbox" class="checkbox" aria-label="Tout sélectionner"></th>
-                <th>Ligne</th><th>Date</th><th>Libellé</th><th>Catégorie</th><th class="text-right">Montant</th><th>État</th>
+                <th class="hidden md:table-cell">Date</th><th>Opération</th><th>Catégorie</th>
+                <th class="hidden lg:table-cell">Origine</th><th class="text-right">Montant</th><th class="hidden sm:table-cell">État</th>
               </tr>
             </thead>
             <tbody id="imp-rows"></tbody>
           </table>
         </div>
         <p id="imp-more" class="text-xs text-muted"></p>
+        <label id="imp-learn-row" class="hidden items-center gap-2 text-sm">
+          <input id="imp-learn" type="checkbox" class="checkbox" checked>
+          <span id="imp-learn-label"></span>
+        </label>
       </div>
+
+      {# Étape 3 : rapport #}
+      <div id="import-step-report" class="hidden"></div>
     </div>
 
     <div class="modal-foot">
-      <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+      <button type="button" class="btn btn-ghost" data-close id="imp-cancel">Annuler</button>
       <button type="button" id="imp-commit" class="btn btn-primary" disabled>Importer</button>
     </div>
   </dialog>
 {% endblock %}
 
 {% block scripts %}
+  <script src="{{ url_for('static', filename='js/import-report.js') }}"></script>
   <script src="{{ url_for('static', filename='js/pages/transactions.js') }}"></script>
 {% endblock %}

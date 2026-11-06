@@ -21,7 +21,8 @@ from flask import Blueprint, current_app, jsonify, request, send_file
 import ai_providers
 import database
 from services import ServiceError, ValidationError
-from services import accounts, assistant, budgets, categories, dashboard, holdings, importer, trading212, transactions
+from services import (accounts, assistant, budgets, categories, dashboard, holdings, importer, imports, insights,
+                      rules, trading212, transactions)
 from services import settings as settings_service
 from services.ai_context import system_prompt
 
@@ -312,6 +313,78 @@ def import_preview():
 @bp.post("/import/commit")
 def import_commit():
     return jsonify(importer.commit(_db(), _json())), 201
+
+
+@bp.post("/import/ai-categorize")
+def import_ai_categorize():
+    """Propositions de l'IA pour les lignes « à classer » d'un aperçu (rien n'est enregistré)."""
+    return jsonify(assistant.suggest_for_import(_db(), _provider(), _json()))
+
+
+# --------------------------------------------------------------------------- lots d'import
+
+@bp.get("/imports")
+def imports_list():
+    return jsonify(items=imports.list_batches(_db()))
+
+
+@bp.get("/imports/<int:batch_id>/report")
+def imports_report(batch_id):
+    return jsonify(imports.report(_db(), batch_id))
+
+
+@bp.delete("/imports/<int:batch_id>")
+def imports_undo(batch_id):
+    return jsonify(imports.undo(_db(), batch_id))
+
+
+@bp.post("/imports/<int:batch_id>/explain")
+def imports_explain(batch_id):
+    """Commentaire de l'IA sur un import. Avec Claude, seuls des montants agrégés sont transmis."""
+    provider = _provider()
+    prompt = imports.explain_prompt(imports.report(_db(), batch_id), detailed=provider.local)
+    text = provider.chat([{"role": "user", "content": prompt}], system=assistant.SYSTEM_EXPLAIN, max_tokens=1200)
+    return jsonify(text=text, local=provider.local, label=provider.label)
+
+
+# --------------------------------------------------------------------------- règles de classement
+
+@bp.get("/rules")
+def rules_list():
+    return jsonify(items=rules.list_rules(_db()))
+
+
+@bp.post("/rules")
+def rules_create():
+    return jsonify(rules.create_rule(_db(), _json())), 201
+
+
+@bp.patch("/rules/<int:rule_id>")
+def rules_update(rule_id):
+    return jsonify(rules.update_rule(_db(), rule_id, _json()))
+
+
+@bp.delete("/rules/<int:rule_id>")
+def rules_delete(rule_id):
+    rules.delete_rule(_db(), rule_id)
+    return "", 204
+
+
+@bp.post("/rules/apply")
+def rules_apply():
+    return jsonify(rules.apply_rules(_db(), _json()))
+
+
+@bp.get("/transactions/<int:transaction_id>/rule-suggestion")
+def rules_suggestion(transaction_id):
+    return jsonify(rules.suggest_for_transaction(_db(), transaction_id))
+
+
+# --------------------------------------------------------------------------- comprendre ses comptes
+
+@bp.get("/insights/recurring")
+def insights_recurring():
+    return jsonify(insights.recurring(_db(), request.args))
 
 
 @bp.post("/import/trading212")

@@ -17,6 +17,7 @@ _SELECT = """
     SELECT t.id, t.account_id, a.name AS account_name, a.color AS account_color,
            t.category_id, c.name AS category_name, c.color AS category_color, c.kind AS category_kind,
            t.date, t.label, t.amount_cents, t.status, t.notes, t.source, t.transfer_group,
+           t.category_source, t.import_batch_id,
            t.created_at, t.updated_at
     FROM transactions t
     JOIN accounts a ON a.id = t.account_id
@@ -34,6 +35,7 @@ def _filters(args: dict) -> tuple[str, list]:
     clauses, params = [], []
     v = Validator(args, partial=True)
     v.integer_id("account_id")
+    v.integer_id("import_batch_id")
     v.month("month")
     v.date("start")
     v.date("end")
@@ -46,6 +48,9 @@ def _filters(args: dict) -> tuple[str, list]:
     if f.get("account_id"):
         clauses.append("t.account_id = ?")
         params.append(f["account_id"])
+    if f.get("import_batch_id"):
+        clauses.append("t.import_batch_id = ?")
+        params.append(f["import_batch_id"])
     category = str(args.get("category_id") or "")
     if category == "none":
         clauses.append("t.category_id IS NULL")
@@ -181,8 +186,11 @@ def _validate(conn, data: dict | None, partial: bool) -> dict:
 
 def create_transaction(conn: sqlite3.Connection, data: dict | None) -> dict:
     clean = _validate(conn, data, partial=False)
-    if "category_id" not in clean or clean["category_id"] is None:
+    if clean.get("category_id") is not None:
+        clean["category_source"] = "manuel"
+    else:
         clean["category_id"] = CategoryGuesser(conn).guess(clean["label"])
+        clean["category_source"] = "historique" if clean["category_id"] else None
     clean = {k: v for k, v in clean.items() if v is not None}
     cur = conn.execute(
         f"INSERT INTO transactions ({', '.join(clean)}) VALUES ({', '.join('?' * len(clean))})",  # noqa: S608
@@ -199,6 +207,9 @@ def update_transaction(conn: sqlite3.Connection, transaction_id: int, data: dict
     if group and "account_id" in clean:
         raise ValidationError("Le compte d'un virement ne peut pas être modifié : supprimez-le et recréez-le.")
     update_row(conn, "transactions", transaction_id, clean, touch=True)
+    if "category_id" in clean and clean["category_id"] != current["category_id"]:
+        conn.execute("UPDATE transactions SET category_source = 'manuel', ai_suggested = 0 WHERE id = ?",
+                     (transaction_id,))
     if group:  # garde les deux jambes du virement cohérentes
         mirror = {}
         if "date" in clean:
@@ -283,7 +294,8 @@ def bulk_action(conn: sqlite3.Connection, data: dict | None) -> dict:
         else:
             category_id = None
         cur = conn.execute(
-            f"UPDATE transactions SET category_id = ?, updated_at = datetime('now') WHERE id IN ({marks})",  # noqa: S608
+            f"UPDATE transactions SET category_id = ?, category_source = 'manuel', ai_suggested = 0, "
+            f"updated_at = datetime('now') WHERE id IN ({marks})",  # noqa: S608
             (category_id, *ids),
         )
     elif action == "status":

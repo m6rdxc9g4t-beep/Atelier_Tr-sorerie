@@ -19,6 +19,7 @@ from . import accounts as accounts_service
 from . import budgets as budgets_service
 from . import dashboard
 from . import holdings as holdings_service
+from . import insights
 
 MONTHS = dashboard.MONTHS_FR_LONG
 
@@ -99,6 +100,19 @@ def build_context(conn: sqlite3.Connection, detailed: bool, today: date | None =
         for i in b["items"]:
             lines.append(f"- {i['category_name']} : {_eur(i['spent_cents'])} / {_eur(i['amount_limit_cents'])} "
                          f"({status[i['status']]})")
+
+    # ------------------------------------------------------------------ échéances récurrentes
+    rec = insights.recurring(conn, today=today)
+    if rec["items"]:
+        debits = [i for i in rec["items"] if i["direction"] == "debit"]
+        credits = [i for i in rec["items"] if i["direction"] == "credit"]
+        lines += ["", "## Opérations récurrentes détectées (abonnements, factures, revenus réguliers)",
+                  f"- {len(debits)} sortie(s) récurrente(s), soit {_eur(-rec['monthly_debit_cents'])} par mois ; "
+                  f"{len(credits)} entrée(s) récurrente(s), soit {_eur(rec['monthly_credit_cents'])} par mois"]
+        if detailed:
+            for i in rec["items"]:
+                lines.append(f"  - {i['merchant']} : {_eur(abs(i['amount_cents']))} ({i['frequency']}"
+                             f"{', montant variable' if not i['fixed'] else ''}), prochaine échéance vers le {i['next_date']}")
 
     # ------------------------------------------------------------------ objectifs
     goals = budgets_service.list_goals(conn)

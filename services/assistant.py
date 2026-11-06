@@ -11,6 +11,7 @@ import sqlite3
 from datetime import date
 
 from .ai_context import system_prompt
+from .merchants import identify
 from .validation import ValidationError, Validator
 
 HISTORY_TURNS = 8          # nombre d'échanges précédents renvoyés au moteur
@@ -85,6 +86,9 @@ Règles :
 - Un montant positif est une entrée : choisis une catégorie de type « revenu » (ou « dépense » s'il s'agit d'un remboursement).
 """
 
+SYSTEM_EXPLAIN = """Tu es l'assistant financier d'Atelier Trésorerie. Tu réponds en français, clairement et
+brièvement, avec des listes courtes et du **gras** pour les chiffres clés. Tu n'es pas un conseiller financier agréé."""
+
 KIND_FR = {"depense": "dépense", "revenu": "revenu", "transfert": "virement"}
 
 
@@ -114,11 +118,27 @@ def suggest_categories(conn: sqlite3.Connection, provider, limit: int = CATEGORI
     ).fetchall()
     if not rows:
         return {"items": [], "remaining": 0, "unmatched": 0}
+    proposals = _ask_categories(conn, provider, [(r["id"], r["label"], r["amount_cents"]) for r in rows])
+
+    items, unmatched = [], 0
+    for r in rows:
+        cat = proposals.get(r["id"])
+        # Cohérence du sens : une catégorie de revenu pour une dépense est rejetée
+        if cat is not None and r["amount_cents"] < 0 and cat["kind"] == "revenu":
+            cat = None
+        if cat is None:
+            unmatched += 1
+            continue
+        items.append({**dict(r), "category_id": cat["id"], "category_name": cat["name"]})
+    return {"items": items, "remaining": uncategorized_count(conn), "unmatched": unmatched}
+
+
+def _ask_categories(conn: sqlite3.Connection, provider, entries: list[tuple[int, str, int]]) -> dict[int, sqlite3.Row]:
+    """Demande au moteur une catégorie pour chaque (id, libellé, montant). Renvoie {id: catégorie}."""
     categories = conn.execute("SELECT id, name, kind FROM categories WHERE kind != 'transfert' ORDER BY name").fetchall()
     by_name = {c["name"].lower(): c for c in categories}
-
     listing = "\n".join(f"- {c['name']} (type {KIND_FR[c['kind']]})" for c in categories)
-    ops = "\n".join(f"{r['id']} | {r['label']} | {r['amount_cents'] / 100:.2f} €" for r in rows)
+    ops = "\n".join(f"{i} | {label} | {cents / 100:.2f} €" for i, label, cents in entries)
     prompt = f"Catégories disponibles :\n{listing}\n\nOpérations (id | libellé | montant) :\n{ops}"
     raw = provider.chat([{"role": "user", "content": prompt}], system=CATEGORIZE_PROMPT, max_tokens=3000)
 
@@ -133,18 +153,46 @@ def suggest_categories(conn: sqlite3.Connection, provider, limit: int = CATEGORI
         name = str(item.get("categorie") or item.get("category") or "").strip().lower()
         if name in by_name:
             proposals[tx_id] = by_name[name]
+    return proposals
 
-    items, unmatched = [], 0
-    for r in rows:
-        cat = proposals.get(r["id"])
-        # Cohérence du sens : une catégorie de revenu pour une dépense est rejetée
-        if cat is not None and r["amount_cents"] < 0 and cat["kind"] == "revenu":
-            cat = None
+
+def suggest_for_import(conn: sqlite3.Connection, provider, data: dict | None) -> dict:
+    """Catégories proposées par l'IA pour les lignes « à classer » d'un aperçu d'import (rien n'est enregistré).
+
+    `items` : [{key, label, amount_cents}] ; une seule question par commerçant et par sens, pour aller
+    plus vite et limiter ce qui est transmis. Renvoie {items: [{key, category_id, category_name}]}.
+    """
+    items = (data or {}).get("items")
+    if not isinstance(items, list) or not items or len(items) > 2000:
+        raise ValidationError("Aucune opération à classer.")
+    groups: dict[tuple, list] = {}
+    for item in items:
+        if not isinstance(item, dict):
+            raise ValidationError("Opération invalide.")
+        v = Validator(item)
+        v.text("label", required=True, max_len=200)
+        label = v.result()["label"]
+        try:
+            cents = int(item.get("amount_cents"))
+        except (TypeError, ValueError) as exc:
+            raise ValidationError("Montant invalide.") from exc
+        who = identify(label, cents)
+        groups.setdefault((who["key"] or label.lower(), cents > 0), []).append((item.get("key"), label, cents))
+    if len(groups) > CATEGORIZE_LIMIT:
+        raise ValidationError(f"{CATEGORIZE_LIMIT} commerçants maximum par demande.")
+
+    entries = [(n, members[0][1], members[0][2]) for n, members in enumerate(groups.values(), 1)]
+    proposals = _ask_categories(conn, provider, entries)
+    out = []
+    for n, members in enumerate(groups.values(), 1):
+        cat = proposals.get(n)
         if cat is None:
-            unmatched += 1
             continue
-        items.append({**dict(r), "category_id": cat["id"], "category_name": cat["name"]})
-    return {"items": items, "remaining": uncategorized_count(conn), "unmatched": unmatched}
+        for key, _label, cents in members:
+            if cents < 0 and cat["kind"] == "revenu":
+                continue
+            out.append({"key": key, "category_id": cat["id"], "category_name": cat["name"]})
+    return {"items": out, "asked": len(entries)}
 
 
 def apply_categories(conn: sqlite3.Connection, data: dict | None) -> dict:
@@ -164,7 +212,8 @@ def apply_categories(conn: sqlite3.Connection, data: dict | None) -> dict:
     with conn:
         before = conn.total_changes
         conn.executemany(
-            "UPDATE transactions SET category_id = ?, ai_suggested = 1, updated_at = datetime('now') WHERE id = ?",
+            "UPDATE transactions SET category_id = ?, ai_suggested = 1, category_source = 'ia', "
+            "updated_at = datetime('now') WHERE id = ?",
             updates,
         )
         applied = conn.total_changes - before

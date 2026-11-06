@@ -12,13 +12,16 @@ import io
 import re
 import sqlite3
 import unicodedata
+import uuid
 from collections import Counter
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from finance import to_cents
 
-from .transactions import CategoryGuesser
+from . import rules as rules_service
+from .classifier import SOURCES, Classifier
+from .insights import TransferMatcher
 from .validation import ValidationError, Validator, ensure_exists
 
 MAX_ROWS = 20_000
@@ -236,12 +239,12 @@ def preview(conn: sqlite3.Connection, filename: str, raw: bytes, account_id, map
             "summary": {"total": 0, "ok": 0, "duplicates": 0, "errors": 0},
         }
 
-    categories = {r["name"].lower(): (r["id"], r["name"]) for r in conn.execute("SELECT id, name FROM categories")}
-    names = {cid: name for cid, name in categories.values()}
-    guesser = CategoryGuesser(conn)
+    names = {r["id"]: r["name"] for r in conn.execute("SELECT id, name FROM categories")}
+    classifier = Classifier(conn)
     occurrences: Counter = Counter()
     existing_cache: dict[tuple, int] = {}
     rows, summary = [], Counter()
+    parsed = []
 
     for line, raw_row in body:  # numéro de ligne tel qu'affiché dans un tableur
         item = {"line": line, "status": "ok", "error": None}
@@ -267,13 +270,17 @@ def preview(conn: sqlite3.Connection, filename: str, raw: bytes, account_id, map
             rows.append(item)
             summary["errors"] += 1
             continue
+        parsed.append((item, raw_row))
 
-        file_category = str(_cell(raw_row, cols["category"]) or "").strip().lower()
-        category_id = categories.get(file_category, (None,))[0] if file_category else None
-        category_id = category_id or guesser.guess(item["label"])
-        item["category_id"] = category_id
-        item["category_name"] = names.get(category_id)
+    dates = [item["date"] for item, _ in parsed]
+    transfers = TransferMatcher(conn, account_id, min(dates), max(dates)) if dates else None
+    transfer_category = _transfer_category(conn)
 
+    for item, raw_row in parsed:
+        cents = item["amount_cents"]
+        file_category = str(_cell(raw_row, cols["category"]) or "").strip() or None
+        item.update(classifier.classify(item["label"], cents, account_id, file_category))
+        item["transfer"] = None
         key = (item["date"], cents, item["label"].lower())
         occurrence = occurrences[key]
         occurrences[key] += 1
@@ -291,8 +298,17 @@ def preview(conn: sqlite3.Connection, filename: str, raw: bytes, account_id, map
             summary["duplicates"] += 1
         else:
             summary["ok"] += 1
+            match = transfers.find(item["date"], cents, item["label"]) if transfers else None
+            if match and transfer_category:
+                item["transfer"] = match
+                item.update(category_id=transfer_category, category_source="virement", rule_id=None)
+                summary["transfers"] += 1
+        item["category_name"] = names.get(item["category_id"])
+        if item["status"] == "ok":
+            summary[f"source_{item['category_source'] or 'aucune'}"] += 1
         rows.append(item)
 
+    rows.sort(key=lambda r: r["line"])
     return {
         "filename": filename,
         "account_id": account_id,
@@ -302,14 +318,28 @@ def preview(conn: sqlite3.Connection, filename: str, raw: bytes, account_id, map
         "mapping_errors": None,
         "rows": rows,
         "summary": {"total": len(rows), "ok": summary["ok"], "duplicates": summary["duplicates"],
-                    "errors": summary["errors"]},
+                    "errors": summary["errors"], "transfers": summary["transfers"],
+                    "sources": {k[7:]: n for k, n in summary.items() if k.startswith("source_")}},
     }
+
+
+def _transfer_category(conn: sqlite3.Connection) -> int | None:
+    row = conn.execute(
+        "SELECT id FROM categories WHERE kind = 'transfert' ORDER BY (name = 'Virement interne') DESC, id LIMIT 1"
+    ).fetchone()
+    return row["id"] if row else None
 
 
 # --------------------------------------------------------------------------- validation
 
 def commit(conn: sqlite3.Connection, data: dict | None) -> dict:
-    """Insère les lignes validées dans l'aperçu. Les doublons (même empreinte) sont ignorés."""
+    """Insère les lignes validées dans l'aperçu, en un « lot » qu'on peut consulter ou annuler.
+
+    Les doublons (même empreinte) sont ignorés. Chaque ligne peut porter :
+      - category_source : origine de la catégorie (voir services/classifier.SOURCES) ;
+      - transfer_with   : opération d'un autre compte à lier comme virement interne.
+    `learn` : corrections faites dans l'aperçu, mémorisées comme règles « commerçant ».
+    """
     data = data or {}
     v = Validator(data)
     v.integer_id("account_id", required=True)
@@ -320,6 +350,7 @@ def commit(conn: sqlite3.Connection, data: dict | None) -> dict:
         raise ValidationError("Aucune ligne à importer.")
     if len(rows) > MAX_ROWS:
         raise ValidationError(f"{MAX_ROWS} lignes maximum par import.")
+    filename = str(data.get("filename") or "Relevé importé").strip()[:200] or "Relevé importé"
 
     valid_categories = {r[0] for r in conn.execute("SELECT id FROM categories")}
     to_insert, errors = [], {}
@@ -328,6 +359,7 @@ def commit(conn: sqlite3.Connection, data: dict | None) -> dict:
         rv.date("date", required=True)
         rv.text("label", required=True, max_len=200)
         rv.integer_id("category_id")
+        rv.integer_id("transfer_with")
         try:
             clean = rv.result()
             cents = int(row.get("amount_cents"))
@@ -340,16 +372,69 @@ def commit(conn: sqlite3.Connection, data: dict | None) -> dict:
             errors[str(i)] = "Ligne invalide."
             continue
         category_id = clean.get("category_id") if clean.get("category_id") in valid_categories else None
-        to_insert.append((account_id, category_id, clean["date"], clean["label"], cents, digest))
+        source = row.get("category_source") if row.get("category_source") in SOURCES else "manuel"
+        to_insert.append({"category_id": category_id, "source": source if category_id else None,
+                          "date": clean["date"], "label": clean["label"], "cents": cents, "hash": digest,
+                          "transfer_with": clean.get("transfer_with")})
     if errors:
         raise ValidationError(f"{len(errors)} ligne(s) invalide(s) : relancez l'aperçu.", errors)
 
-    before = conn.total_changes
-    conn.executemany(
-        "INSERT OR IGNORE INTO transactions (account_id, category_id, date, label, amount_cents, source, import_hash) "
-        "VALUES (?, ?, ?, ?, ?, 'import', ?)",
-        to_insert,
+    learn = data.get("learn") or []
+    if not isinstance(learn, list) or len(learn) > 500:
+        raise ValidationError("Corrections à mémoriser invalides.")
+
+    transfer_category = _transfer_category(conn)
+    inserted = linked = rules_created = 0
+    with conn:  # tout ou rien
+        batch_id = conn.execute("INSERT INTO import_batches (account_id, filename) VALUES (?, ?)",
+                                (account_id, filename)).lastrowid
+        for row in to_insert:
+            cur = conn.execute(
+                "INSERT OR IGNORE INTO transactions (account_id, category_id, category_source, date, label, "
+                "amount_cents, source, import_hash, import_batch_id) VALUES (?, ?, ?, ?, ?, ?, 'import', ?, ?)",
+                (account_id, row["category_id"], row["source"], row["date"], row["label"], row["cents"],
+                 row["hash"], batch_id),
+            )
+            if not cur.rowcount:
+                continue
+            inserted += 1
+            if row["transfer_with"] and _link_transfer(conn, cur.lastrowid, row["transfer_with"], account_id,
+                                                       row["cents"], transfer_category):
+                linked += 1
+        for item in learn:
+            if not isinstance(item, dict):
+                continue
+            try:
+                rules_service.create_rule(conn, {"pattern": item.get("pattern"), "match_type": "commercant",
+                                                 "category_id": item.get("category_id")}, commit=False)
+                rules_created += 1
+            except ValidationError:
+                continue  # motif vide ou catégorie supprimée entre-temps : on n'interrompt pas l'import
+        skipped = len(to_insert) - inserted
+        if inserted:
+            conn.execute("UPDATE import_batches SET inserted = ?, skipped = ? WHERE id = ?", (inserted, skipped, batch_id))
+        else:
+            conn.execute("DELETE FROM import_batches WHERE id = ?", (batch_id,))
+            batch_id = None
+    return {"inserted": inserted, "skipped": skipped, "batch_id": batch_id,
+            "transfers_linked": linked, "rules_created": rules_created}
+
+
+def _link_transfer(conn, tx_id: int, other_id: int, account_id: int, cents: int, transfer_category) -> bool:
+    """Lie l'opération importée à son opposée dans un autre compte (virement interne)."""
+    other = conn.execute(
+        "SELECT id, account_id, amount_cents, transfer_group, category_id FROM transactions WHERE id = ?", (other_id,)
+    ).fetchone()
+    if not other or other["account_id"] == account_id or other["transfer_group"] or other["amount_cents"] != -cents:
+        return False
+    group = uuid.uuid4().hex
+    conn.execute("UPDATE transactions SET transfer_group = ?, category_id = ?, category_source = 'virement' WHERE id = ?",
+                 (group, transfer_category, tx_id))
+    # L'autre jambe garde sa catégorie si elle en a une ; sinon elle devient « Virement interne »
+    conn.execute(
+        "UPDATE transactions SET transfer_group = ?, "
+        "category_source = CASE WHEN category_id IS NULL THEN 'virement' ELSE category_source END, "
+        "category_id = COALESCE(category_id, ?), updated_at = datetime('now') WHERE id = ?",
+        (group, transfer_category, other_id),
     )
-    conn.commit()
-    inserted = conn.total_changes - before
-    return {"inserted": inserted, "skipped": len(to_insert) - inserted}
+    return True
