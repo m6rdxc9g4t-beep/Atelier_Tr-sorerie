@@ -7,7 +7,7 @@
 // ATELIER_PYTHON et le PATH, ou directement : npm start --prefix desktop
 'use strict'
 
-const { app, BrowserWindow, Menu, dialog, screen, shell } = require('electron')
+const { app, BrowserWindow, Menu, dialog, nativeTheme, screen, shell } = require('electron')
 const fs = require('node:fs')
 const os = require('node:os')
 const path = require('node:path')
@@ -72,7 +72,8 @@ function createWindow() {
     minHeight: 600,
     title: PRODUCT,
     show: false,
-    backgroundColor: '#090B14', // ≈ --atelier-bg sombre (bleu roi 6 % dans #07070A) : pas de flash blanc au démarrage
+    // = --atelier-bg (sombre / clair) selon le thème du système : pas de flash au démarrage
+    backgroundColor: nativeTheme.shouldUseDarkColors ? '#0f1012' : '#fbfbfc',
     webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, spellcheck: true },
   })
   if (bounds.maximized) mainWindow.maximize()
