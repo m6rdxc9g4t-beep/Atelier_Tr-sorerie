@@ -266,7 +266,7 @@
   --atelier-text: color-mix(in oklab, var(--atelier-signature) 6%, #f6f7f9);
   --atelier-muted: color-mix(in oklab, var(--atelier-signature) 22%, #a2a7b3);
   --atelier-faint: color-mix(in oklab, var(--atelier-signature) 22%, #8f95a2);
-  --atelier-ink: color-mix(in oklab, var(--atelier-signature) 82%, #ffffff);
+  --atelier-ink: color-mix(in oklab, var(--atelier-signature) 78%, #ffffff);
 
   --atelier-border: color-mix(in oklab, var(--atelier-signature) 22%, #22242b);
   --atelier-border-soft: color-mix(in oklab, var(--atelier-signature) 30%, #30333c);
