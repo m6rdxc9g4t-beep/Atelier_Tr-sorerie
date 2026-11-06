@@ -68,9 +68,9 @@
   --atelier-sig-ops: #895bd5;
   --atelier-sig-mission: #b55d00;
   --atelier-sig-datamind: #6967e1;
-  --atelier-sig-suivi: #8a5fb8;
+  --atelier-sig-suivi: #15aabf;
   --atelier-sig-dates: #db373a;
-  --atelier-sig-cuisine: #3a6c97;
+  --atelier-sig-cuisine: #9b84dc;
   --atelier-sig-dressing: #a16464;
 
   /* Hors app identifiée (portail, suite) : l'indigo de la suite. */
@@ -201,30 +201,53 @@
 }
 
 /* ---------------------------------------------------------------------------
-   3 bis. Apps du foyer (Dates, Suivi, Cuisine) : crème en clair, bleu nuit en sombre.
-   Seulement quand l'app entière est marquée (<html data-atelier-app="…">) : le sélecteur de la suite,
-   qui marque ses entrées une à une, garde la structure neutre. Même rôle de chaque jeton qu'aux §2 et §3.
+   3 bis. Apps du foyer (Dates, Suivi, Cuisine) : toute la structure teintée de la signature,
+   comme avant la v2 (fond, barre latérale, surfaces, texte, traits), mais plate : pas de halo,
+   de grille ni de lueur. Seulement quand l'app entière est marquée (<html data-atelier-app="…">) :
+   le sélecteur de la suite, qui marque ses entrées une à une, garde la structure neutre.
+   Suivi (cyan) et Cuisine (lilas) sont clairs : texte quasi noir sur le bouton plein.
    --------------------------------------------------------------------------- */
+:root[data-atelier-app="suivi"],
+:root[data-atelier-app="cuisine"] {
+  --atelier-signature-contrast: #0b0b0f;
+}
+
 :root[data-atelier-app="dates"],
 :root[data-atelier-app="suivi"],
 :root[data-atelier-app="cuisine"] {
-  --atelier-bg: #f8f4ec;
-  --atelier-sidebar: #f1ebdf;
-  --atelier-surface: #fffdf8;
-  --atelier-surface-2: #efe8db;
-  --atelier-surface-3: #e6ddcc;
-  --atelier-field: #fffdf8;
+  --atelier-bg: color-mix(in oklab, var(--atelier-signature) 5%, #fbfbfd);
+  --atelier-sidebar: color-mix(in oklab, var(--atelier-signature) 8%, #f6f6f8);
+  --atelier-surface: #ffffff;
+  --atelier-surface-2: color-mix(in oklab, var(--atelier-signature) 8%, #f1f1f4);   /* survol, rail des segments */
+  --atelier-surface-3: color-mix(in oklab, var(--atelier-signature) 16%, #e6e6ec);  /* sélection, entrée courante */
+  --atelier-field: #ffffff;
 
-  --atelier-text: #1f1b16;
-  --atelier-muted: #665d51;
-  --atelier-faint: #6f6659;
+  --atelier-text: color-mix(in oklab, var(--atelier-signature) 16%, #15161a);
+  --atelier-muted: color-mix(in oklab, var(--atelier-signature) 18%, #4f5460);
+  --atelier-faint: color-mix(in oklab, var(--atelier-signature) 18%, #565b66);
+  --atelier-ink: color-mix(in oklab, var(--atelier-signature) 62%, #000000);
 
-  --atelier-border: #e4dac8;
-  --atelier-border-soft: #d3c6ae;
-  --atelier-line: #e4dac8;
+  --atelier-border: color-mix(in oklab, var(--atelier-signature) 16%, #e4e5e9);
+  --atelier-border-soft: color-mix(in oklab, var(--atelier-signature) 22%, #d2d4da);
+  --atelier-line: color-mix(in oklab, var(--atelier-signature) 12%, #e8e9ed);
 
-  --atelier-glow: 0 1px 2px rgb(40 30 15 / 0.05);
-  --atelier-glow-strong: 0 1px 2px rgb(40 30 15 / 0.07), 0 8px 24px -8px rgb(40 30 15 / 0.2);
+  --atelier-glow: 0 1px 2px color-mix(in oklab, var(--atelier-signature) 10%, rgb(0 0 0 / 0.06));
+  --atelier-glow-strong: 0 1px 2px rgb(0 0 0 / 0.06),
+    0 8px 24px -8px color-mix(in oklab, var(--atelier-signature) 30%, rgb(0 0 0 / 0.25));
+}
+
+:root[data-atelier-app="cuisine"][data-theme="dark"],
+:root.dark[data-atelier-app="cuisine"] {
+  /* Lilas plus lumineux sur fond sombre, comme avant. */
+  --atelier-signature: #c8b5f2;
+}
+
+/* La tuile de la marque garde le lilas du thème clair (même icône que l'app, glyphe blanc lisible). */
+:root[data-atelier-app="cuisine"][data-theme="dark"] .atelier-brand__tile,
+:root.dark[data-atelier-app="cuisine"] .atelier-brand__tile,
+:root[data-atelier-app="cuisine"][data-theme="dark"] .atelier-about__icon,
+:root.dark[data-atelier-app="cuisine"] .atelier-about__icon {
+  background: linear-gradient(180deg, color-mix(in oklab, #9b84dc 78%, #ffffff), #9b84dc);
 }
 
 :root[data-atelier-app="dates"][data-theme="dark"],
@@ -233,23 +256,24 @@
 :root.dark[data-atelier-app="dates"],
 :root.dark[data-atelier-app="suivi"],
 :root.dark[data-atelier-app="cuisine"] {
-  --atelier-bg: #0b1220;
-  --atelier-sidebar: #0e1626;
-  --atelier-surface: #121b2d;
-  --atelier-surface-2: #172238;
-  --atelier-surface-3: #1f2c46;
-  --atelier-field: #0f1829;
+  --atelier-bg: color-mix(in oklab, var(--atelier-signature) 6%, #07070a);
+  --atelier-sidebar: color-mix(in oklab, var(--atelier-signature) 8%, #07070a);
+  --atelier-surface: color-mix(in oklab, var(--atelier-signature) 9%, #0b0b0f);
+  --atelier-surface-2: color-mix(in oklab, var(--atelier-signature) 15%, #0d0d12);
+  --atelier-surface-3: color-mix(in oklab, var(--atelier-signature) 24%, #0d0d12);
+  --atelier-field: color-mix(in oklab, var(--atelier-signature) 5%, #08080b);
 
-  --atelier-text: #e6eaf2;
-  --atelier-muted: #9aa6bb;
-  --atelier-faint: #8b97ad;
+  --atelier-text: color-mix(in oklab, var(--atelier-signature) 6%, #f6f7f9);
+  --atelier-muted: color-mix(in oklab, var(--atelier-signature) 22%, #a2a7b3);
+  --atelier-faint: color-mix(in oklab, var(--atelier-signature) 22%, #8f95a2);
+  --atelier-ink: color-mix(in oklab, var(--atelier-signature) 78%, #ffffff);
 
-  --atelier-border: #1f2a40;
-  --atelier-border-soft: #2d3b57;
-  --atelier-line: #1f2a40;
+  --atelier-border: color-mix(in oklab, var(--atelier-signature) 22%, #22242b);
+  --atelier-border-soft: color-mix(in oklab, var(--atelier-signature) 30%, #30333c);
+  --atelier-line: color-mix(in oklab, var(--atelier-signature) 16%, #1c1e24);
 
   --atelier-glow: none;
-  --atelier-glow-strong: 0 1px 2px rgb(0 0 0 / 0.45), 0 12px 32px -10px rgb(2 6 18 / 0.75);
+  --atelier-glow-strong: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 32px -10px rgb(0 0 0 / 0.8);
 }
 
 /* ---------------------------------------------------------------------------
