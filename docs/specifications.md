@@ -18,7 +18,7 @@
 ---
 
 ## 3. Design UI / UX (Nouvelle Interface Visuelle)
-- **Palette de couleurs :** Charte v2 « Linear » de la suite Atelier : structure neutre en gris froids (clair et sombre), surfaces plates et traits fins, police Inter. La couleur signature de l'application, le bleu roi #3c72da, ne sert qu'à l'accent (bouton principal, sélection, focus, liens, icône). Les couleurs qui portent un sens restent distinctes : émeraude pour les gains, corail doux pour les dépenses, couleurs propres à chaque catégorie.
+- **Palette de couleurs :** Charte v2 « Linear » de la suite Atelier : structure crème en clair, bleu nuit en sombre, surfaces plates et traits fins, police Inter, cartes de chiffres (indicateurs, comptes) aux coins de 12 px. La couleur signature de l'application, le bleu roi #3c72da, ne sert qu'à l'accent (bouton principal, sélection, focus, liens, icône). Les couleurs qui portent un sens restent distinctes : émeraude pour les gains, corail doux pour les dépenses, couleurs propres à chaque catégorie.
 - **Navigation principale (Sidebar) :**
   - Tableau de bord (`/`)
   - Comptes & Soldes (`/accounts`)

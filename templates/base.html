@@ -38,8 +38,9 @@
             brand: v("brand"), danger: v("danger"), gain: v("gain"), loss: v("loss"),
             warn: v("warn"), lilac: v("lilac"),
           },
-          // text-brand : version lisible de la signature (plus foncée en clair, éclaircie en sombre)
-          textColor: { brand: v("brand-text") },
+          // text-brand : version lisible de la signature (plus foncée en clair, éclaircie en sombre) ;
+          // text-gain / text-loss / text-warn : couleurs de données lisibles en texte (--*-text, ≥ 4,5:1)
+          textColor: { brand: v("brand-text"), gain: v("gain-text"), loss: v("loss-text"), warn: v("warn-text") },
           fontFamily: { sans: "var(--atelier-font)" },
           // Base 13 px sur ordinateur, 14–15 px sur téléphone (variables --fs-*)
           fontSize: {

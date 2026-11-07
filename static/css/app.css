@@ -1,14 +1,15 @@
 /* Atelier Trésorerie — jetons de design et composants.
 
    Charte v2 « Linear » de la suite Atelier (règles : Atelier_Deploy/DESIGN.md) :
-   structure neutre en gris froids, clair et sombre, plate au repos, traits de 1 px, police Inter.
+   structure crème en clair, bleu nuit en sombre, plate au repos, traits de 1 px, police Inter.
    static/brand/atelier-brand.css est une copie exacte de celle d'Atelier Projets (ne jamais l'éditer ici) ;
    data-atelier-app="tresorerie" sur <html> fait de la signature, le bleu roi #3c72da, l'accent de l'app :
    bouton principal, sélection, focus, liens, icône, courbe du patrimoine. Rien d'autre n'est teinté.
    Ce fichier branche les jetons de l'app sur les jetons --atelier-* du kit. Ce sont des couleurs
    complètes : Tailwind leur applique l'opacité (bg-brand/10...) par color-mix (voir templates/base.html).
    Gain / perte / alerte, lilas (placements) et couleurs des catégories gardent leur sens et leurs valeurs :
-   jamais la signature. */
+   jamais la signature. En clair, gain / perte / alerte écrits en TEXTE passent par --gain-text, --loss-text,
+   --warn-text (même teinte, plus foncée : ≥ 4,5:1 sur la crème) ; les graphiques gardent --gain, --loss, --warn. */
 
 :root {
   --canvas: var(--atelier-bg);            /* fond de la zone principale */
@@ -30,8 +31,12 @@
   /* Couleurs de données : inchangées */
   --gain: rgb(14 150 112);    /* émeraude */
   --loss: rgb(214 92 80);     /* corail */
-  --warn: rgb(196 138 22);
+  --warn: rgb(169 120 29);   /* ambre, un cran plus foncé que rgb(196 138 22) : ≥ 3:1 sur la crème et les pistes */
   --lilac: rgb(124 108 220);
+  /* Mêmes couleurs écrites en texte (montants, « Dépassé de… », badges) : ≥ 4,5:1 sur crème, surfaces et survol */
+  --gain-text: rgb(37 117 88);
+  --loss-text: rgb(164 76 65);
+  --warn-text: rgb(133 96 33);
 
   /* Typographie : base 13 px sur ordinateur, 14–15 px sur téléphone (échelle Tailwind branchée dessus) */
   --fs-xs: 0.75rem;     /* 12 px : méta, aides */
@@ -62,6 +67,10 @@
   --loss: rgb(252 160 148);   /* corail doux */
   --warn: rgb(252 211 77);
   --lilac: rgb(196 181 253);
+  /* Sur le bleu nuit, les couleurs de données se lisent telles quelles en texte (≥ 8:1). */
+  --gain-text: var(--gain);
+  --loss-text: var(--loss);
+  --warn-text: var(--warn);
   color-scheme: dark;
 }
 
@@ -185,16 +194,18 @@ code { font-family: var(--atelier-font-mono); font-size: 0.92em; }
   border-radius: var(--atelier-radius-lg);
 }
 
-/* Bandeau d'indicateurs : un seul panneau, cellules séparées par des filets */
-.stat-strip {
-  display: grid;
-  gap: 1px;
-  overflow: hidden;
-  background: var(--border);
+/* Cartes de chiffres (KPI) : comme .atelier-kpi de la marque commune — plates, trait de 1 px, coins de 12 px.
+   .stat-strip = rangée de cartes espacées (indicateurs) ; .kpi-card = coins de 12 px pour une .card qui
+   met un chiffre en avant (comptes, total des budgets, statistiques de la base). */
+.stat-strip { display: grid; gap: 12px; }
+.stat-strip > * {
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--atelier-radius-lg);
+  border-radius: var(--atelier-radius-xl);
+  padding: 14px 16px;
+  min-width: 0;
 }
-.stat-strip > * { background: var(--surface); padding: 14px 16px; min-width: 0; }
+.kpi-card { border-radius: var(--atelier-radius-xl); }
 
 /* Titre de section dans une carte */
 .section-title { font-size: var(--fs-sm); font-weight: 600; color: var(--ink); }
@@ -332,9 +343,9 @@ select.input { padding-right: 1.75rem; }
   white-space: nowrap;
 }
 .badge .dot { width: 0.5rem; height: 0.5rem; border-radius: 999px; flex: none; }
-.badge-gain { border-color: transparent; background: color-mix(in oklab, var(--gain) 14%, transparent); color: var(--gain); }
-.badge-loss { border-color: transparent; background: color-mix(in oklab, var(--loss) 14%, transparent); color: var(--loss); }
-.badge-warn { border-color: transparent; background: color-mix(in oklab, var(--warn) 16%, transparent); color: var(--warn); }
+.badge-gain { border-color: transparent; background: color-mix(in oklab, var(--gain) 14%, transparent); color: var(--gain-text); }
+.badge-loss { border-color: transparent; background: color-mix(in oklab, var(--loss) 14%, transparent); color: var(--loss-text); }
+.badge-warn { border-color: transparent; background: color-mix(in oklab, var(--warn) 16%, transparent); color: var(--warn-text); }
 
 /* ------------------------------------------------------------------ tableaux denses */
 
@@ -374,7 +385,7 @@ dialog.modal {
   box-shadow: var(--atelier-glow-strong);
 }
 dialog.modal.modal-wide { width: min(64rem, calc(100vw - 2rem)); }
-dialog.modal::backdrop { background: rgb(10 11 13 / 0.45); }
+dialog.modal::backdrop { background: rgb(11 18 32 / 0.45); } /* bleu nuit de la suite en transparence */
 .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px 6px 20px; }
 .modal-head h2 { font-size: var(--fs-lg); font-weight: 600; }
 .modal-body { padding: 10px 20px 18px; }

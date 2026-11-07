@@ -27,7 +27,7 @@
     const last = a.last_transaction_date ? `Dernière opération : ${AT.date(a.last_transaction_date)}`
       : a.holding_count ? "Positions suivies sur la page Placements" : "Aucune opération";
     return `
-      <article class="card group relative p-4 ${a.archived ? "opacity-60" : ""}">
+      <article class="card kpi-card group relative p-4 ${a.archived ? "opacity-60" : ""}">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <h3 class="flex items-center gap-2 font-semibold">

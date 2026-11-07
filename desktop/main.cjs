@@ -72,8 +72,8 @@ function createWindow() {
     minHeight: 600,
     title: PRODUCT,
     show: false,
-    // = --atelier-bg (sombre / clair) selon le thème du système : pas de flash au démarrage
-    backgroundColor: nativeTheme.shouldUseDarkColors ? '#0f1012' : '#fbfbfc',
+    // = --atelier-bg (bleu nuit / crème) selon le thème du système : pas de flash au démarrage
+    backgroundColor: nativeTheme.shouldUseDarkColors ? '#0b1220' : '#f8f4ec',
     webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, spellcheck: true },
   })
   if (bounds.maximized) mainWindow.maximize()
