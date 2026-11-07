@@ -277,6 +277,55 @@
 }
 
 /* ---------------------------------------------------------------------------
+   3 ter. Portfolio (site public, lecture longue) : crème en clair, bleu nuit en sombre.
+   Seulement quand le site entier est marqué (<html data-atelier-app="portfolio">).
+   --------------------------------------------------------------------------- */
+:root[data-atelier-app="portfolio"] {
+  --atelier-bg: #f8f4ec;
+  --atelier-sidebar: #f1ebdf;
+  --atelier-surface: #fffdf8;
+  --atelier-surface-2: #efe8db;
+  --atelier-surface-3: #e6ddcc;
+  --atelier-field: #fffdf8;
+
+  --atelier-text: #1f1b16;
+  --atelier-muted: #5f574b;
+  --atelier-faint: #6b6255;
+
+  --atelier-border: #e4dac8;
+  --atelier-border-soft: #cfc2a9;
+  --atelier-line: #e4dac8;
+
+  --atelier-glow: 0 1px 2px rgb(40 30 15 / 0.05);
+  --atelier-glow-strong: 0 1px 2px rgb(40 30 15 / 0.07), 0 8px 24px -8px rgb(40 30 15 / 0.2);
+}
+
+:root[data-atelier-app="portfolio"][data-theme="dark"],
+:root.dark[data-atelier-app="portfolio"] {
+  --atelier-bg: #0b1220;
+  --atelier-sidebar: #0e1626;
+  --atelier-surface: #121b2d;
+  --atelier-surface-2: #172238;
+  --atelier-surface-3: #1f2c46;
+  --atelier-field: #0f1829;
+
+  --atelier-text: #e6eaf2;
+  --atelier-muted: #a3aec2;
+  --atelier-faint: #8b97ad;
+
+  --atelier-border: #1f2a40;
+  --atelier-border-soft: #2d3b57;
+  --atelier-line: #1f2a40;
+
+  /* En sombre, l'ardoise disparaît sur le bleu nuit : bouton et accent en bleu acier. */
+  --atelier-signature: #4f6fae;
+  --atelier-ink: #a9bbdc;
+
+  --atelier-glow: none;
+  --atelier-glow-strong: 0 1px 2px rgb(0 0 0 / 0.45), 0 12px 32px -10px rgb(2 6 18 / 0.75);
+}
+
+/* ---------------------------------------------------------------------------
    4. Classes prêtes à l'emploi (facultatives)
    --------------------------------------------------------------------------- */
 .atelier-backdrop {
