@@ -59,7 +59,7 @@
       const { database: db } = await api("GET", "/api/health");
       const stats = [["Comptes", db.accounts], ["Opérations", db.transactions], ["Catégories", db.categories], ["Budgets", db.budgets]];
       $("db-stats").innerHTML = stats.map(([k, v]) =>
-        `<div class="rounded-xl border border-line px-3 py-2.5"><dt class="text-xs text-muted">${k}</dt><dd class="num mt-0.5 text-lg font-semibold">${v ?? "—"}</dd></div>`).join("");
+        `<div class="card kpi-card px-3 py-2.5"><dt class="text-xs text-muted">${k}</dt><dd class="num mt-0.5 text-lg font-semibold">${v ?? "—"}</dd></div>`).join("");
     } catch (err) { /* facultatif */ }
   }
 

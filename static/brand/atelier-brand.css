@@ -3,7 +3,7 @@
    Copiée telle quelle, avec la police Inter, dans les applications de la suite :
    toute modification se fait ici puis dans chaque copie. Règles : Atelier_Deploy/DESIGN.md.
 
-   Charte v2 : une seule structure neutre pour toute la suite (gris froids, clair et sombre),
+   Charte v2 : une seule structure neutre pour toute la suite (crème en clair, bleu nuit en sombre ; foyer teinté, §3 bis),
    la couleur signature de l'app ne sert qu'à ce qui porte un sens : accent (bouton principal,
    sélection, focus, lien), icône de l'app, données « neutres » d'une seule mesure.
    Pas de halo, pas de grille de fond, pas de lueur : surfaces plates, traits de 1 px.
@@ -83,10 +83,11 @@
   /* Conservé pour la v1 : la marque utilise désormais la même police que l'interface. */
   --atelier-brand-font: var(--atelier-font);
 
-  /* Forme (px) : 5 touches/icônes 20 px · 7 boutons, champs, lignes · 10 panneaux, tuiles */
+  /* Forme (px) : 5 touches/icônes 20 px · 7 boutons, champs, lignes · 10 panneaux, tuiles · 12 cartes de chiffres */
   --atelier-radius-sm: 5px;
   --atelier-radius-md: 7px;
   --atelier-radius-lg: 10px;
+  --atelier-radius-xl: 12px;   /* cartes de chiffres (KPI) */
 }
 
 [data-atelier-app="nexus"] { --atelier-signature: var(--atelier-sig-nexus); }
@@ -109,29 +110,29 @@
 [data-atelier-app="dressing"] { --atelier-signature: var(--atelier-sig-dressing); }
 
 /* ---------------------------------------------------------------------------
-   2. Palette — thème CLAIR (défaut). Structure neutre, identique dans toutes les apps.
+   2. Palette — thème CLAIR (défaut) : crème. Structure identique dans toutes les apps (sauf le foyer, §3 bis).
    --------------------------------------------------------------------------- */
 :root,
 [data-atelier-app] {
   /* Fonds et surfaces */
-  --atelier-bg: #fbfbfc;
-  --atelier-sidebar: #f4f5f7;
-  --atelier-surface: #ffffff;
-  --atelier-surface-2: #eeeff2;   /* survol, menus */
-  --atelier-surface-3: #e7e8ee;   /* élément courant (navigation), sélection neutre */
-  --atelier-field: #ffffff;       /* champs de saisie */
+  --atelier-bg: #f8f4ec;
+  --atelier-sidebar: #f1ebdf;
+  --atelier-surface: #fffdf8;
+  --atelier-surface-2: #efe8db;   /* survol, menus */
+  --atelier-surface-3: #e6ddcc;   /* élément courant (navigation), sélection neutre */
+  --atelier-field: #fffdf8;       /* champs de saisie */
 
   /* Texte */
-  --atelier-text: #1a1b1e;
-  --atelier-muted: #5f636c;
-  --atelier-faint: #6c7079;
+  --atelier-text: #1f1b16;
+  --atelier-muted: #5f574b;
+  --atelier-faint: #6b6255;
   /* Signature utilisée comme TEXTE ou icône fine (≥ 4,5:1 sur blanc). */
   --atelier-ink: color-mix(in oklab, var(--atelier-signature) 88%, #000000);
 
   /* Traits */
-  --atelier-border: #e3e4e8;       /* contour des cartes et panneaux */
-  --atelier-border-soft: #d0d2d8;  /* champs, boutons secondaires */
-  --atelier-line: #e3e4e8;         /* séparateurs, lignes de tableau */
+  --atelier-border: #e4dac8;       /* contour des cartes et panneaux */
+  --atelier-border-soft: #cfc2a9;  /* champs, boutons secondaires */
+  --atelier-line: #e4dac8;         /* séparateurs, lignes de tableau */
 
   /* Remplissages en transparence de la signature */
   --atelier-signature-soft: color-mix(in oklab, var(--atelier-signature) 14%, transparent);   /* sélection, tag */
@@ -140,8 +141,8 @@
   --atelier-signature-hover: color-mix(in oklab, var(--atelier-signature) 88%, #000000);
 
   /* Ombres : plat au repos ; une ombre seulement pour ce qui flotte (menus, dialogues). */
-  --atelier-glow: 0 1px 2px rgb(16 17 20 / 0.04);
-  --atelier-glow-strong: 0 1px 2px rgb(16 17 20 / 0.06), 0 8px 24px -8px rgb(16 17 20 / 0.18);
+  --atelier-glow: 0 1px 2px rgb(40 30 15 / 0.05);
+  --atelier-glow-strong: 0 1px 2px rgb(40 30 15 / 0.07), 0 8px 24px -8px rgb(40 30 15 / 0.2);
   --atelier-signature-glow: none;
   --atelier-text-glow: none;
   --atelier-focus: 0 0 0 3px color-mix(in oklab, var(--atelier-signature) 28%, transparent);
@@ -156,13 +157,13 @@
   --atelier-chart-fill: linear-gradient(180deg, color-mix(in oklab, var(--atelier-signature) 40%, transparent), color-mix(in oklab, var(--atelier-signature) 4%, transparent));
 
   /* États (service, tâche) : uniquement quand ce n'est pas nominal. */
-  --atelier-up: #1a8a4c;
-  --atelier-warn: #a35f00;
-  --atelier-down: #c9302b;
+  --atelier-up: #14743f;
+  --atelier-warn: #9a5700;
+  --atelier-down: #b92b27;
 }
 
 /* ---------------------------------------------------------------------------
-   3. Palette — thème SOMBRE
+   3. Palette — thème SOMBRE : bleu nuit
    --------------------------------------------------------------------------- */
 :root[data-theme="dark"],
 :root.dark,
@@ -170,29 +171,29 @@
 .dark,
 [data-theme="dark"] [data-atelier-app],
 .dark [data-atelier-app] {
-  --atelier-bg: #0f1012;
-  --atelier-sidebar: #131416;
-  --atelier-surface: #17181b;
-  --atelier-surface-2: #1c1d21;
-  --atelier-surface-3: #24252b;
-  --atelier-field: #141518;
+  --atelier-bg: #0b1220;
+  --atelier-sidebar: #0e1626;
+  --atelier-surface: #121b2d;
+  --atelier-surface-2: #172238;
+  --atelier-surface-3: #1f2c46;
+  --atelier-field: #0f1829;
 
-  --atelier-text: #e8e9ec;
-  --atelier-muted: #969aa3;
-  --atelier-faint: #868a94;
+  --atelier-text: #e6eaf2;
+  --atelier-muted: #a3aec2;
+  --atelier-faint: #8b97ad;
   /* Signature comme texte ou icône sur fond sombre : éclaircie. */
   --atelier-ink: color-mix(in oklab, var(--atelier-signature) 62%, #ffffff);
 
-  --atelier-border: #24262b;
-  --atelier-border-soft: #33353c;
-  --atelier-line: #24262b;
+  --atelier-border: #1f2a40;
+  --atelier-border-soft: #2d3b57;
+  --atelier-line: #1f2a40;
 
   --atelier-signature-soft: color-mix(in oklab, var(--atelier-signature) 22%, transparent);
   --atelier-signature-faint: color-mix(in oklab, var(--atelier-signature) 11%, transparent);
   --atelier-signature-hover: color-mix(in oklab, var(--atelier-signature) 86%, #ffffff);
 
   --atelier-glow: none;
-  --atelier-glow-strong: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -10px rgb(0 0 0 / 0.7);
+  --atelier-glow-strong: 0 1px 2px rgb(0 0 0 / 0.45), 0 12px 32px -10px rgb(2 6 18 / 0.75);
   --atelier-focus: 0 0 0 3px color-mix(in oklab, var(--atelier-signature) 38%, transparent);
 
   --atelier-up: #4cc38a;
@@ -277,52 +278,12 @@
 }
 
 /* ---------------------------------------------------------------------------
-   3 ter. Portfolio (site public, lecture longue) : crème en clair, bleu nuit en sombre.
-   Seulement quand le site entier est marqué (<html data-atelier-app="portfolio">).
+   3 ter. Portfolio : en sombre, l'ardoise disparaît sur le bleu nuit, bouton et accent en bleu acier.
    --------------------------------------------------------------------------- */
-:root[data-atelier-app="portfolio"] {
-  --atelier-bg: #f8f4ec;
-  --atelier-sidebar: #f1ebdf;
-  --atelier-surface: #fffdf8;
-  --atelier-surface-2: #efe8db;
-  --atelier-surface-3: #e6ddcc;
-  --atelier-field: #fffdf8;
-
-  --atelier-text: #1f1b16;
-  --atelier-muted: #5f574b;
-  --atelier-faint: #6b6255;
-
-  --atelier-border: #e4dac8;
-  --atelier-border-soft: #cfc2a9;
-  --atelier-line: #e4dac8;
-
-  --atelier-glow: 0 1px 2px rgb(40 30 15 / 0.05);
-  --atelier-glow-strong: 0 1px 2px rgb(40 30 15 / 0.07), 0 8px 24px -8px rgb(40 30 15 / 0.2);
-}
-
 :root[data-atelier-app="portfolio"][data-theme="dark"],
 :root.dark[data-atelier-app="portfolio"] {
-  --atelier-bg: #0b1220;
-  --atelier-sidebar: #0e1626;
-  --atelier-surface: #121b2d;
-  --atelier-surface-2: #172238;
-  --atelier-surface-3: #1f2c46;
-  --atelier-field: #0f1829;
-
-  --atelier-text: #e6eaf2;
-  --atelier-muted: #a3aec2;
-  --atelier-faint: #8b97ad;
-
-  --atelier-border: #1f2a40;
-  --atelier-border-soft: #2d3b57;
-  --atelier-line: #1f2a40;
-
-  /* En sombre, l'ardoise disparaît sur le bleu nuit : bouton et accent en bleu acier. */
   --atelier-signature: #4f6fae;
   --atelier-ink: #a9bbdc;
-
-  --atelier-glow: none;
-  --atelier-glow-strong: 0 1px 2px rgb(0 0 0 / 0.45), 0 12px 32px -10px rgb(2 6 18 / 0.75);
 }
 
 /* ---------------------------------------------------------------------------
@@ -547,4 +508,41 @@ button.atelier-brand:hover .atelier-brand__name { color: var(--atelier-text); }
 .atelier-about__close:hover {
   background: var(--atelier-surface-2);
   color: var(--atelier-text);
+}
+
+/* ---------------------------------------------------------------------------
+   Carte de chiffre (KPI) : coins arrondis, plate, chiffre en tabulaire.
+   <div class="atelier-kpi"><span class="atelier-kpi__label">…</span>
+     <strong class="atelier-kpi__value">…</strong><span class="atelier-kpi__note">…</span></div>
+   --------------------------------------------------------------------------- */
+.atelier-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--atelier-border);
+  border-radius: var(--atelier-radius-xl);
+  background: var(--atelier-surface);
+  color: var(--atelier-text);
+}
+
+.atelier-kpi__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--atelier-muted);
+}
+
+.atelier-kpi__value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.atelier-kpi__note {
+  font-size: 0.75rem;
+  color: var(--atelier-faint);
+  font-variant-numeric: tabular-nums;
 }

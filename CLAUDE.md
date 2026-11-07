@@ -39,8 +39,8 @@ locale Ollama. Confidentialité absolue : aucune donnée financière ne doit qui
 - Toute chaîne utilisateur insérée dans du HTML passe par `AT.esc()`.
 - UI : Tailwind avec les jetons de `static/css/app.css` (`bg-surface`, `text-ink`, `text-muted`,
   `text-gain`, `text-loss`, `bg-brand`...) — pas de couleurs codées en dur. Chiffres avec la classe `num`.
-- Charte v2 « Linear » de la suite Atelier (règles : `Atelier_Deploy/DESIGN.md`) : structure neutre en gris froids,
-  clair et sombre, plate au repos, traits de 1 px, police Inter embarquée (`--atelier-font`), base 13 px.
+- Charte v2 « Linear » de la suite Atelier (règles : `Atelier_Deploy/DESIGN.md`) : structure **crème en clair,
+  bleu nuit en sombre** (fenêtre de bureau : `#f8f4ec` / `#0b1220`), plate au repos, traits de 1 px, police Inter embarquée (`--atelier-font`), base 13 px.
   La signature, le **bleu roi #3c72da**, ne sert qu'à l'accent : bouton principal (plein dans les deux thèmes),
   sélection, focus, liens, icône de l'app, courbe du patrimoine. `static/brand/` (`atelier-brand.css`,
   `atelier-theme.js`, Inter + licence) est une copie exacte de celle d'Atelier Projets (ne jamais l'éditer ici) ;
@@ -50,7 +50,11 @@ locale Ollama. Confidentialité absolue : aucune donnée financière ne doit qui
   `text-brand` = signature lisible (`--atelier-ink`). Le thème Tailwind (couleurs, police, tailles `--fs-*`,
   graisses, rayons 5 / 7 / 10 px) est branché sur ces variables dans `templates/base.html`. Pas de halo, de lueur,
   d'ombre au repos ni de barre de couleur latérale ; navigation courante = fond neutre (`--selected`).
-  Gain / perte / alerte, lilas et couleurs des catégories ne changent pas et ne prennent jamais la signature.
+  Gain / perte / alerte, lilas et couleurs des catégories ne prennent jamais la signature ; en texte, `text-gain`,
+  `text-loss`, `text-warn` et les badges passent par `--gain-text`, `--loss-text`, `--warn-text` (même teinte, plus
+  foncée en clair : ≥ 4,5:1 sur la crème) ; les graphiques gardent `--gain`, `--loss`, `--warn` (≥ 3:1).
+  Cartes de chiffres (KPI) : coins de 12 px comme `.atelier-kpi` — `.stat-strip` (rangée de cartes espacées) ou
+  `.card.kpi-card` ; jamais un bandeau de chiffres séparés par des filets.
 - Thème Système / Clair / Sombre : préférence commune à la suite, lue et écrite par `static/brand/atelier-theme.js`
   (chargé en premier dans `<head>`) ; le sélecteur de la barre latérale appelle `window.atelierTheme.set(pref)`.
   Les graphiques se redessinent sur l'événement `themechange` (émis par `app.js` quand `data-theme` change).
