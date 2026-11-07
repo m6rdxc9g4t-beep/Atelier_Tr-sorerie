@@ -317,7 +317,8 @@
   --atelier-border-soft: #2d3b57;
   --atelier-line: #1f2a40;
 
-  /* L'ardoise de la signature, éclaircie sur le bleu nuit : un bleu gris lisible. */
+  /* En sombre, l'ardoise disparaît sur le bleu nuit : bouton et accent en bleu acier. */
+  --atelier-signature: #4f6fae;
   --atelier-ink: #a9bbdc;
 
   --atelier-glow: none;
