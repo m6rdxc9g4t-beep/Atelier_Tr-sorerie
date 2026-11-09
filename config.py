@@ -27,6 +27,9 @@ class Config:
     OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.1")
     OLLAMA_TIMEOUT = float(os.environ.get("OLLAMA_TIMEOUT", "90"))
 
+    # Exemples de la suite : histoires fictives communes à toutes les apps (généré par Atelier_Deploy)
+    EXEMPLES_DIR = Path(os.environ.get("EXEMPLES_DIR", BASE_DIR / "exemples-suite"))
+
     CURRENCY = os.environ.get("CURRENCY", "EUR")
     PORT = int(os.environ.get("PORT", "5050"))  # 5000 est occupé par AirPlay sur macOS
     # Lancé par l'application Mac (double-clic) : active le bouton « Quitter »

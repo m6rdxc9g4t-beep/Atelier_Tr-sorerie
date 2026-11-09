@@ -1,0 +1,274 @@
+{
+ "format": "atelier-exemples/1",
+ "histoire": {
+  "id": "freelance-data",
+  "titre": "Consultant data freelance",
+  "sous_titre": "Missions, temps facturé et trésorerie d'un indépendant",
+  "secteur": "Freelance",
+  "resume": "Julien Morel, consultant data indépendant à Dijon : missions suivies dans Tab et Projets, temps passé, factures payées via une plateforme, provisions URSSAF ; ses frais de logiciels dérapent en octobre."
+ },
+ "compte": {
+  "nom": "Compte pro Julien Morel",
+  "type": "courant",
+  "institution": "Banque Exemple (fictive)",
+  "solde_initial": 9120.0
+ },
+ "categories": [
+  {
+   "nom": "Assurances",
+   "type": "depense"
+  },
+  {
+   "nom": "Banque",
+   "type": "depense"
+  },
+  {
+   "nom": "Cotisations sociales",
+   "type": "depense"
+  },
+  {
+   "nom": "Coworking",
+   "type": "depense"
+  },
+  {
+   "nom": "Déplacements",
+   "type": "depense"
+  },
+  {
+   "nom": "Formation",
+   "type": "depense"
+  },
+  {
+   "nom": "Honoraires",
+   "type": "revenu"
+  },
+  {
+   "nom": "Logiciels",
+   "type": "depense"
+  },
+  {
+   "nom": "Provision impôts",
+   "type": "depense"
+  },
+  {
+   "nom": "Télécom",
+   "type": "depense"
+  }
+ ],
+ "operations": [
+  {
+   "date": "2026-08-03",
+   "libelle": "PRLV SEPA COWORKING LA FABRIQUE DIJON",
+   "montant": -290.0,
+   "categorie": "Coworking"
+  },
+  {
+   "date": "2026-08-04",
+   "libelle": "VIR SEPA RECU PLATEFORME FREELANCE MUTUELLE ARTISANS F-2026-021",
+   "montant": 4080.0,
+   "categorie": "Honoraires"
+  },
+  {
+   "date": "2026-08-06",
+   "libelle": "PRLV SEPA FREE PRO",
+   "montant": -39.99,
+   "categorie": "Télécom"
+  },
+  {
+   "date": "2026-08-09",
+   "libelle": "PRLV SEPA GOOGLE WORKSPACE",
+   "montant": -13.6,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-08-12",
+   "libelle": "PRLV SEPA URSSAF COTISATIONS",
+   "montant": -1130.17,
+   "categorie": "Cotisations sociales"
+  },
+  {
+   "date": "2026-08-14",
+   "libelle": "VIR SEPA EMIS LIVRET PROVISION IMPOTS",
+   "montant": -900.0,
+   "categorie": "Provision impôts"
+  },
+  {
+   "date": "2026-08-17",
+   "libelle": "CARTE SNCF DIJON BESANCON",
+   "montant": -42.0,
+   "categorie": "Déplacements"
+  },
+  {
+   "date": "2026-08-20",
+   "libelle": "PRLV SEPA ASSURANCE RC PRO HISCOX",
+   "montant": -46.5,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-08-25",
+   "libelle": "VIR SEPA RECU COOPERATIVE LAITIERE JURA F-2026-022",
+   "montant": 3720.0,
+   "categorie": "Honoraires"
+  },
+  {
+   "date": "2026-08-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -8.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-09-03",
+   "libelle": "VIR SEPA RECU PLATEFORME FREELANCE MUTUELLE ARTISANS F-2026-024",
+   "montant": 4080.0,
+   "categorie": "Honoraires"
+  },
+  {
+   "date": "2026-09-03",
+   "libelle": "PRLV SEPA COWORKING LA FABRIQUE DIJON",
+   "montant": -290.0,
+   "categorie": "Coworking"
+  },
+  {
+   "date": "2026-09-06",
+   "libelle": "PRLV SEPA FREE PRO",
+   "montant": -39.99,
+   "categorie": "Télécom"
+  },
+  {
+   "date": "2026-09-09",
+   "libelle": "PRLV SEPA GOOGLE WORKSPACE",
+   "montant": -13.6,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-09-12",
+   "libelle": "PRLV SEPA URSSAF COTISATIONS",
+   "montant": -1105.08,
+   "categorie": "Cotisations sociales"
+  },
+  {
+   "date": "2026-09-14",
+   "libelle": "VIR SEPA EMIS LIVRET PROVISION IMPOTS",
+   "montant": -900.0,
+   "categorie": "Provision impôts"
+  },
+  {
+   "date": "2026-09-15",
+   "libelle": "CARTE SNCF DIJON BESANCON",
+   "montant": -84.0,
+   "categorie": "Déplacements"
+  },
+  {
+   "date": "2026-09-20",
+   "libelle": "PRLV SEPA ASSURANCE RC PRO HISCOX",
+   "montant": -46.5,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-09-21",
+   "libelle": "CARTE FNAC LIVRE STATISTIQUES",
+   "montant": -54.9,
+   "categorie": "Formation"
+  },
+  {
+   "date": "2026-09-24",
+   "libelle": "VIR SEPA RECU COOPERATIVE LAITIERE JURA F-2026-025",
+   "montant": 3720.0,
+   "categorie": "Honoraires"
+  },
+  {
+   "date": "2026-09-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -8.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-10-02",
+   "libelle": "VIR SEPA RECU PLATEFORME FREELANCE MUTUELLE ARTISANS F-2026-027 SOLDE",
+   "montant": 2720.0,
+   "categorie": "Honoraires"
+  },
+  {
+   "date": "2026-10-03",
+   "libelle": "PRLV SEPA COWORKING LA FABRIQUE DIJON",
+   "montant": -290.0,
+   "categorie": "Coworking"
+  },
+  {
+   "date": "2026-10-06",
+   "libelle": "PRLV SEPA FREE PRO",
+   "montant": -39.99,
+   "categorie": "Télécom"
+  },
+  {
+   "date": "2026-10-09",
+   "libelle": "PRLV SEPA GOOGLE WORKSPACE",
+   "montant": -13.6,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-10-11",
+   "libelle": "CARTE JETBRAINS ABONNEMENT ANNUEL",
+   "montant": -289.0,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-10-12",
+   "libelle": "PRLV SEPA URSSAF COTISATIONS",
+   "montant": -1160.38,
+   "categorie": "Cotisations sociales"
+  },
+  {
+   "date": "2026-10-14",
+   "libelle": "VIR SEPA EMIS LIVRET PROVISION IMPOTS",
+   "montant": -900.0,
+   "categorie": "Provision impôts"
+  },
+  {
+   "date": "2026-10-14",
+   "libelle": "CARTE TABLEAU CLOUD LICENCE CREATOR",
+   "montant": -840.0,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-10-16",
+   "libelle": "CARTE SNCF DIJON BESANCON",
+   "montant": -84.0,
+   "categorie": "Déplacements"
+  },
+  {
+   "date": "2026-10-19",
+   "libelle": "CARTE FNAC LIVRE STATISTIQUES",
+   "montant": -48.5,
+   "categorie": "Formation"
+  },
+  {
+   "date": "2026-10-20",
+   "libelle": "PRLV SEPA ASSURANCE RC PRO HISCOX",
+   "montant": -46.5,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-10-27",
+   "libelle": "VIR SEPA RECU COOPERATIVE LAITIERE JURA F-2026-028",
+   "montant": 3100.0,
+   "categorie": "Honoraires"
+  },
+  {
+   "date": "2026-10-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -8.0,
+   "categorie": "Banque"
+  }
+ ],
+ "budgets": {
+  "mois": "2026-10",
+  "montants": {
+   "Logiciels": 300,
+   "Déplacements": 150,
+   "Formation": 80,
+   "Coworking": 300,
+   "Cotisations sociales": 1400
+  }
+ }
+}

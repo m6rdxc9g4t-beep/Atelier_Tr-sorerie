@@ -21,7 +21,7 @@ from flask import Blueprint, current_app, jsonify, request, send_file
 import ai_providers
 import database
 from services import ServiceError, ValidationError
-from services import accounts, assistant, budgets, categories, dashboard, holdings, importer, trading212, transactions
+from services import accounts, assistant, budgets, categories, dashboard, exemples, holdings, importer, trading212, transactions
 from services import settings as settings_service
 from services.ai_context import system_prompt
 
@@ -289,6 +289,23 @@ def holdings_update(holding_id):
 def holdings_delete(holding_id):
     holdings.delete_holding(_db(), holding_id)
     return "", 204
+
+
+# --------------------------------------------------------------------------- exemples de la suite
+
+@bp.get("/exemples-suite")
+def exemples_list():
+    return jsonify(items=exemples.list_histoires(_db(), current_app.config["EXEMPLES_DIR"]))
+
+
+@bp.post("/exemples-suite/<histoire>")
+def exemples_load(histoire):
+    return jsonify(exemples.load(_db(), current_app.config["EXEMPLES_DIR"], histoire)), 201
+
+
+@bp.delete("/exemples-suite/<histoire>")
+def exemples_remove(histoire):
+    return jsonify(exemples.remove(_db(), current_app.config["EXEMPLES_DIR"], histoire))
 
 
 # --------------------------------------------------------------------------- import

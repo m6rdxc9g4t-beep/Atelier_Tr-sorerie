@@ -64,6 +64,14 @@ locale Ollama. Confidentialité absolue : aucune donnée financière ne doit qui
   l'historique de ses propres échanges (colonne `ai_conversations.provider`).
 - Ne jamais versionner `data/*.db`, `.env`, ni des relevés CSV/Excel réels.
 
+## Exemples de la suite
+- `exemples-suite/` (format `atelier-exemples/1`) : histoires fictives communes à toute la suite, **générées** par
+  Atelier_Deploy (`exemples/generer.py --vers <dossier des dépôts>`), jamais modifiées à la main ici.
+- `services/exemples.py` : compte, opérations (`source = 'demo'`), catégories et budgets d'une histoire. Ne modifie rien
+  d'existant (catégorie du même nom réutilisée, budget déjà posé gardé) ; ce qui est créé est noté dans `settings`
+  (clé `exemples_suite`) et seul cela est retiré ; chargement interrompu = retrait de ce qui a été créé.
+  Routes `GET/POST/DELETE /api/exemples-suite[/<histoire>]` ; `EXEMPLES_DIR`. UI : carte de la page Paramètres.
+
 ## Vérifier avant de committer
 ```bash
 pytest

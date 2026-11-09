@@ -106,6 +106,34 @@
       </div>
     </form>
 
+    {# ------------------------------------------------------------ exemples de la suite #}
+    <section id="exemples" class="card p-5" aria-labelledby="exemples-title" hidden>
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div class="min-w-0">
+          <h2 id="exemples-title" class="text-base font-semibold">Exemples de la suite</h2>
+          <p class="mt-1 text-sm text-muted">Des histoires fictives qui traversent toute la suite Atelier : les relevés convertis par Convert et rangés dans Tab arrivent ici dans un compte de démonstration, avec les budgets du mois.</p>
+        </div>
+        <select id="exemple-select" class="input w-64 max-w-full" aria-label="Histoire d'exemple"></select>
+      </div>
+      <div class="mt-4 space-y-3">
+        <div>
+          <p class="text-sm font-medium"><span id="exemple-titre"></span> <span id="exemple-sous-titre" class="font-normal text-muted"></span></p>
+          <p id="exemple-resume" class="mt-1 text-sm text-muted"></p>
+        </div>
+        <ol id="exemple-parcours" class="flex flex-wrap gap-1.5" aria-label="Parcours de l'histoire dans la suite"></ol>
+        <p id="exemple-etape" class="text-sm"></p>
+        <p id="exemple-contenu" class="text-xs text-muted"></p>
+        <p id="exemple-avertissement" class="text-xs text-muted">Le compte de démonstration s'ajoute à vos données tant qu'il est chargé ; vos catégories et budgets existants ne sont jamais modifiés. « Retirer » enlève exactement ce que l'exemple a créé.</p>
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="exemple-charger" class="btn btn-primary">Charger l'exemple</button>
+          <a id="exemple-ouvrir" class="btn btn-ghost" hidden>Voir le compte</a>
+          <a id="exemple-budgets" class="btn btn-ghost" hidden>Voir les budgets</a>
+          <button type="button" id="exemple-retirer" class="btn btn-danger" hidden>Retirer l'exemple</button>
+        </div>
+      </div>
+      <p id="exemple-suite" class="mt-4 border-t border-line pt-3 text-sm text-muted"></p>
+    </section>
+
     {# ------------------------------------------------------------ données #}
     <section class="card p-5">
       <h2 class="text-base font-semibold">Vos données</h2>

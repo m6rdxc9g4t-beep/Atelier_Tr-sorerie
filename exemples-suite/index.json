@@ -1,0 +1,419 @@
+{
+ "format": "atelier-exemples/1",
+ "ordre": [
+  "convert",
+  "tab",
+  "viz",
+  "tresorerie",
+  "nexus",
+  "projets",
+  "wiki"
+ ],
+ "apps": {
+  "convert": "Atelier Convert",
+  "tab": "Atelier Tab",
+  "viz": "Atelier Viz",
+  "tresorerie": "Atelier Trésorerie",
+  "nexus": "Atelier Nexus",
+  "projets": "Atelier Projets",
+  "wiki": "Atelier Wiki"
+ },
+ "histoires": [
+  {
+   "id": "studio-garance",
+   "titre": "Studio Garance",
+   "sous_titre": "Clôture comptable d'un studio de design",
+   "secteur": "Compta",
+   "resume": "Un studio de design graphique d'Arles clôture son mois : relevés bancaires convertis, catégorisés, comparés au budget ; le poste Matériel dépasse et devient une tâche de suivi.",
+   "parcours": [
+    {
+     "app": "convert",
+     "titre": "Convertir les relevés",
+     "texte": "Convertissez le relevé de octobre 2026 (PDF) : les soldes sont contrôlés. « Envoyer dans Atelier Tab » le range dans le projet « Compta 2026 » ; l'export CSV français part dans Trésorerie."
+    },
+    {
+     "app": "tab",
+     "titre": "Ranger et enrichir",
+     "texte": "Le projet « Compta 2026 » réunit les opérations catégorisées et « Clients et factures »."
+    },
+    {
+     "app": "viz",
+     "titre": "Analyser et surveiller",
+     "texte": "Le jeu des opérations alimente les graphiques ; l'alerte « Matériel du mois » se déclenche : 708,00 € pour un seuil de 600,00 €."
+    },
+    {
+     "app": "tresorerie",
+     "titre": "Comparer au budget",
+     "texte": "Le compte « Compte pro Studio Garance » et ses budgets de octobre 2026 : « Matériel » est en dépassement."
+    },
+    {
+     "app": "nexus",
+     "titre": "Enchaîner et réagir",
+     "texte": "Les workflows de l'exemple enchaînent les apps en un lancement, chaque écriture attend « Autoriser » ; un déclencheur réagit à l'alerte de Viz."
+    },
+    {
+     "app": "projets",
+     "titre": "Suivre les actions",
+     "texte": "Le projet « Gestion 2026 — Studio Garance » ; l'alerte devient une tâche dans la story « Suivi des budgets »."
+    },
+    {
+     "app": "wiki",
+     "titre": "Garder la mémoire",
+     "texte": "L'espace « Studio Garance » : parcours de l'exemple, bilans mensuels et procédures, reliés entre eux."
+    }
+   ]
+  },
+  {
+   "id": "renovation-urbaine",
+   "titre": "Rénovation Urbaine 2026",
+   "sous_titre": "Suivi d'un chantier de réhabilitation",
+   "secteur": "Chantier",
+   "resume": "La réhabilitation d'un immeuble de logements à Villeurbanne : planning des lots, situations de travaux payées depuis le compte chantier, budget par lot ; le gros œuvre dépasse son enveloppe du mois.",
+   "parcours": [
+    {
+     "app": "convert",
+     "titre": "Convertir les relevés",
+     "texte": "Convertissez le relevé de octobre 2026 (PDF) : les soldes sont contrôlés. « Envoyer dans Atelier Tab » le range dans le projet « Rénovation Urbaine 2026 » ; l'export CSV français part dans Trésorerie. Essayez aussi « Situations de travaux (CSV) »."
+    },
+    {
+     "app": "tab",
+     "titre": "Ranger et enrichir",
+     "texte": "Le projet « Rénovation Urbaine 2026 » réunit les opérations catégorisées et « Planning & Lots »."
+    },
+    {
+     "app": "viz",
+     "titre": "Analyser et surveiller",
+     "texte": "Le jeu des opérations alimente les graphiques ; l'alerte « Gros œuvre du mois » se déclenche : 16 000,00 € pour un seuil de 14 000,00 €."
+    },
+    {
+     "app": "tresorerie",
+     "titre": "Comparer au budget",
+     "texte": "Le compte « Compte chantier Rénovation Urbaine 2026 » et ses budgets de octobre 2026 : « Gros œuvre » est en dépassement."
+    },
+    {
+     "app": "nexus",
+     "titre": "Enchaîner et réagir",
+     "texte": "Les workflows de l'exemple enchaînent les apps en un lancement, chaque écriture attend « Autoriser » ; un déclencheur réagit à l'alerte de Viz."
+    },
+    {
+     "app": "projets",
+     "titre": "Suivre les actions",
+     "texte": "Le projet « Rénovation Urbaine 2026 » ; l'alerte devient une tâche dans la story « Suivi des budgets »."
+    },
+    {
+     "app": "wiki",
+     "titre": "Garder la mémoire",
+     "texte": "L'espace « Rénovation Urbaine 2026 » : parcours de l'exemple, bilans mensuels et procédures, reliés entre eux."
+    }
+   ]
+  },
+  {
+   "id": "app-ecommerce",
+   "titre": "App E-Commerce v2",
+   "sous_titre": "Une boutique en ligne lance la v2 de son app",
+   "secteur": "Produit",
+   "resume": "Verveine & Co, boutique de thés en ligne, sort la v2 de son app en octobre : backlog et sprints, commandes du back-office, virements Stripe ; la pub du lancement dépasse son budget.",
+   "parcours": [
+    {
+     "app": "convert",
+     "titre": "Convertir les relevés",
+     "texte": "Convertissez le relevé de octobre 2026 (PDF) : les soldes sont contrôlés. « Envoyer dans Atelier Tab » le range dans le projet « App E-Commerce v2 » ; l'export CSV français part dans Trésorerie. Essayez aussi « Commandes du back-office (CSV) »."
+    },
+    {
+     "app": "tab",
+     "titre": "Ranger et enrichir",
+     "texte": "Le projet « App E-Commerce v2 » réunit les opérations catégorisées et « Backlog v2 »."
+    },
+    {
+     "app": "viz",
+     "titre": "Analyser et surveiller",
+     "texte": "Le jeu des opérations alimente les graphiques ; l'alerte « Publicité du mois » se déclenche : 2 480,00 € pour un seuil de 1 500,00 €."
+    },
+    {
+     "app": "tresorerie",
+     "titre": "Comparer au budget",
+     "texte": "Le compte « Compte pro Verveine & Co » et ses budgets de octobre 2026 : « Publicité » est en dépassement."
+    },
+    {
+     "app": "nexus",
+     "titre": "Enchaîner et réagir",
+     "texte": "Les workflows de l'exemple enchaînent les apps en un lancement, chaque écriture attend « Autoriser » ; un déclencheur réagit à l'alerte de Viz."
+    },
+    {
+     "app": "projets",
+     "titre": "Suivre les actions",
+     "texte": "Le projet « App E-Commerce v2 — Verveine & Co » ; l'alerte devient une tâche dans la story « Suivi des budgets »."
+    },
+    {
+     "app": "wiki",
+     "titre": "Garder la mémoire",
+     "texte": "L'espace « Verveine & Co — App v2 » : parcours de l'exemple, bilans mensuels et procédures, reliés entre eux."
+    }
+   ]
+  },
+  {
+   "id": "freelance-data",
+   "titre": "Consultant data freelance",
+   "sous_titre": "Missions, temps facturé et trésorerie d'un indépendant",
+   "secteur": "Freelance",
+   "resume": "Julien Morel, consultant data indépendant à Dijon : missions suivies dans Tab et Projets, temps passé, factures payées via une plateforme, provisions URSSAF ; ses frais de logiciels dérapent en octobre.",
+   "parcours": [
+    {
+     "app": "convert",
+     "titre": "Convertir les relevés",
+     "texte": "Convertissez le relevé de octobre 2026 (PDF) : les soldes sont contrôlés. « Envoyer dans Atelier Tab » le range dans le projet « Missions 2026 » ; l'export CSV français part dans Trésorerie. Essayez aussi « Paiements de la plateforme freelance (CSV) »."
+    },
+    {
+     "app": "tab",
+     "titre": "Ranger et enrichir",
+     "texte": "Le projet « Missions 2026 » réunit les opérations catégorisées et « Missions »."
+    },
+    {
+     "app": "viz",
+     "titre": "Analyser et surveiller",
+     "texte": "Le jeu des opérations alimente les graphiques ; l'alerte « Logiciels du mois » se déclenche : 1 142,60 € pour un seuil de 300,00 €."
+    },
+    {
+     "app": "tresorerie",
+     "titre": "Comparer au budget",
+     "texte": "Le compte « Compte pro Julien Morel » et ses budgets de octobre 2026 : « Logiciels » est en dépassement."
+    },
+    {
+     "app": "nexus",
+     "titre": "Enchaîner et réagir",
+     "texte": "Les workflows de l'exemple enchaînent les apps en un lancement, chaque écriture attend « Autoriser » ; un déclencheur réagit à l'alerte de Viz."
+    },
+    {
+     "app": "projets",
+     "titre": "Suivre les actions",
+     "texte": "Le projet « Missions 2026 — Julien Morel » ; l'alerte devient une tâche dans la story « Suivi des budgets »."
+    },
+    {
+     "app": "wiki",
+     "titre": "Garder la mémoire",
+     "texte": "L'espace « Julien Morel — freelance » : parcours de l'exemple, bilans mensuels et procédures, reliés entre eux."
+    }
+   ]
+  },
+  {
+   "id": "finance-patrimoine",
+   "titre": "Lemaire Patrimoine",
+   "sous_titre": "Portefeuille et allocation d'une holding familiale",
+   "secteur": "Finance",
+   "resume": "La holding de la famille Lemaire place sa trésorerie : achats d'ETF, dividendes, comité mensuel, allocation cible ; les frais de courtage d'octobre dépassent l'enveloppe après un rééquilibrage.",
+   "parcours": [
+    {
+     "app": "convert",
+     "titre": "Convertir les relevés",
+     "texte": "Convertissez le relevé de octobre 2026 (PDF) : les soldes sont contrôlés. « Envoyer dans Atelier Tab » le range dans le projet « Allocation 2026 » ; l'export CSV français part dans Trésorerie. Essayez aussi « Opérations du compte-titres (CSV) »."
+    },
+    {
+     "app": "tab",
+     "titre": "Ranger et enrichir",
+     "texte": "Le projet « Allocation 2026 » réunit les opérations catégorisées et « Allocation cible »."
+    },
+    {
+     "app": "viz",
+     "titre": "Analyser et surveiller",
+     "texte": "Le jeu des opérations alimente les graphiques ; l'alerte « Frais de courtage du mois » se déclenche : 421,62 € pour un seuil de 250,00 €."
+    },
+    {
+     "app": "tresorerie",
+     "titre": "Comparer au budget",
+     "texte": "Le compte « Compte courant Lemaire Patrimoine » et ses budgets de octobre 2026 : « Frais de courtage » est en dépassement."
+    },
+    {
+     "app": "nexus",
+     "titre": "Enchaîner et réagir",
+     "texte": "Les workflows de l'exemple enchaînent les apps en un lancement, chaque écriture attend « Autoriser » ; un déclencheur réagit à l'alerte de Viz."
+    },
+    {
+     "app": "projets",
+     "titre": "Suivre les actions",
+     "texte": "Le projet « Rééquilibrage 2026 — Lemaire Patrimoine » ; l'alerte devient une tâche dans la story « Suivi des budgets »."
+    },
+    {
+     "app": "wiki",
+     "titre": "Garder la mémoire",
+     "texte": "L'espace « Lemaire Patrimoine » : parcours de l'exemple, bilans mensuels et procédures, reliés entre eux."
+    }
+   ]
+  },
+  {
+   "id": "marketing-campagne",
+   "titre": "Campagne Brume",
+   "sous_titre": "Lancement d'une marque de cosmétiques par une agence",
+   "secteur": "Marketing",
+   "resume": "L'agence Orbe lance la gamme d'automne de Brume Cosmétiques : plan média, performances par canal, factures des régies ; le budget Meta explose au lancement et le coût d'acquisition grimpe.",
+   "parcours": [
+    {
+     "app": "convert",
+     "titre": "Convertir les relevés",
+     "texte": "Convertissez le relevé de octobre 2026 (PDF) : les soldes sont contrôlés. « Envoyer dans Atelier Tab » le range dans le projet « Brume — lancement automne » ; l'export CSV français part dans Trésorerie. Essayez aussi « Performances des régies (CSV) »."
+    },
+    {
+     "app": "tab",
+     "titre": "Ranger et enrichir",
+     "texte": "Le projet « Brume — lancement automne » réunit les opérations catégorisées et « Plan média »."
+    },
+    {
+     "app": "viz",
+     "titre": "Analyser et surveiller",
+     "texte": "Le jeu des opérations alimente les graphiques ; l'alerte « Dépenses Meta du mois » se déclenche : 4 320,00 € pour un seuil de 2 500,00 €."
+    },
+    {
+     "app": "tresorerie",
+     "titre": "Comparer au budget",
+     "texte": "Le compte « Compte client Brume (agence Orbe) » et ses budgets de octobre 2026 : « Meta » est en dépassement."
+    },
+    {
+     "app": "nexus",
+     "titre": "Enchaîner et réagir",
+     "texte": "Les workflows de l'exemple enchaînent les apps en un lancement, chaque écriture attend « Autoriser » ; un déclencheur réagit à l'alerte de Viz."
+    },
+    {
+     "app": "projets",
+     "titre": "Suivre les actions",
+     "texte": "Le projet « Brume — lancement automne 2026 » ; l'alerte devient une tâche dans la story « Suivi des budgets »."
+    },
+    {
+     "app": "wiki",
+     "titre": "Garder la mémoire",
+     "texte": "L'espace « Brume — campagne d'automne » : parcours de l'exemple, bilans mensuels et procédures, reliés entre eux."
+    }
+   ]
+  },
+  {
+   "id": "assurance-courtage",
+   "titre": "Arpège Courtage",
+   "sous_titre": "Portefeuille, sinistres et renouvellements d'un cabinet de courtage",
+   "secteur": "Assurance",
+   "resume": "Le cabinet Arpège, à Toulouse, gère 7 clients professionnels : primes, commissions, sinistres déclarés ; la flotte automobile se dégrade et les frais juridiques dépassent leur budget en octobre.",
+   "parcours": [
+    {
+     "app": "convert",
+     "titre": "Convertir les relevés",
+     "texte": "Convertissez le relevé de octobre 2026 (PDF) : les soldes sont contrôlés. « Envoyer dans Atelier Tab » le range dans le projet « Portefeuille 2026 » ; l'export CSV français part dans Trésorerie. Essayez aussi « Bordereau de sinistres (CSV) »."
+    },
+    {
+     "app": "tab",
+     "titre": "Ranger et enrichir",
+     "texte": "Le projet « Portefeuille 2026 » réunit les opérations catégorisées et « Contrats »."
+    },
+    {
+     "app": "viz",
+     "titre": "Analyser et surveiller",
+     "texte": "Le jeu des opérations alimente les graphiques ; l'alerte « Frais juridiques du mois » se déclenche : 2 360,00 € pour un seuil de 800,00 €."
+    },
+    {
+     "app": "tresorerie",
+     "titre": "Comparer au budget",
+     "texte": "Le compte « Compte pro Arpège Courtage » et ses budgets de octobre 2026 : « Frais juridiques » est en dépassement."
+    },
+    {
+     "app": "nexus",
+     "titre": "Enchaîner et réagir",
+     "texte": "Les workflows de l'exemple enchaînent les apps en un lancement, chaque écriture attend « Autoriser » ; un déclencheur réagit à l'alerte de Viz."
+    },
+    {
+     "app": "projets",
+     "titre": "Suivre les actions",
+     "texte": "Le projet « Renouvellements T4 2026 — Arpège Courtage » ; l'alerte devient une tâche dans la story « Suivi des budgets »."
+    },
+    {
+     "app": "wiki",
+     "titre": "Garder la mémoire",
+     "texte": "L'espace « Arpège Courtage » : parcours de l'exemple, bilans mensuels et procédures, reliés entre eux."
+    }
+   ]
+  },
+  {
+   "id": "boutique-librairie",
+   "titre": "Librairie Les Pages Vives",
+   "sous_titre": "Ventes, stock et commandes d'une librairie-papeterie",
+   "secteur": "Boutique",
+   "resume": "Une librairie-papeterie de la Croix-Rousse à Lyon : caisse par rayon, stock et commandes aux distributeurs, rentrée scolaire puis préparation des fêtes ; les achats de livres d'octobre dépassent.",
+   "parcours": [
+    {
+     "app": "convert",
+     "titre": "Convertir les relevés",
+     "texte": "Convertissez le relevé de octobre 2026 (PDF) : les soldes sont contrôlés. « Envoyer dans Atelier Tab » le range dans le projet « Boutique 2026 » ; l'export CSV français part dans Trésorerie. Essayez aussi « Ventes de la caisse par rayon (CSV) »."
+    },
+    {
+     "app": "tab",
+     "titre": "Ranger et enrichir",
+     "texte": "Le projet « Boutique 2026 » réunit les opérations catégorisées et « Stock et commandes »."
+    },
+    {
+     "app": "viz",
+     "titre": "Analyser et surveiller",
+     "texte": "Le jeu des opérations alimente les graphiques ; l'alerte « Achats de livres du mois » se déclenche : 15 200,00 € pour un seuil de 13 000,00 €."
+    },
+    {
+     "app": "tresorerie",
+     "titre": "Comparer au budget",
+     "texte": "Le compte « Compte pro Les Pages Vives » et ses budgets de octobre 2026 : « Achats livres » est en dépassement."
+    },
+    {
+     "app": "nexus",
+     "titre": "Enchaîner et réagir",
+     "texte": "Les workflows de l'exemple enchaînent les apps en un lancement, chaque écriture attend « Autoriser » ; un déclencheur réagit à l'alerte de Viz."
+    },
+    {
+     "app": "projets",
+     "titre": "Suivre les actions",
+     "texte": "Le projet « Fêtes de fin d'année 2026 — Les Pages Vives » ; l'alerte devient une tâche dans la story « Suivi des budgets »."
+    },
+    {
+     "app": "wiki",
+     "titre": "Garder la mémoire",
+     "texte": "L'espace « Les Pages Vives » : parcours de l'exemple, bilans mensuels et procédures, reliés entre eux."
+    }
+   ]
+  },
+  {
+   "id": "immobilier-locatif",
+   "titre": "SCI Les Tilleuls",
+   "sous_titre": "Gestion locative de six appartements",
+   "secteur": "Immobilier",
+   "resume": "La SCI familiale Les Tilleuls loue six appartements à Nantes : loyers encaissés, charges, état locatif, travaux ; en octobre un appartement est vacant, un loyer est impayé et les travaux de remise en état dépassent leur budget.",
+   "parcours": [
+    {
+     "app": "convert",
+     "titre": "Convertir les relevés",
+     "texte": "Convertissez le relevé de octobre 2026 (PDF) : les soldes sont contrôlés. « Envoyer dans Atelier Tab » le range dans le projet « Gestion locative » ; l'export CSV français part dans Trésorerie. Essayez aussi « Quittances d'octobre (CSV) »."
+    },
+    {
+     "app": "tab",
+     "titre": "Ranger et enrichir",
+     "texte": "Le projet « Gestion locative » réunit les opérations catégorisées et « État locatif »."
+    },
+    {
+     "app": "viz",
+     "titre": "Analyser et surveiller",
+     "texte": "Le jeu des opérations alimente les graphiques ; l'alerte « Travaux du mois » se déclenche : 3 540,00 € pour un seuil de 1 500,00 €."
+    },
+    {
+     "app": "tresorerie",
+     "titre": "Comparer au budget",
+     "texte": "Le compte « Compte courant SCI Les Tilleuls » et ses budgets de octobre 2026 : « Travaux » est en dépassement."
+    },
+    {
+     "app": "nexus",
+     "titre": "Enchaîner et réagir",
+     "texte": "Les workflows de l'exemple enchaînent les apps en un lancement, chaque écriture attend « Autoriser » ; un déclencheur réagit à l'alerte de Viz."
+    },
+    {
+     "app": "projets",
+     "titre": "Suivre les actions",
+     "texte": "Le projet « Gestion 2026 — SCI Les Tilleuls » ; l'alerte devient une tâche dans la story « Suivi des budgets »."
+    },
+    {
+     "app": "wiki",
+     "titre": "Garder la mémoire",
+     "texte": "L'espace « SCI Les Tilleuls » : parcours de l'exemple, bilans mensuels et procédures, reliés entre eux."
+    }
+   ]
+  }
+ ]
+}
