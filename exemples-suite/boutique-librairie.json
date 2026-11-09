@@ -1,0 +1,240 @@
+{
+ "format": "atelier-exemples/1",
+ "histoire": {
+  "id": "boutique-librairie",
+  "titre": "Librairie Les Pages Vives",
+  "sous_titre": "Ventes, stock et commandes d'une librairie-papeterie",
+  "secteur": "Boutique",
+  "resume": "Une librairie-papeterie de la Croix-Rousse à Lyon : caisse par rayon, stock et commandes aux distributeurs, rentrée scolaire puis préparation des fêtes ; les achats de livres d'octobre dépassent."
+ },
+ "compte": {
+  "nom": "Compte pro Les Pages Vives",
+  "type": "courant",
+  "institution": "Banque Exemple (fictive)",
+  "solde_initial": 14600.0
+ },
+ "categories": [
+  {
+   "nom": "Achats livres",
+   "type": "depense"
+  },
+  {
+   "nom": "Achats papeterie",
+   "type": "depense"
+  },
+  {
+   "nom": "Banque",
+   "type": "depense"
+  },
+  {
+   "nom": "Logiciels",
+   "type": "depense"
+  },
+  {
+   "nom": "Loyer",
+   "type": "depense"
+  },
+  {
+   "nom": "Salaires",
+   "type": "depense"
+  },
+  {
+   "nom": "Ventes",
+   "type": "revenu"
+  },
+  {
+   "nom": "Vitrine et animation",
+   "type": "depense"
+  },
+  {
+   "nom": "Énergie",
+   "type": "depense"
+  }
+ ],
+ "operations": [
+  {
+   "date": "2026-08-01",
+   "libelle": "PRLV SEPA LOYER LOCAL COMMERCIAL GRANDE RUE",
+   "montant": -1680.0,
+   "categorie": "Loyer"
+  },
+  {
+   "date": "2026-08-05",
+   "libelle": "VIR SEPA EMIS SALAIRES AOÛT",
+   "montant": -4900.0,
+   "categorie": "Salaires"
+  },
+  {
+   "date": "2026-08-09",
+   "libelle": "PRLV SEPA LOGICIEL DE CAISSE ET STOCK",
+   "montant": -89.0,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-08-10",
+   "libelle": "PRLV SEPA DISTRIBUTEUR LIVRES NORD SUD",
+   "montant": -6200.0,
+   "categorie": "Achats livres"
+  },
+  {
+   "date": "2026-08-12",
+   "libelle": "PRLV SEPA EDF ENTREPRISES",
+   "montant": -138.02,
+   "categorie": "Énergie"
+  },
+  {
+   "date": "2026-08-20",
+   "libelle": "PRLV SEPA FOURNITURES SCOLAIRES CLAIREFONTAINE",
+   "montant": -2850.0,
+   "categorie": "Achats papeterie"
+  },
+  {
+   "date": "2026-08-28",
+   "libelle": "FRAIS TERMINAL CARTES BANCAIRES",
+   "montant": -108.18,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-08-31",
+   "libelle": "REMISES CARTES BANCAIRES AOUT",
+   "montant": 16389.26,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-08-31",
+   "libelle": "REMISE ESPECES AOUT",
+   "montant": 3597.64,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-09-01",
+   "libelle": "PRLV SEPA LOYER LOCAL COMMERCIAL GRANDE RUE",
+   "montant": -1680.0,
+   "categorie": "Loyer"
+  },
+  {
+   "date": "2026-09-05",
+   "libelle": "VIR SEPA EMIS SALAIRES SEPTEMBRE",
+   "montant": -4900.0,
+   "categorie": "Salaires"
+  },
+  {
+   "date": "2026-09-09",
+   "libelle": "PRLV SEPA LOGICIEL DE CAISSE ET STOCK",
+   "montant": -89.0,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-09-10",
+   "libelle": "PRLV SEPA DISTRIBUTEUR LIVRES NORD SUD",
+   "montant": -9400.0,
+   "categorie": "Achats livres"
+  },
+  {
+   "date": "2026-09-12",
+   "libelle": "PRLV SEPA EDF ENTREPRISES",
+   "montant": -135.09,
+   "categorie": "Énergie"
+  },
+  {
+   "date": "2026-09-18",
+   "libelle": "PRLV SEPA DIFFUSEUR BD ET MANGAS",
+   "montant": -3100.0,
+   "categorie": "Achats livres"
+  },
+  {
+   "date": "2026-09-28",
+   "libelle": "FRAIS TERMINAL CARTES BANCAIRES",
+   "montant": -100.84,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-09-30",
+   "libelle": "REMISES CARTES BANCAIRES SEPTEMBRE",
+   "montant": 22712.02,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-09-30",
+   "libelle": "REMISE ESPECES SEPTEMBRE",
+   "montant": 4985.57,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-10-01",
+   "libelle": "PRLV SEPA LOYER LOCAL COMMERCIAL GRANDE RUE",
+   "montant": -1680.0,
+   "categorie": "Loyer"
+  },
+  {
+   "date": "2026-10-05",
+   "libelle": "VIR SEPA EMIS SALAIRES OCTOBRE",
+   "montant": -4900.0,
+   "categorie": "Salaires"
+  },
+  {
+   "date": "2026-10-09",
+   "libelle": "PRLV SEPA LOGICIEL DE CAISSE ET STOCK",
+   "montant": -89.0,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-10-10",
+   "libelle": "PRLV SEPA DISTRIBUTEUR LIVRES NORD SUD",
+   "montant": -8900.0,
+   "categorie": "Achats livres"
+  },
+  {
+   "date": "2026-10-12",
+   "libelle": "PRLV SEPA EDF ENTREPRISES",
+   "montant": -133.89,
+   "categorie": "Énergie"
+  },
+  {
+   "date": "2026-10-15",
+   "libelle": "CARTE DECORATION VITRINE FETES",
+   "montant": -240.0,
+   "categorie": "Vitrine et animation"
+  },
+  {
+   "date": "2026-10-17",
+   "libelle": "PRLV SEPA DIFFUSEUR BD ET MANGAS",
+   "montant": -3600.0,
+   "categorie": "Achats livres"
+  },
+  {
+   "date": "2026-10-24",
+   "libelle": "PRLV SEPA DISTRIBUTEUR LIVRES NORD SUD BEAUX LIVRES FETES",
+   "montant": -2700.0,
+   "categorie": "Achats livres"
+  },
+  {
+   "date": "2026-10-28",
+   "libelle": "FRAIS TERMINAL CARTES BANCAIRES",
+   "montant": -87.8,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-10-31",
+   "libelle": "REMISES CARTES BANCAIRES OCTOBRE",
+   "montant": 20520.09,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-10-31",
+   "libelle": "REMISE ESPECES OCTOBRE",
+   "montant": 4504.41,
+   "categorie": "Ventes"
+  }
+ ],
+ "budgets": {
+  "mois": "2026-10",
+  "montants": {
+   "Achats livres": 13000,
+   "Achats papeterie": 1500,
+   "Vitrine et animation": 300,
+   "Énergie": 200,
+   "Logiciels": 100
+  }
+ }
+}

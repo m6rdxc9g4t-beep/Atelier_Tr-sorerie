@@ -1,0 +1,188 @@
+{
+ "format": "atelier-exemples/1",
+ "histoire": {
+  "id": "marketing-campagne",
+  "titre": "Campagne Brume",
+  "sous_titre": "Lancement d'une marque de cosmétiques par une agence",
+  "secteur": "Marketing",
+  "resume": "L'agence Orbe lance la gamme d'automne de Brume Cosmétiques : plan média, performances par canal, factures des régies ; le budget Meta explose au lancement et le coût d'acquisition grimpe."
+ },
+ "compte": {
+  "nom": "Compte client Brume (agence Orbe)",
+  "type": "courant",
+  "institution": "Banque Exemple (fictive)",
+  "solde_initial": 9800.0
+ },
+ "categories": [
+  {
+   "nom": "Banque",
+   "type": "depense"
+  },
+  {
+   "nom": "Budget client",
+   "type": "revenu"
+  },
+  {
+   "nom": "Google Ads",
+   "type": "depense"
+  },
+  {
+   "nom": "Influence",
+   "type": "depense"
+  },
+  {
+   "nom": "Meta",
+   "type": "depense"
+  },
+  {
+   "nom": "Outils",
+   "type": "depense"
+  },
+  {
+   "nom": "Production",
+   "type": "depense"
+  },
+  {
+   "nom": "TikTok",
+   "type": "depense"
+  }
+ ],
+ "operations": [
+  {
+   "date": "2026-08-01",
+   "libelle": "VIR SEPA RECU BRUME COSMETIQUES BUDGET MEDIA AOUT",
+   "montant": 4000.0,
+   "categorie": "Budget client"
+  },
+  {
+   "date": "2026-08-06",
+   "libelle": "PRLV SEPA CANVA HUBSPOT SEMRUSH",
+   "montant": -318.0,
+   "categorie": "Outils"
+  },
+  {
+   "date": "2026-08-20",
+   "libelle": "VIR SEPA EMIS STUDIO LUMEN SHOOTING PRODUIT",
+   "montant": -1600.0,
+   "categorie": "Production"
+  },
+  {
+   "date": "2026-08-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -15.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-08-31",
+   "libelle": "PRLV SEPA META PLATFORMS IRELAND AOUT",
+   "montant": -1250.0,
+   "categorie": "Meta"
+  },
+  {
+   "date": "2026-08-31",
+   "libelle": "PRLV SEPA GOOGLE IRELAND ADS AOUT",
+   "montant": -940.0,
+   "categorie": "Google Ads"
+  },
+  {
+   "date": "2026-08-31",
+   "libelle": "PRLV SEPA TIKTOK ADS AOUT",
+   "montant": -690.0,
+   "categorie": "TikTok"
+  },
+  {
+   "date": "2026-09-01",
+   "libelle": "VIR SEPA RECU BRUME COSMETIQUES BUDGET MEDIA SEPTEMBRE",
+   "montant": 4000.0,
+   "categorie": "Budget client"
+  },
+  {
+   "date": "2026-09-06",
+   "libelle": "PRLV SEPA CANVA HUBSPOT SEMRUSH",
+   "montant": -318.0,
+   "categorie": "Outils"
+  },
+  {
+   "date": "2026-09-14",
+   "libelle": "VIR SEPA EMIS COLLECTIF CREATEURS INFLUENCE",
+   "montant": -1200.0,
+   "categorie": "Influence"
+  },
+  {
+   "date": "2026-09-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -15.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-09-30",
+   "libelle": "PRLV SEPA META PLATFORMS IRELAND SEPTEMBRE",
+   "montant": -1180.0,
+   "categorie": "Meta"
+  },
+  {
+   "date": "2026-09-30",
+   "libelle": "PRLV SEPA GOOGLE IRELAND ADS SEPTEMBRE",
+   "montant": -910.0,
+   "categorie": "Google Ads"
+  },
+  {
+   "date": "2026-09-30",
+   "libelle": "PRLV SEPA TIKTOK ADS SEPTEMBRE",
+   "montant": -660.0,
+   "categorie": "TikTok"
+  },
+  {
+   "date": "2026-10-01",
+   "libelle": "VIR SEPA RECU BRUME COSMETIQUES BUDGET MEDIA LANCEMENT",
+   "montant": 9000.0,
+   "categorie": "Budget client"
+  },
+  {
+   "date": "2026-10-06",
+   "libelle": "PRLV SEPA CANVA HUBSPOT SEMRUSH",
+   "montant": -318.0,
+   "categorie": "Outils"
+  },
+  {
+   "date": "2026-10-08",
+   "libelle": "VIR SEPA EMIS COLLECTIF CREATEURS INFLUENCE LANCEMENT",
+   "montant": -2500.0,
+   "categorie": "Influence"
+  },
+  {
+   "date": "2026-10-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -15.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-10-31",
+   "libelle": "PRLV SEPA META PLATFORMS IRELAND OCTOBRE",
+   "montant": -4320.0,
+   "categorie": "Meta"
+  },
+  {
+   "date": "2026-10-31",
+   "libelle": "PRLV SEPA GOOGLE IRELAND ADS OCTOBRE",
+   "montant": -1490.0,
+   "categorie": "Google Ads"
+  },
+  {
+   "date": "2026-10-31",
+   "libelle": "PRLV SEPA TIKTOK ADS OCTOBRE",
+   "montant": -2210.0,
+   "categorie": "TikTok"
+  }
+ ],
+ "budgets": {
+  "mois": "2026-10",
+  "montants": {
+   "Meta": 2500,
+   "Google Ads": 1500,
+   "TikTok": 2200,
+   "Influence": 2500,
+   "Outils": 350
+  }
+ }
+}

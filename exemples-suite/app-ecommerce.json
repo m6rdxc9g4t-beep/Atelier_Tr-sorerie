@@ -1,0 +1,246 @@
+{
+ "format": "atelier-exemples/1",
+ "histoire": {
+  "id": "app-ecommerce",
+  "titre": "App E-Commerce v2",
+  "sous_titre": "Une boutique en ligne lance la v2 de son app",
+  "secteur": "Produit",
+  "resume": "Verveine & Co, boutique de thés en ligne, sort la v2 de son app en octobre : backlog et sprints, commandes du back-office, virements Stripe ; la pub du lancement dépasse son budget."
+ },
+ "compte": {
+  "nom": "Compte pro Verveine & Co",
+  "type": "courant",
+  "institution": "Banque Exemple (fictive)",
+  "solde_initial": 38450.0
+ },
+ "categories": [
+  {
+   "nom": "Achats marchandises",
+   "type": "depense"
+  },
+  {
+   "nom": "Banque",
+   "type": "depense"
+  },
+  {
+   "nom": "Hébergement",
+   "type": "depense"
+  },
+  {
+   "nom": "Logistique",
+   "type": "depense"
+  },
+  {
+   "nom": "Outils",
+   "type": "depense"
+  },
+  {
+   "nom": "Prestataires",
+   "type": "depense"
+  },
+  {
+   "nom": "Publicité",
+   "type": "depense"
+  },
+  {
+   "nom": "Salaires",
+   "type": "depense"
+  },
+  {
+   "nom": "Ventes",
+   "type": "revenu"
+  }
+ ],
+ "operations": [
+  {
+   "date": "2026-08-02",
+   "libelle": "PRLV SEPA SCALINGO HEBERGEMENT",
+   "montant": -389.0,
+   "categorie": "Hébergement"
+  },
+  {
+   "date": "2026-08-05",
+   "libelle": "VIR SEPA EMIS SALAIRES AOÛT",
+   "montant": -9800.0,
+   "categorie": "Salaires"
+  },
+  {
+   "date": "2026-08-07",
+   "libelle": "VIR SEPA RECU STRIPE PAYOUTS",
+   "montant": 2463.46,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-08-08",
+   "libelle": "PRLV SEPA COLISSIMO EXPEDITIONS",
+   "montant": -589.69,
+   "categorie": "Logistique"
+  },
+  {
+   "date": "2026-08-12",
+   "libelle": "VIR SEPA EMIS JARDINS DE NILGIRI ACHAT THES",
+   "montant": -2850.0,
+   "categorie": "Achats marchandises"
+  },
+  {
+   "date": "2026-08-15",
+   "libelle": "PRLV SEPA FIGMA GITHUB SENTRY",
+   "montant": -212.0,
+   "categorie": "Outils"
+  },
+  {
+   "date": "2026-08-19",
+   "libelle": "CARTE META ADS",
+   "montant": -420.0,
+   "categorie": "Publicité"
+  },
+  {
+   "date": "2026-08-21",
+   "libelle": "VIR SEPA RECU STRIPE PAYOUTS",
+   "montant": 2566.1,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-08-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -24.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-09-02",
+   "libelle": "PRLV SEPA SCALINGO HEBERGEMENT",
+   "montant": -389.0,
+   "categorie": "Hébergement"
+  },
+  {
+   "date": "2026-09-04",
+   "libelle": "VIR SEPA RECU STRIPE PAYOUTS",
+   "montant": 2745.94,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-09-05",
+   "libelle": "VIR SEPA EMIS SALAIRES SEPTEMBRE",
+   "montant": -9800.0,
+   "categorie": "Salaires"
+  },
+  {
+   "date": "2026-09-08",
+   "libelle": "PRLV SEPA COLISSIMO EXPEDITIONS",
+   "montant": -648.49,
+   "categorie": "Logistique"
+  },
+  {
+   "date": "2026-09-10",
+   "libelle": "VIR SEPA EMIS JARDINS DE NILGIRI ACHAT THES",
+   "montant": -3120.0,
+   "categorie": "Achats marchandises"
+  },
+  {
+   "date": "2026-09-15",
+   "libelle": "PRLV SEPA FIGMA GITHUB SENTRY",
+   "montant": -212.0,
+   "categorie": "Outils"
+  },
+  {
+   "date": "2026-09-18",
+   "libelle": "VIR SEPA RECU STRIPE PAYOUTS",
+   "montant": 2979.64,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-09-23",
+   "libelle": "CARTE META ADS",
+   "montant": -510.0,
+   "categorie": "Publicité"
+  },
+  {
+   "date": "2026-09-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -24.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-09-30",
+   "libelle": "VIR SEPA EMIS STUDIO PIXEL FREELANCE DESIGN V2",
+   "montant": -2400.0,
+   "categorie": "Prestataires"
+  },
+  {
+   "date": "2026-10-02",
+   "libelle": "VIR SEPA RECU STRIPE PAYOUTS",
+   "montant": 2975.34,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-10-02",
+   "libelle": "PRLV SEPA SCALINGO HEBERGEMENT",
+   "montant": -389.0,
+   "categorie": "Hébergement"
+  },
+  {
+   "date": "2026-10-05",
+   "libelle": "VIR SEPA EMIS SALAIRES OCTOBRE",
+   "montant": -9800.0,
+   "categorie": "Salaires"
+  },
+  {
+   "date": "2026-10-06",
+   "libelle": "CARTE META ADS LANCEMENT V2",
+   "montant": -1180.0,
+   "categorie": "Publicité"
+  },
+  {
+   "date": "2026-10-08",
+   "libelle": "PRLV SEPA COLISSIMO EXPEDITIONS",
+   "montant": -615.03,
+   "categorie": "Logistique"
+  },
+  {
+   "date": "2026-10-08",
+   "libelle": "CARTE GOOGLE ADS LANCEMENT V2",
+   "montant": -760.0,
+   "categorie": "Publicité"
+  },
+  {
+   "date": "2026-10-13",
+   "libelle": "VIR SEPA EMIS JARDINS DE NILGIRI ACHAT THES",
+   "montant": -3990.0,
+   "categorie": "Achats marchandises"
+  },
+  {
+   "date": "2026-10-15",
+   "libelle": "PRLV SEPA FIGMA GITHUB SENTRY",
+   "montant": -212.0,
+   "categorie": "Outils"
+  },
+  {
+   "date": "2026-10-16",
+   "libelle": "VIR SEPA RECU STRIPE PAYOUTS",
+   "montant": 3363.42,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-10-22",
+   "libelle": "CARTE META ADS",
+   "montant": -540.0,
+   "categorie": "Publicité"
+  },
+  {
+   "date": "2026-10-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -24.0,
+   "categorie": "Banque"
+  }
+ ],
+ "budgets": {
+  "mois": "2026-10",
+  "montants": {
+   "Publicité": 1500,
+   "Achats marchandises": 4500,
+   "Hébergement": 450,
+   "Logistique": 900,
+   "Outils": 250
+  }
+ }
+}

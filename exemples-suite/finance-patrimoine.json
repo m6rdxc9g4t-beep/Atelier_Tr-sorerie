@@ -1,0 +1,210 @@
+{
+ "format": "atelier-exemples/1",
+ "histoire": {
+  "id": "finance-patrimoine",
+  "titre": "Lemaire Patrimoine",
+  "sous_titre": "Portefeuille et allocation d'une holding familiale",
+  "secteur": "Finance",
+  "resume": "La holding de la famille Lemaire place sa trésorerie : achats d'ETF, dividendes, comité mensuel, allocation cible ; les frais de courtage d'octobre dépassent l'enveloppe après un rééquilibrage."
+ },
+ "compte": {
+  "nom": "Compte courant Lemaire Patrimoine",
+  "type": "courant",
+  "institution": "Banque Exemple (fictive)",
+  "solde_initial": 212400.0
+ },
+ "categories": [
+  {
+   "nom": "Achats de titres",
+   "type": "depense"
+  },
+  {
+   "nom": "Banque",
+   "type": "depense"
+  },
+  {
+   "nom": "Coupons",
+   "type": "revenu"
+  },
+  {
+   "nom": "Dividendes",
+   "type": "revenu"
+  },
+  {
+   "nom": "Frais de courtage",
+   "type": "depense"
+  },
+  {
+   "nom": "Honoraires comptables",
+   "type": "depense"
+  },
+  {
+   "nom": "Loyers perçus",
+   "type": "revenu"
+  },
+  {
+   "nom": "Ventes de titres",
+   "type": "revenu"
+  }
+ ],
+ "operations": [
+  {
+   "date": "2026-08-04",
+   "libelle": "ACHAT ETF MSCI WORLD 120 PARTS",
+   "montant": -12840.0,
+   "categorie": "Achats de titres"
+  },
+  {
+   "date": "2026-08-04",
+   "libelle": "COMMISSION COURTAGE ORDRE BOURSE",
+   "montant": -38.52,
+   "categorie": "Frais de courtage"
+  },
+  {
+   "date": "2026-08-05",
+   "libelle": "PRLV SEPA HONORAIRES CABINET COMPTABLE AQUITAINE",
+   "montant": -480.0,
+   "categorie": "Honoraires comptables"
+  },
+  {
+   "date": "2026-08-18",
+   "libelle": "DIVIDENDE TOTALENERGIES 400 ACTIONS",
+   "montant": 316.8,
+   "categorie": "Dividendes"
+  },
+  {
+   "date": "2026-08-25",
+   "libelle": "VIR SEPA RECU LOYER BUREAUX SCI CHARTRONS",
+   "montant": 3600.0,
+   "categorie": "Loyers perçus"
+  },
+  {
+   "date": "2026-08-27",
+   "libelle": "SOUSCRIPTION SCPI RENDEMENT PIERRE 25 PARTS",
+   "montant": -6250.0,
+   "categorie": "Achats de titres"
+  },
+  {
+   "date": "2026-08-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -30.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-09-02",
+   "libelle": "ACHAT OBLIGATION ETAT 2032 10000 NOMINAL",
+   "montant": -9870.0,
+   "categorie": "Achats de titres"
+  },
+  {
+   "date": "2026-09-02",
+   "libelle": "COMMISSION COURTAGE ORDRE BOURSE",
+   "montant": -29.61,
+   "categorie": "Frais de courtage"
+  },
+  {
+   "date": "2026-09-05",
+   "libelle": "PRLV SEPA HONORAIRES CABINET COMPTABLE AQUITAINE",
+   "montant": -480.0,
+   "categorie": "Honoraires comptables"
+  },
+  {
+   "date": "2026-09-15",
+   "libelle": "COUPON OBLIGATION EDF 2029",
+   "montant": 412.5,
+   "categorie": "Coupons"
+  },
+  {
+   "date": "2026-09-22",
+   "libelle": "DIVIDENDE SANOFI 250 ACTIONS",
+   "montant": 990.0,
+   "categorie": "Dividendes"
+  },
+  {
+   "date": "2026-09-25",
+   "libelle": "VIR SEPA RECU LOYER BUREAUX SCI CHARTRONS",
+   "montant": 3600.0,
+   "categorie": "Loyers perçus"
+  },
+  {
+   "date": "2026-09-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -30.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-10-01",
+   "libelle": "VENTE ETF S&P 500 80 PARTS REEQUILIBRAGE",
+   "montant": 41280.0,
+   "categorie": "Ventes de titres"
+  },
+  {
+   "date": "2026-10-01",
+   "libelle": "COMMISSION COURTAGE ORDRE BOURSE",
+   "montant": -123.84,
+   "categorie": "Frais de courtage"
+  },
+  {
+   "date": "2026-10-02",
+   "libelle": "ACHAT ETF EURO STOXX 50 300 PARTS",
+   "montant": -15360.0,
+   "categorie": "Achats de titres"
+  },
+  {
+   "date": "2026-10-02",
+   "libelle": "COMMISSION COURTAGE ORDRE BOURSE",
+   "montant": -46.08,
+   "categorie": "Frais de courtage"
+  },
+  {
+   "date": "2026-10-03",
+   "libelle": "ACHAT ETF OBLIGATIONS EURO 200 PARTS",
+   "montant": -21900.0,
+   "categorie": "Achats de titres"
+  },
+  {
+   "date": "2026-10-03",
+   "libelle": "COMMISSION COURTAGE ORDRE BOURSE",
+   "montant": -65.7,
+   "categorie": "Frais de courtage"
+  },
+  {
+   "date": "2026-10-05",
+   "libelle": "PRLV SEPA HONORAIRES CABINET COMPTABLE AQUITAINE",
+   "montant": -480.0,
+   "categorie": "Honoraires comptables"
+  },
+  {
+   "date": "2026-10-15",
+   "libelle": "DROITS DE GARDE COMPTE-TITRES T3",
+   "montant": -186.0,
+   "categorie": "Frais de courtage"
+  },
+  {
+   "date": "2026-10-20",
+   "libelle": "DIVIDENDE AIR LIQUIDE 150 ACTIONS",
+   "montant": 495.0,
+   "categorie": "Dividendes"
+  },
+  {
+   "date": "2026-10-25",
+   "libelle": "VIR SEPA RECU LOYER BUREAUX SCI CHARTRONS",
+   "montant": 3600.0,
+   "categorie": "Loyers perçus"
+  },
+  {
+   "date": "2026-10-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -30.0,
+   "categorie": "Banque"
+  }
+ ],
+ "budgets": {
+  "mois": "2026-10",
+  "montants": {
+   "Frais de courtage": 250,
+   "Honoraires comptables": 500,
+   "Banque": 40
+  }
+ }
+}

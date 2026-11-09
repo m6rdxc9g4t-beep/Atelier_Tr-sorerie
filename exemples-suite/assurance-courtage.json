@@ -1,0 +1,245 @@
+{
+ "format": "atelier-exemples/1",
+ "histoire": {
+  "id": "assurance-courtage",
+  "titre": "Arpège Courtage",
+  "sous_titre": "Portefeuille, sinistres et renouvellements d'un cabinet de courtage",
+  "secteur": "Assurance",
+  "resume": "Le cabinet Arpège, à Toulouse, gère 7 clients professionnels : primes, commissions, sinistres déclarés ; la flotte automobile se dégrade et les frais juridiques dépassent leur budget en octobre."
+ },
+ "compte": {
+  "nom": "Compte pro Arpège Courtage",
+  "type": "courant",
+  "institution": "Banque Exemple (fictive)",
+  "solde_initial": 31250.0
+ },
+ "categories": [
+  {
+   "nom": "Assurances",
+   "type": "depense"
+  },
+  {
+   "nom": "Banque",
+   "type": "depense"
+  },
+  {
+   "nom": "Commissions",
+   "type": "revenu"
+  },
+  {
+   "nom": "Formation",
+   "type": "depense"
+  },
+  {
+   "nom": "Frais juridiques",
+   "type": "depense"
+  },
+  {
+   "nom": "Locaux",
+   "type": "depense"
+  },
+  {
+   "nom": "Logiciels",
+   "type": "depense"
+  },
+  {
+   "nom": "Prospection",
+   "type": "depense"
+  },
+  {
+   "nom": "Salaires",
+   "type": "depense"
+  }
+ ],
+ "operations": [
+  {
+   "date": "2026-08-02",
+   "libelle": "PRLV SEPA LOYER BUREAUX CAPITOLE",
+   "montant": -1350.0,
+   "categorie": "Locaux"
+  },
+  {
+   "date": "2026-08-05",
+   "libelle": "VIR SEPA EMIS SALAIRES AOÛT",
+   "montant": -7400.0,
+   "categorie": "Salaires"
+  },
+  {
+   "date": "2026-08-10",
+   "libelle": "VIR SEPA RECU ASSUREUR ATLANTIQUE COMMISSIONS AOÛT",
+   "montant": 4189.52,
+   "categorie": "Commissions"
+  },
+  {
+   "date": "2026-08-12",
+   "libelle": "VIR SEPA RECU MUTUELLE DU MIDI COMMISSIONS AOÛT",
+   "montant": 1398.83,
+   "categorie": "Commissions"
+  },
+  {
+   "date": "2026-08-15",
+   "libelle": "VIR SEPA RECU COMPAGNIE HORIZON COMMISSIONS AOÛT",
+   "montant": 2351.84,
+   "categorie": "Commissions"
+  },
+  {
+   "date": "2026-08-18",
+   "libelle": "PRLV SEPA LOGICIEL COURTAGE ASSURLINK",
+   "montant": -420.0,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-08-21",
+   "libelle": "VIR SEPA EMIS CABINET EXPERTISE AUTO SUD",
+   "montant": -380.0,
+   "categorie": "Frais juridiques"
+  },
+  {
+   "date": "2026-08-24",
+   "libelle": "PRLV SEPA RC PRO COURTIER ET GARANTIE FINANCIERE",
+   "montant": -210.0,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-08-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -22.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-09-02",
+   "libelle": "PRLV SEPA LOYER BUREAUX CAPITOLE",
+   "montant": -1350.0,
+   "categorie": "Locaux"
+  },
+  {
+   "date": "2026-09-05",
+   "libelle": "VIR SEPA EMIS SALAIRES SEPTEMBRE",
+   "montant": -7400.0,
+   "categorie": "Salaires"
+  },
+  {
+   "date": "2026-09-08",
+   "libelle": "CARTE SALON PATRIMOINE ET ASSURANCE TOULOUSE",
+   "montant": -650.0,
+   "categorie": "Prospection"
+  },
+  {
+   "date": "2026-09-10",
+   "libelle": "VIR SEPA RECU ASSUREUR ATLANTIQUE COMMISSIONS SEPTEMBRE",
+   "montant": 4060.4,
+   "categorie": "Commissions"
+  },
+  {
+   "date": "2026-09-12",
+   "libelle": "VIR SEPA RECU MUTUELLE DU MIDI COMMISSIONS SEPTEMBRE",
+   "montant": 1466.29,
+   "categorie": "Commissions"
+  },
+  {
+   "date": "2026-09-15",
+   "libelle": "VIR SEPA RECU COMPAGNIE HORIZON COMMISSIONS SEPTEMBRE",
+   "montant": 2272.77,
+   "categorie": "Commissions"
+  },
+  {
+   "date": "2026-09-18",
+   "libelle": "PRLV SEPA LOGICIEL COURTAGE ASSURLINK",
+   "montant": -420.0,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-09-24",
+   "libelle": "PRLV SEPA RC PRO COURTIER ET GARANTIE FINANCIERE",
+   "montant": -210.0,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-09-25",
+   "libelle": "VIR SEPA EMIS CABINET EXPERTISE AUTO SUD",
+   "montant": -420.0,
+   "categorie": "Frais juridiques"
+  },
+  {
+   "date": "2026-09-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -22.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-10-02",
+   "libelle": "PRLV SEPA LOYER BUREAUX CAPITOLE",
+   "montant": -1350.0,
+   "categorie": "Locaux"
+  },
+  {
+   "date": "2026-10-05",
+   "libelle": "VIR SEPA EMIS SALAIRES OCTOBRE",
+   "montant": -7400.0,
+   "categorie": "Salaires"
+  },
+  {
+   "date": "2026-10-09",
+   "libelle": "VIR SEPA EMIS MAITRE ROUSSEL AVOCAT LITIGE TRANSPORTS MERCIER",
+   "montant": -1800.0,
+   "categorie": "Frais juridiques"
+  },
+  {
+   "date": "2026-10-10",
+   "libelle": "VIR SEPA RECU ASSUREUR ATLANTIQUE COMMISSIONS OCTOBRE",
+   "montant": 4052.99,
+   "categorie": "Commissions"
+  },
+  {
+   "date": "2026-10-12",
+   "libelle": "VIR SEPA RECU MUTUELLE DU MIDI COMMISSIONS OCTOBRE",
+   "montant": 1461.3,
+   "categorie": "Commissions"
+  },
+  {
+   "date": "2026-10-15",
+   "libelle": "VIR SEPA RECU COMPAGNIE HORIZON COMMISSIONS OCTOBRE",
+   "montant": 2181.79,
+   "categorie": "Commissions"
+  },
+  {
+   "date": "2026-10-18",
+   "libelle": "PRLV SEPA LOGICIEL COURTAGE ASSURLINK",
+   "montant": -420.0,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-10-21",
+   "libelle": "VIR SEPA EMIS CABINET EXPERTISE AUTO SUD",
+   "montant": -560.0,
+   "categorie": "Frais juridiques"
+  },
+  {
+   "date": "2026-10-24",
+   "libelle": "PRLV SEPA RC PRO COURTIER ET GARANTIE FINANCIERE",
+   "montant": -210.0,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-10-26",
+   "libelle": "CARTE FORMATION DDA 15 HEURES",
+   "montant": -390.0,
+   "categorie": "Formation"
+  },
+  {
+   "date": "2026-10-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -22.0,
+   "categorie": "Banque"
+  }
+ ],
+ "budgets": {
+  "mois": "2026-10",
+  "montants": {
+   "Frais juridiques": 800,
+   "Prospection": 400,
+   "Formation": 400,
+   "Logiciels": 450
+  }
+ }
+}

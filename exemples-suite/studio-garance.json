@@ -1,0 +1,321 @@
+{
+ "format": "atelier-exemples/1",
+ "histoire": {
+  "id": "studio-garance",
+  "titre": "Studio Garance",
+  "sous_titre": "Clôture comptable d'un studio de design",
+  "secteur": "Compta",
+  "resume": "Un studio de design graphique d'Arles clôture son mois : relevés bancaires convertis, catégorisés, comparés au budget ; le poste Matériel dépasse et devient une tâche de suivi."
+ },
+ "compte": {
+  "nom": "Compte pro Studio Garance",
+  "type": "courant",
+  "institution": "Banque Exemple (fictive)",
+  "solde_initial": 2776.65
+ },
+ "categories": [
+  {
+   "nom": "Assurances",
+   "type": "depense"
+  },
+  {
+   "nom": "Banque",
+   "type": "depense"
+  },
+  {
+   "nom": "Charges sociales",
+   "type": "depense"
+  },
+  {
+   "nom": "Déplacements",
+   "type": "depense"
+  },
+  {
+   "nom": "Formation",
+   "type": "depense"
+  },
+  {
+   "nom": "Locaux",
+   "type": "depense"
+  },
+  {
+   "nom": "Logiciels",
+   "type": "depense"
+  },
+  {
+   "nom": "Matériel",
+   "type": "depense"
+  },
+  {
+   "nom": "Repas",
+   "type": "depense"
+  },
+  {
+   "nom": "Télécom",
+   "type": "depense"
+  },
+  {
+   "nom": "Ventes",
+   "type": "revenu"
+  }
+ ],
+ "operations": [
+  {
+   "date": "2026-08-01",
+   "libelle": "PRLV SEPA SCI DES TANNEURS LOYER ATELIER",
+   "montant": -1150.0,
+   "categorie": "Locaux"
+  },
+  {
+   "date": "2026-08-04",
+   "libelle": "PRLV SEPA ADOBE CREATIVE CLOUD",
+   "montant": -71.99,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-08-06",
+   "libelle": "VIR SEPA RECU MAISON VAUCLAIR FACT 2026-031",
+   "montant": 1800.0,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-08-08",
+   "libelle": "PRLV SEPA ORANGE PRO",
+   "montant": -54.99,
+   "categorie": "Télécom"
+  },
+  {
+   "date": "2026-08-12",
+   "libelle": "CARTE BOESNER FOURNITURES ARLES",
+   "montant": -186.3,
+   "categorie": "Matériel"
+  },
+  {
+   "date": "2026-08-16",
+   "libelle": "PRLV SEPA URSSAF",
+   "montant": -640.0,
+   "categorie": "Charges sociales"
+  },
+  {
+   "date": "2026-08-18",
+   "libelle": "CARTE LDLC PRO DISQUE SSD",
+   "montant": -389.0,
+   "categorie": "Matériel"
+  },
+  {
+   "date": "2026-08-20",
+   "libelle": "VIR SEPA RECU CAFE LISIERE FACT 2026-033",
+   "montant": 1800.0,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-08-22",
+   "libelle": "CARTE SNCF CONNECT",
+   "montant": -124.0,
+   "categorie": "Déplacements"
+  },
+  {
+   "date": "2026-08-25",
+   "libelle": "CARTE BRASSERIE DU FORUM",
+   "montant": -58.4,
+   "categorie": "Repas"
+  },
+  {
+   "date": "2026-08-26",
+   "libelle": "PRLV SEPA IONOS HEBERGEMENT",
+   "montant": -182.32,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-08-27",
+   "libelle": "PRLV SEPA ASSURANCE RC PRO",
+   "montant": -48.2,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-08-29",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -9.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-09-01",
+   "libelle": "PRLV SEPA SCI DES TANNEURS LOYER ATELIER",
+   "montant": -1150.0,
+   "categorie": "Locaux"
+  },
+  {
+   "date": "2026-09-04",
+   "libelle": "PRLV SEPA ADOBE CREATIVE CLOUD",
+   "montant": -71.99,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-09-05",
+   "libelle": "VIR SEPA RECU LES HALLES D ARLES FACT 2026-034",
+   "montant": 2350.0,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-09-09",
+   "libelle": "PRLV SEPA ORANGE PRO",
+   "montant": -54.99,
+   "categorie": "Télécom"
+  },
+  {
+   "date": "2026-09-11",
+   "libelle": "CARTE BOESNER FOURNITURES ARLES",
+   "montant": -212.8,
+   "categorie": "Matériel"
+  },
+  {
+   "date": "2026-09-15",
+   "libelle": "VIR SEPA EMIS ECOLE ESTIENNE FORMATION",
+   "montant": -450.0,
+   "categorie": "Formation"
+  },
+  {
+   "date": "2026-09-16",
+   "libelle": "PRLV SEPA URSSAF",
+   "montant": -640.0,
+   "categorie": "Charges sociales"
+  },
+  {
+   "date": "2026-09-17",
+   "libelle": "CARTE LDLC PRO ECRAN 27 POUCES",
+   "montant": -304.22,
+   "categorie": "Matériel"
+  },
+  {
+   "date": "2026-09-19",
+   "libelle": "VIR SEPA RECU MAISON VAUCLAIR FACT 2026-036",
+   "montant": 1800.0,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-09-22",
+   "libelle": "CARTE SNCF CONNECT",
+   "montant": -156.4,
+   "categorie": "Déplacements"
+  },
+  {
+   "date": "2026-09-24",
+   "libelle": "CARTE IMPRIMERIE DU RHONE",
+   "montant": -268.0,
+   "categorie": "Matériel"
+  },
+  {
+   "date": "2026-09-26",
+   "libelle": "PRLV SEPA ASSURANCE RC PRO",
+   "montant": -48.2,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-09-29",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -9.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-09-30",
+   "libelle": "CARTE BRASSERIE DU FORUM",
+   "montant": -36.5,
+   "categorie": "Repas"
+  },
+  {
+   "date": "2026-10-01",
+   "libelle": "PRLV SEPA SCI DES TANNEURS LOYER ATELIER",
+   "montant": -1150.0,
+   "categorie": "Locaux"
+  },
+  {
+   "date": "2026-10-02",
+   "libelle": "VIR SEPA RECU MAISON VAUCLAIR FACT 2026-038",
+   "montant": 2400.0,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-10-04",
+   "libelle": "PRLV SEPA ADOBE CREATIVE CLOUD",
+   "montant": -71.99,
+   "categorie": "Logiciels"
+  },
+  {
+   "date": "2026-10-07",
+   "libelle": "CARTE BOESNER FOURNITURES ARLES",
+   "montant": -238.4,
+   "categorie": "Matériel"
+  },
+  {
+   "date": "2026-10-09",
+   "libelle": "PRLV SEPA ORANGE PRO",
+   "montant": -54.99,
+   "categorie": "Télécom"
+  },
+  {
+   "date": "2026-10-12",
+   "libelle": "VIR SEPA RECU LES HALLES D ARLES FACT 2026-039",
+   "montant": 1850.0,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-10-14",
+   "libelle": "CARTE IMPRIMERIE DU RHONE",
+   "montant": -312.0,
+   "categorie": "Matériel"
+  },
+  {
+   "date": "2026-10-16",
+   "libelle": "PRLV SEPA URSSAF",
+   "montant": -640.0,
+   "categorie": "Charges sociales"
+  },
+  {
+   "date": "2026-10-19",
+   "libelle": "CARTE SNCF CONNECT",
+   "montant": -89.5,
+   "categorie": "Déplacements"
+  },
+  {
+   "date": "2026-10-21",
+   "libelle": "CARTE BOESNER FOURNITURES ARLES",
+   "montant": -157.6,
+   "categorie": "Matériel"
+  },
+  {
+   "date": "2026-10-23",
+   "libelle": "VIR SEPA RECU CAFE LISIERE FACT 2026-041",
+   "montant": 960.0,
+   "categorie": "Ventes"
+  },
+  {
+   "date": "2026-10-27",
+   "libelle": "PRLV SEPA ASSURANCE RC PRO",
+   "montant": -48.2,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-10-29",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -9.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-10-30",
+   "libelle": "CARTE BRASSERIE DU FORUM",
+   "montant": -42.8,
+   "categorie": "Repas"
+  }
+ ],
+ "budgets": {
+  "mois": "2026-10",
+  "montants": {
+   "Locaux": 1500,
+   "Matériel": 600,
+   "Logiciels": 80,
+   "Déplacements": 150,
+   "Repas": 100,
+   "Télécom": 80
+  }
+ }
+}

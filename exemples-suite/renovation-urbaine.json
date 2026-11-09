@@ -1,0 +1,210 @@
+{
+ "format": "atelier-exemples/1",
+ "histoire": {
+  "id": "renovation-urbaine",
+  "titre": "Rénovation Urbaine 2026",
+  "sous_titre": "Suivi d'un chantier de réhabilitation",
+  "secteur": "Chantier",
+  "resume": "La réhabilitation d'un immeuble de logements à Villeurbanne : planning des lots, situations de travaux payées depuis le compte chantier, budget par lot ; le gros œuvre dépasse son enveloppe du mois."
+ },
+ "compte": {
+  "nom": "Compte chantier Rénovation Urbaine 2026",
+  "type": "courant",
+  "institution": "Banque Exemple (fictive)",
+  "solde_initial": 64200.0
+ },
+ "categories": [
+  {
+   "nom": "Appels de fonds",
+   "type": "revenu"
+  },
+  {
+   "nom": "Assurances",
+   "type": "depense"
+  },
+  {
+   "nom": "Banque",
+   "type": "depense"
+  },
+  {
+   "nom": "Charpente bois",
+   "type": "depense"
+  },
+  {
+   "nom": "Gros œuvre",
+   "type": "depense"
+  },
+  {
+   "nom": "Installation de chantier",
+   "type": "depense"
+  },
+  {
+   "nom": "Menuiseries extérieures",
+   "type": "depense"
+  },
+  {
+   "nom": "Électricité",
+   "type": "depense"
+  },
+  {
+   "nom": "Études et honoraires",
+   "type": "depense"
+  }
+ ],
+ "operations": [
+  {
+   "date": "2026-08-03",
+   "libelle": "VIR SEPA RECU METROPOLE DE LYON APPEL DE FONDS 3",
+   "montant": 60000.0,
+   "categorie": "Appels de fonds"
+  },
+  {
+   "date": "2026-08-05",
+   "libelle": "PRLV SEPA ASSURANCE DOMMAGES-OUVRAGE",
+   "montant": -612.5,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-08-10",
+   "libelle": "VIR SEPA EMIS ATELIER DUBOIS BENALI HONORAIRES AOÛT",
+   "montant": -1500.0,
+   "categorie": "Études et honoraires"
+  },
+  {
+   "date": "2026-08-14",
+   "libelle": "VIR SEPA EMIS BTP RHONE SITUATION 4 GROS OEUVRE",
+   "montant": -9800.0,
+   "categorie": "Gros œuvre"
+  },
+  {
+   "date": "2026-08-21",
+   "libelle": "VIR SEPA EMIS CHARPENTES DU BEAUJOLAIS SITUATION 2",
+   "montant": -14250.0,
+   "categorie": "Charpente bois"
+  },
+  {
+   "date": "2026-08-26",
+   "libelle": "CARTE LOCATION ENGINS KILOUTOU",
+   "montant": -1240.0,
+   "categorie": "Installation de chantier"
+  },
+  {
+   "date": "2026-08-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -18.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-09-02",
+   "libelle": "VIR SEPA RECU METROPOLE DE LYON APPEL DE FONDS 4",
+   "montant": 45000.0,
+   "categorie": "Appels de fonds"
+  },
+  {
+   "date": "2026-09-05",
+   "libelle": "PRLV SEPA ASSURANCE DOMMAGES-OUVRAGE",
+   "montant": -612.5,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-09-10",
+   "libelle": "VIR SEPA EMIS ATELIER DUBOIS BENALI HONORAIRES SEPTEMBRE",
+   "montant": -1500.0,
+   "categorie": "Études et honoraires"
+  },
+  {
+   "date": "2026-09-12",
+   "libelle": "VIR SEPA EMIS BTP RHONE SITUATION 5 GROS OEUVRE",
+   "montant": -11200.0,
+   "categorie": "Gros œuvre"
+  },
+  {
+   "date": "2026-09-18",
+   "libelle": "VIR SEPA EMIS CHARPENTES DU BEAUJOLAIS SITUATION 3 SOLDE",
+   "montant": -14250.0,
+   "categorie": "Charpente bois"
+  },
+  {
+   "date": "2026-09-24",
+   "libelle": "VIR SEPA EMIS ELEC LUMIERE SITUATION 1",
+   "montant": -4100.0,
+   "categorie": "Électricité"
+  },
+  {
+   "date": "2026-09-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -18.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-09-29",
+   "libelle": "CARTE BENNES ET DECHETS DU RHONE",
+   "montant": -890.0,
+   "categorie": "Installation de chantier"
+  },
+  {
+   "date": "2026-10-01",
+   "libelle": "VIR SEPA RECU METROPOLE DE LYON APPEL DE FONDS 5",
+   "montant": 45000.0,
+   "categorie": "Appels de fonds"
+  },
+  {
+   "date": "2026-10-05",
+   "libelle": "PRLV SEPA ASSURANCE DOMMAGES-OUVRAGE",
+   "montant": -612.5,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-10-09",
+   "libelle": "VIR SEPA EMIS BTP RHONE SITUATION 6 GROS OEUVRE",
+   "montant": -12600.0,
+   "categorie": "Gros œuvre"
+  },
+  {
+   "date": "2026-10-10",
+   "libelle": "VIR SEPA EMIS ATELIER DUBOIS BENALI HONORAIRES OCTOBRE",
+   "montant": -1500.0,
+   "categorie": "Études et honoraires"
+  },
+  {
+   "date": "2026-10-15",
+   "libelle": "VIR SEPA EMIS ELEC LUMIERE SITUATION 2",
+   "montant": -2270.0,
+   "categorie": "Électricité"
+  },
+  {
+   "date": "2026-10-20",
+   "libelle": "VIR SEPA EMIS BTP RHONE TRAVAUX SUPPLEMENTAIRES FONDATIONS",
+   "montant": -3400.0,
+   "categorie": "Gros œuvre"
+  },
+  {
+   "date": "2026-10-23",
+   "libelle": "VIR SEPA EMIS MENUISERIES DU VAL ACOMPTE 30 %",
+   "montant": -6420.0,
+   "categorie": "Menuiseries extérieures"
+  },
+  {
+   "date": "2026-10-27",
+   "libelle": "CARTE LOCATION ENGINS KILOUTOU",
+   "montant": -980.0,
+   "categorie": "Installation de chantier"
+  },
+  {
+   "date": "2026-10-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -18.0,
+   "categorie": "Banque"
+  }
+ ],
+ "budgets": {
+  "mois": "2026-10",
+  "montants": {
+   "Gros œuvre": 14000,
+   "Électricité": 4500,
+   "Menuiseries extérieures": 7000,
+   "Installation de chantier": 1500,
+   "Études et honoraires": 1500
+  }
+ }
+}

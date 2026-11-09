@@ -123,7 +123,95 @@
     }
   });
 
+  // ------------------------------------------------------------ exemples de la suite
+  const APPS = { convert: "Convert", tab: "Tab", viz: "Viz", tresorerie: "Trésorerie", nexus: "Nexus", projets: "Projets", wiki: "Wiki" };
+  const STORAGE_KEY = "atelier:exemple"; // histoire choisie, commune aux apps de la même origine
+  let histoires = [];
+
+  function remembered() {
+    try { return localStorage.getItem(STORAGE_KEY); } catch { return null; }
+  }
+  function remember(id) {
+    try { localStorage.setItem(STORAGE_KEY, id); } catch { /* stockage indisponible : le choix n'est pas gardé */ }
+  }
+
+  function renderExemple() {
+    const h = histoires.find((x) => x.id === $("exemple-select").value) || histoires[0];
+    if (!h) return;
+    const i = h.parcours.findIndex((e) => e.app === "tresorerie");
+    const current = h.parcours[i];
+    const next = h.parcours[i + 1];
+    $("exemple-titre").textContent = h.titre;
+    $("exemple-sous-titre").textContent = `— ${h.sous_titre}`;
+    $("exemple-resume").textContent = h.resume;
+    $("exemple-parcours").innerHTML = h.parcours.map((e, n) => `
+      <li class="chip${e.app === "tresorerie" ? " bg-selected text-brand" : ""}" title="${esc(e.texte)}"${e.app === "tresorerie" ? ' aria-current="step"' : ""}>
+        <span class="num text-faint">${n + 1}</span> ${esc(APPS[e.app] || e.app)}
+      </li>`).join("");
+    $("exemple-etape").textContent = current ? current.texte : "";
+    $("exemple-contenu").textContent = `Compte « ${h.compte} », ${h.operations} opérations d'août à octobre 2026, ${h.budgets} budgets pour ${AT.monthLabel(h.budgets_mois).toLowerCase()}.`;
+    $("exemple-suite").innerHTML = next
+      ? `<span class="font-medium text-ink">Ensuite, ${esc(APPS[next.app] || next.app)}</span> — ${esc(next.texte)}`
+      : "";
+    $("exemple-charger").hidden = h.charge;
+    $("exemple-retirer").hidden = !h.charge;
+    $("exemple-ouvrir").hidden = !h.charge;
+    $("exemple-budgets").hidden = !h.charge;
+    if (h.charge) {
+      $("exemple-ouvrir").href = `/transactions?account_id=${encodeURIComponent(h.account_id)}`;
+      $("exemple-budgets").href = `/budgets?month=${encodeURIComponent(h.budgets_mois)}`;
+    }
+  }
+
+  async function loadExemples() {
+    try {
+      histoires = (await api("GET", "/api/exemples-suite")).items;
+    } catch {
+      histoires = [];
+    }
+    $("exemples").hidden = !histoires.length;
+    if (!histoires.length) return;
+    const keep = $("exemple-select").value || remembered();
+    $("exemple-select").innerHTML = histoires
+      .map((h) => `<option value="${esc(h.id)}">${esc(h.secteur)} · ${esc(h.titre)}</option>`).join("");
+    $("exemple-select").value = histoires.some((h) => h.id === keep) ? keep : histoires[0].id;
+    renderExemple();
+  }
+
+  $("exemple-select").addEventListener("change", () => { remember($("exemple-select").value); renderExemple(); });
+  $("exemple-charger").addEventListener("click", async () => {
+    const id = $("exemple-select").value;
+    $("exemple-charger").disabled = true;
+    try {
+      const res = await api("POST", `/api/exemples-suite/${encodeURIComponent(id)}`);
+      toast(res.budgets_gardes && res.budgets_gardes.length
+        ? `Exemple chargé. Budgets déjà présents, laissés tels quels : ${res.budgets_gardes.join(", ")}.`
+        : "Exemple chargé.");
+      await loadExemples();
+      loadStats();
+    } catch (err) {
+      toast(err.message, "error");
+    } finally {
+      $("exemple-charger").disabled = false;
+    }
+  });
+  $("exemple-retirer").addEventListener("click", async () => {
+    const h = histoires.find((x) => x.id === $("exemple-select").value);
+    if (!h || !(await AT.confirm(`Retirer l'exemple « ${h.titre} » : son compte, ses opérations et ses budgets ?`, { confirmLabel: "Retirer", danger: true }))) return;
+    try {
+      const res = await api("DELETE", `/api/exemples-suite/${encodeURIComponent(h.id)}`);
+      toast(res.categories_gardees && res.categories_gardees.length
+        ? `Exemple retiré. Catégories gardées car utilisées ailleurs : ${res.categories_gardees.join(", ")}.`
+        : "Exemple retiré.");
+      await loadExemples();
+      loadStats();
+    } catch (err) {
+      toast(err.message, "error");
+    }
+  });
+
   (async () => {
+    loadExemples();
     try {
       fill(await api("GET", "/api/settings"));
     } catch (err) {

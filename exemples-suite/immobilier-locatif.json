@@ -1,0 +1,275 @@
+{
+ "format": "atelier-exemples/1",
+ "histoire": {
+  "id": "immobilier-locatif",
+  "titre": "SCI Les Tilleuls",
+  "sous_titre": "Gestion locative de six appartements",
+  "secteur": "Immobilier",
+  "resume": "La SCI familiale Les Tilleuls loue six appartements à Nantes : loyers encaissés, charges, état locatif, travaux ; en octobre un appartement est vacant, un loyer est impayé et les travaux de remise en état dépassent leur budget."
+ },
+ "compte": {
+  "nom": "Compte courant SCI Les Tilleuls",
+  "type": "courant",
+  "institution": "Banque Exemple (fictive)",
+  "solde_initial": 11480.0
+ },
+ "categories": [
+  {
+   "nom": "Assurances",
+   "type": "depense"
+  },
+  {
+   "nom": "Banque",
+   "type": "depense"
+  },
+  {
+   "nom": "Charges de copropriété",
+   "type": "depense"
+  },
+  {
+   "nom": "Emprunt",
+   "type": "depense"
+  },
+  {
+   "nom": "Gestion locative",
+   "type": "depense"
+  },
+  {
+   "nom": "Indemnités d'assurance",
+   "type": "revenu"
+  },
+  {
+   "nom": "Loyers",
+   "type": "revenu"
+  },
+  {
+   "nom": "Taxe foncière",
+   "type": "depense"
+  },
+  {
+   "nom": "Travaux",
+   "type": "depense"
+  }
+ ],
+ "operations": [
+  {
+   "date": "2026-08-03",
+   "libelle": "VIR SEPA RECU CLAIRE FONTAINE LOYER APT 1",
+   "montant": 700.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-08-04",
+   "libelle": "VIR SEPA RECU MEHDI SAÏDI LOYER APT 2",
+   "montant": 895.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-08-05",
+   "libelle": "VIR SEPA RECU ANAÏS ROUX LOYER APT 3",
+   "montant": 715.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-08-06",
+   "libelle": "VIR SEPA RECU NGUYEN LOYER APT 4",
+   "montant": 1070.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-08-07",
+   "libelle": "VIR SEPA RECU LUCAS FERRAND LOYER APT 5",
+   "montant": 510.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-08-08",
+   "libelle": "VIR SEPA RECU PAUL BESSON LOYER APT 6",
+   "montant": 885.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-08-10",
+   "libelle": "PRLV SEPA PRET IMMOBILIER ECHEANCE AOÛT",
+   "montant": -2380.0,
+   "categorie": "Emprunt"
+  },
+  {
+   "date": "2026-08-15",
+   "libelle": "PRLV SEPA ASSURANCE PNO MUTUELLE DU MIDI",
+   "montant": -93.33,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-08-20",
+   "libelle": "PRLV SEPA SYNDIC NANTES CENTRE APPEL DE CHARGES",
+   "montant": -410.0,
+   "categorie": "Charges de copropriété"
+  },
+  {
+   "date": "2026-08-22",
+   "libelle": "VIR SEPA EMIS PLOMBERIE ERDRE REPARATION CHAUFFE-EAU APT 2",
+   "montant": -540.0,
+   "categorie": "Travaux"
+  },
+  {
+   "date": "2026-08-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -12.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-09-02",
+   "libelle": "VIR SEPA EMIS ARTISAN DEGAT DES EAUX APT 4",
+   "montant": -1150.0,
+   "categorie": "Travaux"
+  },
+  {
+   "date": "2026-09-03",
+   "libelle": "VIR SEPA RECU CLAIRE FONTAINE LOYER APT 1",
+   "montant": 700.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-09-04",
+   "libelle": "VIR SEPA RECU MEHDI SAÏDI LOYER APT 2",
+   "montant": 895.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-09-05",
+   "libelle": "VIR SEPA RECU ANAÏS ROUX LOYER APT 3",
+   "montant": 715.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-09-06",
+   "libelle": "VIR SEPA RECU NGUYEN LOYER APT 4",
+   "montant": 1070.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-09-07",
+   "libelle": "VIR SEPA RECU LUCAS FERRAND LOYER APT 5",
+   "montant": 510.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-09-08",
+   "libelle": "VIR SEPA RECU PAUL BESSON LOYER APT 6",
+   "montant": 413.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-09-10",
+   "libelle": "PRLV SEPA PRET IMMOBILIER ECHEANCE SEPTEMBRE",
+   "montant": -2380.0,
+   "categorie": "Emprunt"
+  },
+  {
+   "date": "2026-09-15",
+   "libelle": "PRLV SEPA ASSURANCE PNO MUTUELLE DU MIDI",
+   "montant": -93.33,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-09-20",
+   "libelle": "PRLV SEPA SYNDIC NANTES CENTRE APPEL DE CHARGES",
+   "montant": -410.0,
+   "categorie": "Charges de copropriété"
+  },
+  {
+   "date": "2026-09-27",
+   "libelle": "VIR SEPA RECU MUTUELLE DU MIDI INDEMNITE SINISTRE",
+   "montant": 980.0,
+   "categorie": "Indemnités d'assurance"
+  },
+  {
+   "date": "2026-09-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -12.0,
+   "categorie": "Banque"
+  },
+  {
+   "date": "2026-10-03",
+   "libelle": "VIR SEPA RECU CLAIRE FONTAINE LOYER APT 1",
+   "montant": 700.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-10-04",
+   "libelle": "VIR SEPA RECU MEHDI SAÏDI LOYER APT 2",
+   "montant": 895.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-10-05",
+   "libelle": "VIR SEPA RECU ANAÏS ROUX LOYER APT 3",
+   "montant": 715.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-10-06",
+   "libelle": "VIR SEPA EMIS PEINTURES DE LOIRE REMISE EN ETAT APT 6",
+   "montant": -2650.0,
+   "categorie": "Travaux"
+  },
+  {
+   "date": "2026-10-07",
+   "libelle": "VIR SEPA RECU LUCAS FERRAND LOYER APT 5",
+   "montant": 510.0,
+   "categorie": "Loyers"
+  },
+  {
+   "date": "2026-10-10",
+   "libelle": "PRLV SEPA PRET IMMOBILIER ECHEANCE OCTOBRE",
+   "montant": -2380.0,
+   "categorie": "Emprunt"
+  },
+  {
+   "date": "2026-10-13",
+   "libelle": "CARTE LEROY MERLIN NANTES SOLS APT 6",
+   "montant": -890.0,
+   "categorie": "Travaux"
+  },
+  {
+   "date": "2026-10-15",
+   "libelle": "PRLV SEPA ASSURANCE PNO MUTUELLE DU MIDI",
+   "montant": -93.33,
+   "categorie": "Assurances"
+  },
+  {
+   "date": "2026-10-15",
+   "libelle": "PRLV SEPA TAXE FONCIERE 2026",
+   "montant": -3240.0,
+   "categorie": "Taxe foncière"
+  },
+  {
+   "date": "2026-10-20",
+   "libelle": "PRLV SEPA SYNDIC NANTES CENTRE APPEL DE CHARGES",
+   "montant": -410.0,
+   "categorie": "Charges de copropriété"
+  },
+  {
+   "date": "2026-10-21",
+   "libelle": "CARTE ANNONCE LOCATION SELOGER APT 6",
+   "montant": -79.0,
+   "categorie": "Gestion locative"
+  },
+  {
+   "date": "2026-10-28",
+   "libelle": "FRAIS TENUE DE COMPTE",
+   "montant": -12.0,
+   "categorie": "Banque"
+  }
+ ],
+ "budgets": {
+  "mois": "2026-10",
+  "montants": {
+   "Travaux": 1500,
+   "Charges de copropriété": 450,
+   "Gestion locative": 100,
+   "Assurances": 100
+  }
+ }
+}
